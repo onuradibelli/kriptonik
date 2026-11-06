@@ -1,0 +1,861 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { currencies, conversionRoutes, calculateRate, formatNumberTR, type ConversionRoute } from '../../data/conversions';
+
+export function getStaticPaths() {
+	return conversionRoutes.map(r => ({
+		params: { slug: r.slug },
+		props: { route: r }
+	}));
+}
+
+interface Props {
+	route: ConversionRoute;
+}
+
+const { route } = Astro.props;
+
+const fromCurr = currencies[route.from];
+const toCurr = currencies[route.to];
+const rate = calculateRate(route.from, route.to);
+const total = route.amount * rate;
+
+const formattedAmount = route.amount >= 1 ? route.amount.toLocaleString('tr-TR') : route.amount.toString();
+const formattedTotal = formatNumberTR(total);
+const formattedUnitRate = formatNumberTR(rate, rate < 0.01 ? 6 : 4);
+
+const pageTitle = `${formattedAmount} ${fromCurr.name} Kaç ${toCurr.name}? (Canlı Kur Hesaplama) | Kriptonik`;
+const pageDesc = `${formattedAmount} ${fromCurr.name} anlık olarak ${formattedTotal} ${toCurr.name} etmektedir. Canlı piyasa kuru, serbest piyasa, TCMB ve borsa makas farkları dönüşüm tablosu.`;
+
+// Multipliers for table
+const multipliers = [0.1, 0.5, 1, 2, 5, 10, 20, 50, 100, 250, 500, 1000, 5000];
+
+// Reverse amounts for table
+const reverseAmounts = [100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000];
+
+// Related sibling routes
+const relatedRoutes = conversionRoutes
+	.filter(r => r.category === route.category && r.slug !== route.slug)
+	.slice(0, 8);
+
+// FAQs
+const faqs = [
+	{
+		q: `${formattedAmount} ${fromCurr.name} şu an kaç ${toCurr.name}?`,
+		a: `Şu anki canlı piyasa kurlarına göre ${formattedAmount} ${fromCurr.name} yaklaşık ${formattedTotal} ${toCurr.name} (${toCurr.symbol}) değerindedir. Piyasadaki anlık dalgalanmalara göre bu tutar güncellenmektedir.`
+	},
+	{
+		q: `Bankada veya borsada bozdururken elime ne kadar geçer?`,
+		a: `Burada gösterilen hesaplama piyasadaki orta (mid) fiyata dayanır. Bankalarda işlem yaparken alış/satış makas farkı, kripto borsalarında ise borsa işlem komisyonu (%0.05 - %0.2) sebebiyle net elinize geçen tutar ufak farklılıklar gösterebilir.`
+	},
+	{
+		q: `${fromCurr.name} / ${toCurr.name} kuru ne sıklıkla güncellenir?`,
+		a: `Kriptonik veri motoru, global ve yerel borsa piyasa emir tahtalarını her 30 saniyede bir tarayarak kurları anlık olarak yeniler.`
+	},
+	{
+		q: `En düşük komisyonla nasıl çevrilir?`,
+		a: `Geleneksel bankaların mesai dışı yüksek makasları yerine, Türk Lirası işlem çifti sunan yerel kripto para borsalarında limit emir (maker) kullanarak veya hafta içi serbest piyasa saatlerinde işlem yaparak masrafları minimuma indirebilirsiniz.`
+	}
+];
+
+// Rich SEO JSON-LD Schemas
+const jsonLd = {
+	"@context": "https://schema.org",
+	"@graph": [
+		{
+			"@type": "WebPage",
+			"@id": `https://kriptonik.com/kac-tl/${route.slug}#webpage`,
+			"url": `https://kriptonik.com/kac-tl/${route.slug}`,
+			"name": pageTitle,
+			"description": pageDesc,
+			"isPartOf": { "@id": "https://kriptonik.com/#website" },
+			"inLanguage": "tr-TR"
+		},
+		{
+			"@type": "BreadcrumbList",
+			"itemListElement": [
+				{ "@type": "ListItem", "position": 1, "name": "Ana Sayfa", "item": "https://kriptonik.com" },
+				{ "@type": "ListItem", "position": 2, "name": "Kaç TL?", "item": "https://kriptonik.com/kac-tl" },
+				{ "@type": "ListItem", "position": 3, "name": `${formattedAmount} ${fromCurr.name} Kaç ${toCurr.name}?`, "item": `https://kriptonik.com/kac-tl/${route.slug}` }
+			]
+		},
+		{
+			"@type": "FAQPage",
+			"mainEntity": faqs.map(item => ({
+				"@type": "Question",
+				"name": item.q,
+				"acceptedAnswer": {
+					"@type": "Answer",
+					"text": item.a
+				}
+			}))
+		},
+		{
+			"@type": "ExchangeRateSpecification",
+			"currency": fromCurr.code,
+			"currentExchangeRate": {
+				"@type": "UnitPriceSpecification",
+				"price": rate,
+				"priceCurrency": toCurr.code
+			}
+		}
+	]
+};
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+	<div class="container conversion-detail-page">
+		<!-- Breadcrumb -->
+		<nav class="crumb-nav" aria-label="Gezinti">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<a href="/kac-tl">Kaç TL?</a>
+			<span>/</span>
+			<span class="current">{formattedAmount} {fromCurr.name} Kaç {toCurr.name}?</span>
+		</nav>
+
+		<!-- Hero Answer Box (Direct Answer Snippet) -->
+		<div class="answer-card">
+			<div class="ac-top">
+				<span class="live-status-pill">
+					<span class="live-dot"></span>
+					<span>CANLI PİYASA KURU</span>
+				</span>
+				<span class="ac-timestamp">Anlık Güncelleme (Edge)</span>
+			</div>
+
+			<h1 class="ac-headline">
+				{formattedAmount} {fromCurr.name} Kaç {toCurr.name}?
+			</h1>
+
+			<div class="ac-result-box">
+				<div class="ac-amount-group">
+					<span class="ac-from">{formattedAmount} {fromCurr.code} =</span>
+					<span class="ac-total font-mono">{formattedTotal} {toCurr.code}</span>
+				</div>
+				<p class="ac-rate-sub">
+					1 {fromCurr.code} = <strong class="font-mono">{formattedUnitRate} {toCurr.code}</strong> ({fromCurr.pluralName} ➔ {toCurr.pluralName})
+				</p>
+			</div>
+		</div>
+
+		<!-- Interactive Recalculator Card -->
+		<div class="recalc-card">
+			<div class="recalc-head">
+				<h3>Miktarı Değiştirip Tekrar Hesapla</h3>
+				<span class="recalc-tag">Anlık Sonuç</span>
+			</div>
+
+			<div class="recalc-row">
+				<div class="recalc-field">
+					<label for="detail-input">Miktar ({fromCurr.code}):</label>
+					<input 
+						type="number" 
+						id="detail-input" 
+						value={route.amount} 
+						min="0" 
+						step="any" 
+						class="field-input font-mono" 
+					/>
+				</div>
+
+				<div class="recalc-equals">=</div>
+
+				<div class="recalc-field">
+					<label for="detail-result">Karşılığı ({toCurr.code}):</label>
+					<input 
+						type="text" 
+						id="detail-result" 
+						value={formattedTotal} 
+						readonly 
+						class="field-input result-input font-mono" 
+					/>
+				</div>
+			</div>
+		</div>
+
+		<!-- Conversion Tables Grid (Multi-Tier & Reverse) -->
+		<div class="tables-split-grid">
+			<!-- Table 1: Common Amounts -->
+			<div class="table-card">
+				<div class="tc-head">
+					<h3>{fromCurr.name} ➔ {toCurr.name} Dönüşüm Tablosu</h3>
+					<span class="tc-sub">Yaygın Tutarlar</span>
+				</div>
+				<div class="table-wrap">
+					<table class="rates-table">
+						<thead>
+							<tr>
+								<th>{fromCurr.name} Tutarı</th>
+								<th class="text-right">{toCurr.name} Karşılığı</th>
+							</tr>
+						</thead>
+						<tbody>
+							{multipliers.map(m => {
+								const val = m * rate;
+								const isCurrent = m === route.amount;
+								return (
+									<tr class={isCurrent ? 'row-current' : ''}>
+										<td>
+											<span class="font-mono">{m >= 1 ? m.toLocaleString('tr-TR') : m}</span> {fromCurr.code}
+											{isCurrent && <span class="current-badge">Şu anki sayfa</span>}
+										</td>
+										<td class="text-right font-mono font-bold">
+											{formatNumberTR(val)} {toCurr.symbol}
+										</td>
+									</tr>
+								);
+							})}
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- Table 2: Reverse Conversion -->
+			<div class="table-card">
+				<div class="tc-head">
+					<h3>{toCurr.name} ➔ {fromCurr.name} Ters Çeviri Tablosu</h3>
+					<span class="tc-sub">Kaç {fromCurr.name} Alır?</span>
+				</div>
+				<div class="table-wrap">
+					<table class="rates-table">
+						<thead>
+							<tr>
+								<th>{toCurr.name} Tutarı</th>
+								<th class="text-right">{fromCurr.name} Karşılığı</th>
+							</tr>
+						</thead>
+						<tbody>
+							{reverseAmounts.map(amt => {
+								const reverseRate = calculateRate(route.to, route.from);
+								const val = amt * reverseRate;
+								return (
+									<tr>
+										<td>
+											<span class="font-mono">{amt.toLocaleString('tr-TR')}</span> {toCurr.code}
+										</td>
+										<td class="text-right font-mono font-bold">
+											{formatNumberTR(val, 4)} {fromCurr.symbol}
+										</td>
+									</tr>
+								);
+							})}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<!-- Market Spread & Venue Comparison -->
+		<div class="spread-info-card">
+			<div class="sic-head">
+				<div class="sic-icon">
+					<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+				</div>
+				<div>
+					<h3>Piyasalar Arası Fiyat ve Makas Farkları</h3>
+					<p>{fromCurr.name} alırken veya satarken işlem yapacağınız yere göre karşılaşacağınız tahmini oranlar:</p>
+				</div>
+			</div>
+
+			<div class="venues-grid">
+				<div class="venue-item">
+					<span class="vi-name">Serbest Piyasa (Kapalıçarşı)</span>
+					<span class="vi-rate font-mono">≈ {formatNumberTR(rate * 1.002)} {toCurr.code}</span>
+					<span class="vi-desc">Nakit işlemlerde dar makas, anlık fiziksel talep belirler.</span>
+				</div>
+				<div class="venue-item">
+					<span class="vi-name">Banka Ortalaması (Mesai Dışı)</span>
+					<span class="vi-rate font-mono">≈ {formatNumberTR(rate * 1.025)} {toCurr.code}</span>
+					<span class="vi-desc">Bankalarda mesai saatleri dışında %2 - %5 arası yüksek makas oluşur.</span>
+				</div>
+				<div class="venue-item venue-highlight">
+					<span class="vi-name">Kripto Borsaları (USDT/TRY)</span>
+					<span class="vi-rate font-mono">≈ {formatNumberTR(rate * 1.004)} {toCurr.code}</span>
+					<span class="vi-desc">7/24 kesintisiz likidite ve %0.1 civarı düşük işlem komisyonu.</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- Informational Editorial Text -->
+		<div class="editorial-card">
+			<h3>{formattedAmount} {fromCurr.name} Alım-Satımında Bilmeniz Gerekenler</h3>
+			<p>
+				{formattedAmount} {fromCurr.name} ({fromCurr.code}) bozdururken veya satın alırken tek kriter gösterge kuru değildir. Piyasa derinliği, işlem yaptığınız platformun komisyon yapısı ve transfer ücretleri nihai bakiyenizi doğrudan etkiler.
+			</p>
+			<p>
+				Kriptonik'te sunulan veriler; global emir defterleri, yerel Türk kripto para borsaları ve serbest piyasa göstergelerinden alınan anlık ağırlıklı medyan değerlerle üretilir. Hiçbir aracı komisyonu gizlenmez, formüller şeffaf biçimde paylaşılır.
+			</p>
+		</div>
+
+		<!-- Related Conversions -->
+		{relatedRoutes.length > 0 && (
+			<div class="related-section">
+				<h3 class="related-title">Benzer {fromCurr.name} Hesaplamaları</h3>
+				<div class="related-pills">
+					{relatedRoutes.map(r => (
+						<a href={`/kac-tl/${r.slug}`} class="rel-pill">
+							<span>{r.amount} {currencies[r.from].name} Kaç {currencies[r.to].name}?</span>
+							<span class="rel-arrow">→</span>
+						</a>
+					))}
+				</div>
+			</div>
+		)}
+
+		<!-- FAQs -->
+		<div class="faq-section">
+			<h3 class="faq-sec-title">Sıkça Sorulan Sorular</h3>
+			<div class="faq-list">
+				{faqs.map(item => (
+					<details class="faq-item" open>
+						<summary class="faq-question">
+							<span>{item.q}</span>
+							<span class="faq-arr">▾</span>
+						</summary>
+						<div class="faq-answer">
+							<p>{item.a}</p>
+						</div>
+					</details>
+				))}
+			</div>
+		</div>
+	</div>
+</Layout>
+
+<script define:vars={{ baseRate: rate, fromCode: fromCurr.code, toCode: toCurr.code }}>
+	const detailInput = document.getElementById('detail-input');
+	const detailResult = document.getElementById('detail-result');
+
+	detailInput?.addEventListener('input', () => {
+		const amt = parseFloat(detailInput.value) || 0;
+		const total = amt * baseRate;
+		if (detailResult) {
+			detailResult.value = total.toLocaleString('tr-TR', { maximumFractionDigits: baseRate < 0.01 ? 6 : 2, minimumFractionDigits: 2 });
+		}
+	});
+</script>
+
+<style>
+	.conversion-detail-page {
+		padding: 48px 20px 88px;
+		max-width: 960px;
+	}
+
+	.crumb-nav {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 13px;
+		color: var(--text-faint);
+		margin-bottom: 28px;
+		flex-wrap: wrap;
+	}
+
+	.crumb-nav a {
+		color: var(--text-muted);
+		text-decoration: none;
+	}
+
+	.crumb-nav a:hover {
+		color: var(--primary);
+	}
+
+	.crumb-nav .current {
+		color: var(--text);
+		font-weight: 500;
+	}
+
+	/* Hero Answer Card */
+	.answer-card {
+		background: var(--bg-elev);
+		border: 1px solid var(--border-strong);
+		border-radius: 20px;
+		padding: 36px;
+		margin-bottom: 28px;
+		box-shadow: var(--shadow-md), 0 0 32px rgba(16, 185, 129, 0.05);
+	}
+
+	.ac-top {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 18px;
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	.live-status-pill {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		background: rgba(16, 185, 129, 0.1);
+		border: 1px solid rgba(16, 185, 129, 0.25);
+		color: var(--primary);
+		padding: 4px 10px;
+		border-radius: 9999px;
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.06em;
+	}
+
+	.live-dot {
+		width: 6px;
+		height: 6px;
+		background: var(--primary);
+		border-radius: 50%;
+	}
+
+	.ac-timestamp {
+		font-size: 12px;
+		color: var(--text-faint);
+	}
+
+	.ac-headline {
+		font-size: 32px;
+		font-weight: 800;
+		color: var(--text);
+		letter-spacing: -0.025em;
+		margin: 0 0 20px;
+	}
+
+	.ac-result-box {
+		background: var(--bg-sunken);
+		border: 1px solid var(--border);
+		border-radius: 14px;
+		padding: 24px;
+	}
+
+	.ac-amount-group {
+		display: flex;
+		align-items: baseline;
+		gap: 12px;
+		flex-wrap: wrap;
+		margin-bottom: 10px;
+	}
+
+	.ac-from {
+		font-size: 24px;
+		color: var(--text-muted);
+		font-weight: 600;
+	}
+
+	.ac-total {
+		font-size: 44px;
+		font-weight: 800;
+		color: var(--primary);
+		letter-spacing: -0.02em;
+	}
+
+	.ac-rate-sub {
+		font-size: 13.5px;
+		color: var(--text-muted);
+		margin: 0;
+	}
+
+	.ac-rate-sub strong {
+		color: var(--text);
+	}
+
+	/* Recalculator Card */
+	.recalc-card {
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
+		border-radius: 16px;
+		padding: 24px;
+		margin-bottom: 36px;
+	}
+
+	.recalc-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 18px;
+	}
+
+	.recalc-head h3 {
+		font-size: 16px;
+		font-weight: 700;
+		color: var(--text);
+		margin: 0;
+	}
+
+	.recalc-tag {
+		font-size: 11px;
+		color: var(--text-faint);
+		background: var(--bg-sunken);
+		border: 1px solid var(--border);
+		padding: 3px 8px;
+		border-radius: 4px;
+	}
+
+	.recalc-row {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		gap: 16px;
+		align-items: flex-end;
+	}
+
+	.recalc-field {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.recalc-field label {
+		font-size: 12.5px;
+		font-weight: 600;
+		color: var(--text-muted);
+	}
+
+	.field-input {
+		width: 100%;
+		background: var(--bg-sunken);
+		border: 1px solid var(--border);
+		color: var(--text);
+		padding: 12px 16px;
+		border-radius: 10px;
+		font-size: 18px;
+		font-weight: 600;
+		outline: none;
+		transition: border-color var(--transition-fast);
+	}
+
+	.field-input:focus {
+		border-color: var(--primary);
+	}
+
+	.result-input {
+		color: var(--primary);
+		font-weight: 700;
+	}
+
+	.recalc-equals {
+		font-size: 24px;
+		font-weight: 700;
+		color: var(--text-faint);
+		padding-bottom: 10px;
+		text-align: center;
+	}
+
+	/* Split Grid Tables */
+	.tables-split-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 24px;
+		margin-bottom: 36px;
+	}
+
+	.table-card {
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
+		border-radius: 16px;
+		padding: 22px;
+	}
+
+	.tc-head {
+		margin-bottom: 16px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid var(--border-subtle);
+	}
+
+	.tc-head h3 {
+		font-size: 15px;
+		font-weight: 700;
+		color: var(--text);
+		margin: 0 0 4px;
+	}
+
+	.tc-sub {
+		font-size: 12px;
+		color: var(--text-faint);
+	}
+
+	.table-wrap {
+		overflow-x: auto;
+	}
+
+	.rates-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 13.5px;
+	}
+
+	.rates-table th {
+		text-align: left;
+		padding: 10px 12px;
+		color: var(--text-faint);
+		font-size: 11.5px;
+		border-bottom: 1px solid var(--border);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+
+	.rates-table td {
+		padding: 11px 12px;
+		border-bottom: 1px solid var(--border-subtle);
+		color: var(--text);
+	}
+
+	.row-current {
+		background: rgba(16, 185, 129, 0.08);
+	}
+
+	.row-current td {
+		color: var(--primary);
+	}
+
+	.current-badge {
+		font-size: 10px;
+		font-weight: 700;
+		color: var(--primary);
+		background: rgba(16, 185, 129, 0.15);
+		padding: 2px 6px;
+		border-radius: 4px;
+		margin-left: 6px;
+	}
+
+	.text-right {
+		text-align: right;
+	}
+
+	.font-bold {
+		font-weight: 700;
+	}
+
+	/* Spread Info Card */
+	.spread-info-card {
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
+		border-radius: 16px;
+		padding: 28px;
+		margin-bottom: 36px;
+	}
+
+	.sic-head {
+		display: flex;
+		gap: 14px;
+		align-items: flex-start;
+		margin-bottom: 22px;
+	}
+
+	.sic-icon {
+		width: 40px;
+		height: 40px;
+		border-radius: 10px;
+		background: rgba(16, 185, 129, 0.1);
+		color: var(--primary);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+	}
+
+	.sic-head h3 {
+		font-size: 18px;
+		font-weight: 700;
+		color: var(--text);
+		margin: 0 0 6px;
+	}
+
+	.sic-head p {
+		font-size: 13.5px;
+		color: var(--text-muted);
+		margin: 0;
+	}
+
+	.venues-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 16px;
+	}
+
+	.venue-item {
+		background: var(--bg-sunken);
+		border: 1px solid var(--border-subtle);
+		border-radius: 12px;
+		padding: 16px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.venue-highlight {
+		border-color: var(--primary);
+		background: rgba(16, 185, 129, 0.04);
+	}
+
+	.vi-name {
+		font-size: 13px;
+		font-weight: 700;
+		color: var(--text);
+	}
+
+	.vi-rate {
+		font-size: 16px;
+		font-weight: 800;
+		color: var(--primary);
+	}
+
+	.vi-desc {
+		font-size: 11.5px;
+		line-height: 1.4;
+		color: var(--text-muted);
+	}
+
+	/* Editorial */
+	.editorial-card {
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
+		border-radius: 16px;
+		padding: 28px;
+		margin-bottom: 36px;
+	}
+
+	.editorial-card h3 {
+		font-size: 18px;
+		font-weight: 700;
+		color: var(--text);
+		margin: 0 0 12px;
+	}
+
+	.editorial-card p {
+		font-size: 14px;
+		line-height: 1.65;
+		color: var(--text-muted);
+		margin: 0 0 12px;
+	}
+
+	.editorial-card p:last-child {
+		margin-bottom: 0;
+	}
+
+	/* Related */
+	.related-section {
+		margin-bottom: 36px;
+	}
+
+	.related-title {
+		font-size: 16px;
+		font-weight: 700;
+		color: var(--text);
+		margin: 0 0 14px;
+	}
+
+	.related-pills {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+		gap: 10px;
+	}
+
+	.rel-pill {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 10px 14px;
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		text-decoration: none;
+		font-size: 12.5px;
+		font-weight: 600;
+		color: var(--text);
+		transition: all var(--transition-fast);
+	}
+
+	.rel-pill:hover {
+		border-color: var(--primary);
+		color: var(--primary);
+		transform: translateX(2px);
+	}
+
+	.rel-arrow {
+		color: var(--text-faint);
+		font-size: 12px;
+	}
+
+	/* FAQ */
+	.faq-section {
+		margin-bottom: 40px;
+	}
+
+	.faq-sec-title {
+		font-size: 18px;
+		font-weight: 700;
+		color: var(--text);
+		margin: 0 0 16px;
+	}
+
+	.faq-list {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.faq-item {
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		overflow: hidden;
+	}
+
+	.faq-item[open] {
+		border-color: var(--border-strong);
+	}
+
+	.faq-question {
+		padding: 16px 20px;
+		font-size: 14px;
+		font-weight: 600;
+		color: var(--text);
+		cursor: pointer;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		user-select: none;
+		list-style: none;
+	}
+
+	.faq-question::-webkit-details-marker {
+		display: none;
+	}
+
+	.faq-arr {
+		color: var(--text-faint);
+		font-size: 12px;
+	}
+
+	.faq-answer {
+		padding: 0 20px 16px;
+		font-size: 13.5px;
+		color: var(--text-muted);
+		line-height: 1.6;
+	}
+
+	.faq-answer p {
+		margin: 0;
+	}
+
+	@media (max-width: 768px) {
+		.ac-total {
+			font-size: 32px;
+		}
+		.ac-headline {
+			font-size: 26px;
+		}
+		.recalc-row {
+			grid-template-columns: 1fr;
+		}
+		.recalc-equals {
+			display: none;
+		}
+		.tables-split-grid {
+			grid-template-columns: 1fr;
+		}
+		.venues-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

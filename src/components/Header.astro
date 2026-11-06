@@ -22,6 +22,7 @@ const currentPath = Astro.url.pathname;
 		<!-- Desktop Navigation -->
 		<nav class="nav-links">
 			<a href="/" class={currentPath === '/' ? 'nav-item active' : 'nav-item'}>Ana Sayfa</a>
+			<a href="/kac-tl" class={currentPath.startsWith('/kac-tl') ? 'nav-item active' : 'nav-item'}>Kaç TL?</a>
 			
 			<div class="nav-dropdown-wrapper">
 				<a href="/araclar" class={currentPath.startsWith('/araclar') ? 'nav-item active' : 'nav-item'}>
@@ -115,6 +116,7 @@ const currentPath = Astro.url.pathname;
 			🔍 Hızlı Arama Yap (Ctrl+K)
 		</button>
 		<a href="/" class="mobile-nav-item">Ana Sayfa</a>
+		<a href="/kac-tl" class="mobile-nav-item">Kaç TL? Çevirici</a>
 		<a href="/araclar" class="mobile-nav-item">Tüm Araçlar</a>
 		<a href="/yardim" class="mobile-nav-item">Acil Yardım</a>
 		<a href="/piyasa" class="mobile-nav-item">Canlı Piyasa</a>
