@@ -1,0 +1,268 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = "Birim Çevirici (BTC, Satoshi, ETH, Gwei, Wei) | Kriptonik";
+const pageDesc = "Kripto para birimlerini kayıpsız dönüştürün. 1 BTC kaç Satoshi, 1 ETH kaç Gwei ve Wei eder? Anlık çift yönlü birim çevirici.";
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container tool-page">
+		<nav class="breadcrumb">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<a href="/araclar">Araçlar</a>
+			<span>/</span>
+			<span class="current">Birim Çevirici</span>
+		</nav>
+
+		<div class="tool-header">
+			<div class="badge badge-info">
+				<span>🔄</span>
+				<span>Kayıpsız Çevrim</span>
+			</div>
+			<h1 class="tool-title">Kripto Birim Çevirici</h1>
+			<p class="tool-subtitle">
+				Satoshi, Gwei, Wei, Lamport ve ana birimler arasında hassas matematiksel dönüştürme yapın.
+			</p>
+		</div>
+
+		<div class="tool-card card">
+			<div class="unit-tabs">
+				<button type="button" class="unit-tab active" data-unit-tab="btc">Bitcoin (BTC / Sat)</button>
+				<button type="button" class="unit-tab" data-unit-tab="eth">Ethereum (ETH / Gwei / Wei)</button>
+				<button type="button" class="unit-tab" data-unit-tab="sol">Solana (SOL / Lamport)</button>
+				<button type="button" class="unit-tab" data-unit-tab="trx">TRON (TRX / Sun)</button>
+			</div>
+
+			<!-- Bitcoin Panel -->
+			<div class="unit-panel" id="panel-btc">
+				<div class="converter-grid">
+					<div class="form-group">
+						<label class="form-label" for="btc-val">Bitcoin (BTC):</label>
+						<input type="text" id="btc-val" class="form-input mono-text" value="1" placeholder="1.0" />
+					</div>
+					<div class="form-group">
+						<label class="form-label" for="sat-val">Satoshi (sat):</label>
+						<input type="text" id="sat-val" class="form-input mono-text" value="100000000" placeholder="100,000,000" />
+					</div>
+					<div class="form-group">
+						<label class="form-label" for="mbtc-val">MilliBitcoin (mBTC):</label>
+						<input type="text" id="mbtc-val" class="form-input mono-text" value="1000" placeholder="1000" />
+					</div>
+					<div class="form-group">
+						<label class="form-label" for="ubtc-val">MikroBitcoin / Bits (µBTC):</label>
+						<input type="text" id="ubtc-val" class="form-input mono-text" value="1000000" placeholder="1000000" />
+					</div>
+				</div>
+			</div>
+
+			<!-- Ethereum Panel -->
+			<div class="unit-panel" id="panel-eth" style="display: none;">
+				<div class="converter-grid">
+					<div class="form-group">
+						<label class="form-label" for="eth-val">Ether (ETH):</label>
+						<input type="text" id="eth-val" class="form-input mono-text" value="1" placeholder="1.0" />
+					</div>
+					<div class="form-group">
+						<label class="form-label" for="gwei-val">Gigawei (Gwei):</label>
+						<input type="text" id="gwei-val" class="form-input mono-text" value="1000000000" placeholder="1,000,000,000" />
+					</div>
+					<div class="form-group full-width">
+						<label class="form-label" for="wei-val">Wei (En küçük ETH birimi):</label>
+						<input type="text" id="wei-val" class="form-input mono-text" value="1000000000000000000" />
+					</div>
+				</div>
+			</div>
+
+			<!-- Solana Panel -->
+			<div class="unit-panel" id="panel-sol" style="display: none;">
+				<div class="converter-grid">
+					<div class="form-group">
+						<label class="form-label" for="sol-val">Solana (SOL):</label>
+						<input type="text" id="sol-val" class="form-input mono-text" value="1" placeholder="1.0" />
+					</div>
+					<div class="form-group">
+						<label class="form-label" for="lamport-val">Lamport (1 SOL = 10^9 Lamport):</label>
+						<input type="text" id="lamport-val" class="form-input mono-text" value="1000000000" />
+					</div>
+				</div>
+			</div>
+
+			<!-- TRON Panel -->
+			<div class="unit-panel" id="panel-trx" style="display: none;">
+				<div class="converter-grid">
+					<div class="form-group">
+						<label class="form-label" for="trx-val">TRON (TRX):</label>
+						<input type="text" id="trx-val" class="form-input mono-text" value="1" placeholder="1.0" />
+					</div>
+					<div class="form-group">
+						<label class="form-label" for="sun-val">SUN (1 TRX = 10^6 SUN):</label>
+						<input type="text" id="sun-val" class="form-input mono-text" value="1000000" />
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- SEO Content -->
+		<div class="card" style="margin-top: 36px;">
+			<h2 style="font-size: 20px; margin-bottom: 12px;">Kripto Birimleri Nasıl Hesaplanır?</h2>
+			<p class="text-muted" style="font-size: 14px; line-height: 1.7; margin-bottom: 12px;">
+				Blokzincir ağlarında para transferleri ondalıklı sayılar yerine en küçük tamsayı birimleriyle işlenir. Örneğin Bitcoin ağında tüm bakiyeler <strong>Satoshi</strong>, Ethereum ağında ise <strong>Wei</strong> olarak saklanır.
+			</p>
+			<ul class="text-muted" style="padding-left: 20px; font-size: 14px; line-height: 1.7;">
+				<li><strong>1 Bitcoin (BTC)</strong> = 100.000.000 Satoshi (10^8 sat)</li>
+				<li><strong>1 Ether (ETH)</strong> = 1.000.000.000 Gwei (10^9 gwei) = 1.000.000.000.000.000.000 Wei (10^18 wei)</li>
+				<li><strong>1 Solana (SOL)</strong> = 1.000.000.000 Lamport (10^9 lamport)</li>
+				<li><strong>1 TRON (TRX)</strong> = 1.000.000 SUN (10^6 sun)</li>
+			</ul>
+		</div>
+	</div>
+</Layout>
+
+<script>
+	// Tab Switcher
+	const tabs = document.querySelectorAll('.unit-tab');
+	const panels: Record<string, HTMLElement | null> = {
+		btc: document.getElementById('panel-btc'),
+		eth: document.getElementById('panel-eth'),
+		sol: document.getElementById('panel-sol'),
+		trx: document.getElementById('panel-trx')
+	};
+
+	tabs.forEach(tab => {
+		tab.addEventListener('click', () => {
+			tabs.forEach(t => t.classList.remove('active'));
+			tab.classList.add('active');
+			const target = tab.getAttribute('data-unit-tab') || 'btc';
+			Object.entries(panels).forEach(([k, p]) => {
+				if (p) p.style.display = k === target ? 'block' : 'none';
+			});
+		});
+	});
+
+	// Bitcoin Converters
+	const btcInput = document.getElementById('btc-val') as HTMLInputElement;
+	const satInput = document.getElementById('sat-val') as HTMLInputElement;
+	const mbtcInput = document.getElementById('mbtc-val') as HTMLInputElement;
+	const ubtcInput = document.getElementById('ubtc-val') as HTMLInputElement;
+
+	btcInput?.addEventListener('input', () => {
+		const val = parseFloat(btcInput.value) || 0;
+		if (satInput) satInput.value = Math.round(val * 1e8).toString();
+		if (mbtcInput) mbtcInput.value = (val * 1e3).toString();
+		if (ubtcInput) ubtcInput.value = (val * 1e6).toString();
+	});
+
+	satInput?.addEventListener('input', () => {
+		const val = parseFloat(satInput.value) || 0;
+		if (btcInput) btcInput.value = (val / 1e8).toFixed(8).replace(/\.?0+$/, '');
+		if (mbtcInput) mbtcInput.value = (val / 1e5).toString();
+		if (ubtcInput) ubtcInput.value = (val / 1e2).toString();
+	});
+
+	// Ethereum Converters
+	const ethInput = document.getElementById('eth-val') as HTMLInputElement;
+	const gweiInput = document.getElementById('gwei-val') as HTMLInputElement;
+	const weiInput = document.getElementById('wei-val') as HTMLInputElement;
+
+	ethInput?.addEventListener('input', () => {
+		const val = parseFloat(ethInput.value) || 0;
+		if (gweiInput) gweiInput.value = (val * 1e9).toString();
+		if (weiInput) {
+			try {
+				const bi = BigInt(Math.round(val * 1e9)) * BigInt(1e9);
+				weiInput.value = bi.toString();
+			} catch {
+				weiInput.value = (val * 1e18).toString();
+			}
+		}
+	});
+
+	gweiInput?.addEventListener('input', () => {
+		const val = parseFloat(gweiInput.value) || 0;
+		if (ethInput) ethInput.value = (val / 1e9).toFixed(9).replace(/\.?0+$/, '');
+		if (weiInput) weiInput.value = (val * 1e9).toString();
+	});
+</script>
+
+<style>
+	.tool-page {
+		padding: 32px 20px 80px;
+	}
+
+	.breadcrumb {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 13px;
+		color: var(--text-faint);
+		margin-bottom: 20px;
+	}
+
+	.tool-header {
+		margin-bottom: 28px;
+	}
+
+	.tool-title {
+		font-size: 34px;
+		font-weight: 700;
+		margin: 8px 0;
+	}
+
+	.tool-subtitle {
+		font-size: 16px;
+		color: var(--text-muted);
+		max-width: 700px;
+	}
+
+	.unit-tabs {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-bottom: 24px;
+		border-bottom: 1px solid var(--border);
+		padding-bottom: 12px;
+	}
+
+	.unit-tab {
+		background: var(--bg-sunken);
+		border: 1px solid var(--border);
+		color: var(--text-muted);
+		padding: 8px 16px;
+		border-radius: 8px;
+		font-size: 13px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 150ms ease;
+	}
+
+	.unit-tab:hover {
+		color: var(--text);
+		border-color: var(--border-strong);
+	}
+
+	.unit-tab.active {
+		background: var(--primary);
+		color: var(--primary-contrast);
+		border-color: var(--primary);
+	}
+
+	.converter-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 20px;
+	}
+
+	.full-width {
+		grid-column: span 2;
+	}
+
+	@media (max-width: 600px) {
+		.converter-grid {
+			grid-template-columns: 1fr;
+		}
+		.full-width {
+			grid-column: span 1;
+		}
+	}
+</style>

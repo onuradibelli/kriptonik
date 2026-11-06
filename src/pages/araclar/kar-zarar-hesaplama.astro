@@ -1,0 +1,387 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = "Kripto Kâr/Zarar ve Ortalama Maliyet Hesaplayıcı | Kriptonik";
+const pageDesc = "Kripto para işlemlerinizde gerçekleşen ve gerçekleşmemiş kâr/zararı, ortalama maliyeti ve başa baş noktasını FIFO ve Ortalama Maliyet yöntemleriyle hesaplayın.";
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container tool-page">
+		<nav class="breadcrumb">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<a href="/araclar">Araçlar</a>
+			<span>/</span>
+			<span class="current">Kâr/Zarar Hesaplayıcı</span>
+		</nav>
+
+		<div class="tool-header">
+			<div class="badge badge-info">
+				<span>📊</span>
+				<span>Tarayıcı İçi Portföy Hesabı</span>
+			</div>
+			<h1 class="tool-title">Kâr/Zarar ve Ortalama Maliyet Hesaplayıcı</h1>
+			<p class="tool-subtitle">
+				İşlemlerinizi ekleyin; gerçekleşen kârınızı, eldeki varlıkların ortalama maliyetini ve başa baş fiyatınızı anında hesaplayın. Verileriniz tamamen cihazınızda kalır.
+			</p>
+		</div>
+
+		<div class="tool-card card">
+			<!-- Yöntem ve Para Birimi Ayarları -->
+			<div class="settings-row">
+				<div class="form-group">
+					<label class="form-label" for="calc-method">Maliyet Hesaplama Yöntemi:</label>
+					<select id="calc-method" class="form-select">
+						<option value="AVG" selected>Ortalama Maliyet (Weighted Average)</option>
+						<option value="FIFO">FIFO (İlk Giren İlk Çıkar)</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label class="form-label" for="current-price-input">Güncel Birim Fiyat (Satış/Piyasa Fiyatı):</label>
+					<input type="number" id="current-price-input" class="form-input mono-text" value="300" step="any" />
+				</div>
+			</div>
+
+			<!-- İşlem Tablosu -->
+			<div class="transactions-section">
+				<div class="tx-header-row">
+					<h3 style="font-size: 16px;">İşlem Geçmişi (Alışlar ve Satışlar):</h3>
+					<button type="button" class="btn btn-secondary btn-sm" id="add-row-btn">+ Yeni İşlem Ekle</button>
+				</div>
+
+				<div class="table-wrapper">
+					<table class="data-table" id="tx-table">
+						<thead>
+							<tr>
+								<th>İşlem Türü</th>
+								<th>Miktar (Adet)</th>
+								<th>Birim Fiyat</th>
+								<th>Komisyon</th>
+								<th>Toplam Tutar</th>
+								<th>İşlem</th>
+							</tr>
+						</thead>
+						<tbody id="tx-tbody">
+							<!-- Varsayılan Test Satırları (Section 6.8 Vektörü) -->
+							<tr class="tx-row" data-row-id="1">
+								<td>
+									<select class="form-select row-type">
+										<option value="BUY" selected>Alış (BUY)</option>
+										<option value="SELL">Satış (SELL)</option>
+									</select>
+								</td>
+								<td><input type="number" class="form-input mono-text row-qty" value="1" step="any" /></td>
+								<td><input type="number" class="form-input mono-text row-price" value="100" step="any" /></td>
+								<td><input type="number" class="form-input mono-text row-fee" value="0" step="any" /></td>
+								<td class="mono-text row-total">100.00</td>
+								<td><button type="button" class="del-row-btn" title="Sil">✕</button></td>
+							</tr>
+							<tr class="tx-row" data-row-id="2">
+								<td>
+									<select class="form-select row-type">
+										<option value="BUY" selected>Alış (BUY)</option>
+										<option value="SELL">Satış (SELL)</option>
+									</select>
+								</td>
+								<td><input type="number" class="form-input mono-text row-qty" value="1" step="any" /></td>
+								<td><input type="number" class="form-input mono-text row-price" value="200" step="any" /></td>
+								<td><input type="number" class="form-input mono-text row-fee" value="0" step="any" /></td>
+								<td class="mono-text row-total">200.00</td>
+								<td><button type="button" class="del-row-btn" title="Sil">✕</button></td>
+							</tr>
+							<tr class="tx-row" data-row-id="3">
+								<td>
+									<select class="form-select row-type">
+										<option value="BUY">Alış (BUY)</option>
+										<option value="SELL" selected>Satış (SELL)</option>
+									</select>
+								</td>
+								<td><input type="number" class="form-input mono-text row-qty" value="1" step="any" /></td>
+								<td><input type="number" class="form-input mono-text row-price" value="300" step="any" /></td>
+								<td><input type="number" class="form-input mono-text row-fee" value="0" step="any" /></td>
+								<td class="mono-text row-total">300.00</td>
+								<td><button type="button" class="del-row-btn" title="Sil">✕</button></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- Sonuçlar Paneli -->
+			<div class="results-grid" style="margin-top: 24px;">
+				<div class="res-card card">
+					<span class="res-label">Eldeki Varlık Miktarı</span>
+					<span class="res-val mono-text" id="res-qty">1.00</span>
+				</div>
+				<div class="res-card card">
+					<span class="res-label">Birim Ortalama Maliyet</span>
+					<span class="res-val mono-text text-primary" id="res-avg-cost">150.00</span>
+				</div>
+				<div class="res-card card">
+					<span class="res-label">Gerçekleşmiş Kâr/Zarar</span>
+					<span class="res-val mono-text text-success" id="res-realized">+150.00</span>
+				</div>
+				<div class="res-card card">
+					<span class="res-label">Gerçekleşmemiş Kâr/Zarar</span>
+					<span class="res-val mono-text text-success" id="res-unrealized">+150.00 (+100.0%)</span>
+				</div>
+				<div class="res-card card">
+					<span class="res-label">Başa Baş Noktası (Break-Even)</span>
+					<span class="res-val mono-text" id="res-breakeven">150.00</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- Açıklama ve Formül -->
+		<div class="card" style="margin-top: 32px;">
+			<h3 style="font-size: 18px; margin-bottom: 12px;">Ortalama Maliyet ve FIFO Nasıl Hesaplanır?</h3>
+			<p class="text-muted" style="font-size: 14px; line-height: 1.6; margin-bottom: 12px;">
+				<strong>Ağırlıklı Ortalama Maliyet:</strong> Yapılan her yeni alım işleminde toplam ödenen tutar (komisyonlar dahil), toplam coin adedine bölünerek tek bir havuz maliyeti elde edilir. Satış yapıldığında bu ortak havuzdan düşülür.
+			</p>
+			<p class="text-muted" style="font-size: 14px; line-height: 1.6;">
+				<strong>FIFO (First In, First Out):</strong> Satış yapıldığında ilk satın aldığınız en eski lotlardan düşülür. Özellikle vergi ve muhasebe dökümlerinde standart olarak kabul edilir.
+			</p>
+		</div>
+	</div>
+</Layout>
+
+<script>
+	let rowCounter = 4;
+	const tbody = document.getElementById('tx-tbody');
+	const addBtn = document.getElementById('add-row-btn');
+	const methodSelect = document.getElementById('calc-method') as HTMLSelectElement;
+	const currentPriceInput = document.getElementById('current-price-input') as HTMLInputElement;
+
+	const resQty = document.getElementById('res-qty');
+	const resAvg = document.getElementById('res-avg-cost');
+	const resRealized = document.getElementById('res-realized');
+	const resUnrealized = document.getElementById('res-unrealized');
+	const resBreakeven = document.getElementById('res-breakeven');
+
+	function calculatePnL() {
+		if (!tbody || !methodSelect || !currentPriceInput) return;
+
+		const method = methodSelect.value;
+		const currentPrice = parseFloat(currentPriceInput.value) || 0;
+		const rows = tbody.querySelectorAll('.tx-row');
+
+		interface TxItem {
+			type: 'BUY' | 'SELL';
+			qty: number;
+			price: number;
+			fee: number;
+		}
+
+		const txs: TxItem[] = [];
+
+		rows.forEach(r => {
+			const type = (r.querySelector('.row-type') as HTMLSelectElement).value as 'BUY' | 'SELL';
+			const qty = parseFloat((r.querySelector('.row-qty') as HTMLInputElement).value) || 0;
+			const price = parseFloat((r.querySelector('.row-price') as HTMLInputElement).value) || 0;
+			const fee = parseFloat((r.querySelector('.row-fee') as HTMLInputElement).value) || 0;
+
+			const totalCell = r.querySelector('.row-total');
+			if (totalCell) {
+				const tot = (qty * price) + (type === 'BUY' ? fee : -fee);
+				totalCell.textContent = tot.toFixed(2);
+			}
+
+			if (qty > 0 && price >= 0) {
+				txs.push({ type, qty, price, fee });
+			}
+		});
+
+		let holdingQty = 0;
+		let holdingCost = 0;
+		let realizedPnL = 0;
+
+		// FIFO Lot Queue
+		interface Lot {
+			qty: number;
+			price: number;
+		}
+		const fifoLots: Lot[] = [];
+
+		if (method === 'AVG') {
+			for (const tx of txs) {
+				if (tx.type === 'BUY') {
+					holdingCost += (tx.qty * tx.price) + tx.fee;
+					holdingQty += tx.qty;
+				} else {
+					// SELL
+					if (holdingQty > 0) {
+						const avgCost = holdingCost / holdingQty;
+						const sellQty = Math.min(tx.qty, holdingQty);
+						const profit = (tx.price - avgCost) * sellQty - tx.fee;
+						realizedPnL += profit;
+						holdingCost -= avgCost * sellQty;
+						holdingQty -= sellQty;
+					}
+				}
+			}
+		} else {
+			// FIFO
+			for (const tx of txs) {
+				if (tx.type === 'BUY') {
+					fifoLots.push({ qty: tx.qty, price: tx.price + (tx.fee / tx.qty) });
+					holdingQty += tx.qty;
+				} else {
+					let toSell = tx.qty;
+					while (toSell > 0 && fifoLots.length > 0) {
+						const lot = fifoLots[0];
+						const take = Math.min(toSell, lot.qty);
+						const profit = (tx.price - lot.price) * take;
+						realizedPnL += profit;
+						lot.qty -= take;
+						toSell -= take;
+						holdingQty -= take;
+						if (lot.qty <= 0) fifoLots.shift();
+					}
+					realizedPnL -= tx.fee;
+				}
+			}
+			holdingCost = fifoLots.reduce((acc, l) => acc + (l.qty * l.price), 0);
+		}
+
+		const avgUnitCost = holdingQty > 0 ? (holdingCost / holdingQty) : 0;
+		const currentValue = holdingQty * currentPrice;
+		const unrealizedPnL = currentValue - holdingCost;
+		const unrealizedPct = holdingCost > 0 ? ((unrealizedPnL / holdingCost) * 100) : 0;
+
+		if (resQty) resQty.textContent = holdingQty.toFixed(4).replace(/\.?0+$/, '');
+		if (resAvg) resAvg.textContent = avgUnitCost.toFixed(2);
+		if (resRealized) {
+			resRealized.textContent = `${realizedPnL >= 0 ? '+' : ''}${realizedPnL.toFixed(2)}`;
+			resRealized.className = `res-val mono-text ${realizedPnL >= 0 ? 'text-success' : 'text-danger'}`;
+		}
+		if (resUnrealized) {
+			resUnrealized.textContent = `${unrealizedPnL >= 0 ? '+' : ''}${unrealizedPnL.toFixed(2)} (${unrealizedPct >= 0 ? '+' : ''}${unrealizedPct.toFixed(1)}%)`;
+			resUnrealized.className = `res-val mono-text ${unrealizedPnL >= 0 ? 'text-success' : 'text-danger'}`;
+		}
+		if (resBreakeven) resBreakeven.textContent = avgUnitCost.toFixed(2);
+	}
+
+	function bindRowEvents(row: HTMLElement) {
+		row.querySelectorAll('input, select').forEach(el => {
+			el.addEventListener('input', calculatePnL);
+		});
+		const delBtn = row.querySelector('.del-row-btn');
+		delBtn?.addEventListener('click', () => {
+			row.remove();
+			calculatePnL();
+		});
+	}
+
+	tbody?.querySelectorAll('.tx-row').forEach(r => bindRowEvents(r as HTMLElement));
+
+	addBtn?.addEventListener('click', () => {
+		if (!tbody) return;
+		const tr = document.createElement('tr');
+		tr.className = 'tx-row';
+		tr.setAttribute('data-row-id', (rowCounter++).toString());
+		tr.innerHTML = `
+			<td>
+				<select class="form-select row-type">
+					<option value="BUY" selected>Alış (BUY)</option>
+					<option value="SELL">Satış (SELL)</option>
+				</select>
+			</td>
+			<td><input type="number" class="form-input mono-text row-qty" value="1" step="any" /></td>
+			<td><input type="number" class="form-input mono-text row-price" value="100" step="any" /></td>
+			<td><input type="number" class="form-input mono-text row-fee" value="0" step="any" /></td>
+			<td class="mono-text row-total">100.00</td>
+			<td><button type="button" class="del-row-btn" title="Sil">✕</button></td>
+		`;
+		tbody.appendChild(tr);
+		bindRowEvents(tr);
+		calculatePnL();
+	});
+
+	methodSelect?.addEventListener('change', calculatePnL);
+	currentPriceInput?.addEventListener('input', calculatePnL);
+
+	calculatePnL();
+</script>
+
+<style>
+	.tool-page {
+		padding: 32px 20px 80px;
+	}
+
+	.breadcrumb {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 13px;
+		color: var(--text-faint);
+		margin-bottom: 20px;
+	}
+
+	.tool-header {
+		margin-bottom: 28px;
+	}
+
+	.tool-title {
+		font-size: 34px;
+		font-weight: 700;
+		margin: 8px 0;
+	}
+
+	.tool-subtitle {
+		font-size: 16px;
+		color: var(--text-muted);
+		max-width: 700px;
+	}
+
+	.settings-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 20px;
+		margin-bottom: 24px;
+	}
+
+	.tx-header-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 12px;
+	}
+
+	.del-row-btn {
+		background: transparent;
+		border: none;
+		color: var(--danger);
+		font-size: 16px;
+		cursor: pointer;
+		padding: 4px 8px;
+	}
+
+	.results-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+		gap: 16px;
+	}
+
+	.res-card {
+		padding: 16px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.res-label {
+		font-size: 12px;
+		color: var(--text-muted);
+	}
+
+	.res-val {
+		font-size: 20px;
+		font-weight: 700;
+	}
+
+	@media (max-width: 700px) {
+		.settings-row {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

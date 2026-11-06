@@ -1,0 +1,207 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = "Kripto Staking ve Bileşik Getiri Hesaplayıcı | Kriptonik";
+const pageDesc = "Kripto staking getirisi, APR / APY dönüşümü ve bileşik faiz simülatörü. Günlük, haftalık veya aylık getirinizi hesaplayın.";
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container tool-page">
+		<nav class="breadcrumb">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<a href="/araclar">Araçlar</a>
+			<span>/</span>
+			<span class="current">Staking Getirisi</span>
+		</nav>
+
+		<div class="tool-header">
+			<div class="badge badge-info">
+				<span>🌱</span>
+				<span>Getiri Simülasyonu</span>
+			</div>
+			<h1 class="tool-title">Staking ve Bileşik Getiri Hesaplayıcı</h1>
+			<p class="tool-subtitle">
+				APR ve APY arasındaki bileşik faiz farkını görün; belirlediğiniz süre sonunda elde edeceğiniz tahmini ödül miktarını simüle edin.
+			</p>
+		</div>
+
+		<div class="tool-card card">
+			<div class="form-grid">
+				<div class="form-group">
+					<label class="form-label" for="principal-input">Başlangıç Yatırımı (Adet veya $):</label>
+					<input type="number" id="principal-input" class="form-input mono-text" value="1000" step="any" />
+				</div>
+
+				<div class="form-group">
+					<label class="form-label" for="rate-input">Getiri Oranı (%):</label>
+					<div class="rate-wrap">
+						<input type="number" id="rate-input" class="form-input mono-text" value="10" step="0.1" />
+						<select id="rate-type" class="form-select">
+							<option value="APR" selected>APR (Basit Yıllık)</option>
+							<option value="APY">APY (Bileşik Yıllık)</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label" for="compound-freq">Bileşik Getiri Sıklığı:</label>
+					<select id="compound-freq" class="form-select">
+						<option value="365">Günlük (365 Kez / Yıl)</option>
+						<option value="52">Haftalık (52 Kez / Yıl)</option>
+						<option value="12" selected>Aylık (12 Kez / Yıl)</option>
+						<option value="1">Yıllık (1 Kez / Yıl)</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label" for="years-input">Staking Süresi (Yıl):</label>
+					<input type="number" id="years-input" class="form-input mono-text" value="1" min="0.1" max="10" step="0.5" />
+				</div>
+			</div>
+
+			<div class="results-dashboard card" style="margin-top: 24px; background: var(--bg-sunken);">
+				<div class="results-grid">
+					<div class="res-item">
+						<span class="text-muted" style="font-size: 13px;">Toplam Bitiş Bakiyesi</span>
+						<span class="mono-text res-main-val text-primary" id="total-val">1.104,71</span>
+					</div>
+					<div class="res-item">
+						<span class="text-muted" style="font-size: 13px;">Kazanılan Net Staking Ödülü</span>
+						<span class="mono-text res-main-val text-success" id="reward-val">+104,71</span>
+					</div>
+					<div class="res-item">
+						<span class="text-muted" style="font-size: 13px;">Etkin Yıllık Getiri (APY)</span>
+						<span class="mono-text res-main-val" id="effective-apy">%10,47 APY</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Bilgilendirme -->
+		<div class="card" style="margin-top: 32px;">
+			<h3 style="font-size: 18px; margin-bottom: 12px;">APR ile APY Arasındaki Fark Nedir?</h3>
+			<p class="text-muted" style="font-size: 14px; line-height: 1.6; margin-bottom: 10px;">
+				<strong>APR (Annual Percentage Rate):</strong> Bileşik faizin dahil edilmediği yalın yıllık getiri oranıdır.
+			</p>
+			<p class="text-muted" style="font-size: 14px; line-height: 1.6;">
+				<strong>APY (Annual Percentage Yield):</strong> Kazandığınız faiz ödüllerinin otomatik olarak anaparaya eklenip tekrar faiz kazandırdığı (bileşik getiri) gerçek yıllık kazanç oranıdır. Bileşik sıklığı ne kadar yüksekse APY de o kadar artar.
+			</p>
+		</div>
+	</div>
+</Layout>
+
+<script>
+	const pInput = document.getElementById('principal-input') as HTMLInputElement;
+	const rInput = document.getElementById('rate-input') as HTMLInputElement;
+	const rType = document.getElementById('rate-type') as HTMLSelectElement;
+	const nSelect = document.getElementById('compound-freq') as HTMLSelectElement;
+	const tInput = document.getElementById('years-input') as HTMLInputElement;
+
+	const totalEl = document.getElementById('total-val');
+	const rewardEl = document.getElementById('reward-val');
+	const apyEl = document.getElementById('effective-apy');
+
+	function calculateStaking() {
+		if (!pInput || !rInput || !rType || !nSelect || !tInput) return;
+
+		const P = parseFloat(pInput.value) || 0;
+		const ratePercent = parseFloat(rInput.value) || 0;
+		const n = parseInt(nSelect.value, 10) || 12;
+		const t = parseFloat(tInput.value) || 1;
+
+		let APR = 0;
+		let APY = 0;
+
+		if (rType.value === 'APR') {
+			APR = ratePercent / 100;
+			APY = Math.pow(1 + (APR / n), n) - 1;
+		} else {
+			APY = ratePercent / 100;
+			APR = n * (Math.pow(1 + APY, 1 / n) - 1);
+		}
+
+		// A = P * (1 + APR/n)^(n*t)
+		const A = P * Math.pow(1 + (APR / n), n * t);
+		const reward = A - P;
+
+		if (totalEl) totalEl.innerText = A.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+		if (rewardEl) rewardEl.innerText = `+${reward.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+		if (apyEl) apyEl.innerText = `%${(APY * 100).toFixed(2)} APY`;
+	}
+
+	pInput?.addEventListener('input', calculateStaking);
+	rInput?.addEventListener('input', calculateStaking);
+	rType?.addEventListener('change', calculateStaking);
+	nSelect?.addEventListener('change', calculateStaking);
+	tInput?.addEventListener('input', calculateStaking);
+
+	calculateStaking();
+</script>
+
+<style>
+	.tool-page {
+		padding: 32px 20px 80px;
+	}
+
+	.breadcrumb {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 13px;
+		color: var(--text-faint);
+		margin-bottom: 20px;
+	}
+
+	.tool-header {
+		margin-bottom: 24px;
+	}
+
+	.tool-title {
+		font-size: 34px;
+		font-weight: 700;
+		margin: 8px 0;
+	}
+
+	.tool-subtitle {
+		font-size: 16px;
+		color: var(--text-muted);
+		max-width: 700px;
+	}
+
+	.form-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 20px;
+	}
+
+	.rate-wrap {
+		display: grid;
+		grid-template-columns: 1.2fr 1fr;
+		gap: 10px;
+	}
+
+	.results-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 20px;
+		padding: 20px;
+	}
+
+	.res-item {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.res-main-val {
+		font-size: 26px;
+		font-weight: 700;
+	}
+
+	@media (max-width: 600px) {
+		.form-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
