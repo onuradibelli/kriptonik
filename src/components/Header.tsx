@@ -45,13 +45,13 @@ export default function Header() {
   ];
 
   const featuredSymbols = [
-    { sym: 'BTCUSDT', name: 'BTC' },
-    { sym: 'ETHUSDT', name: 'ETH' },
-    { sym: 'SOLUSDT', name: 'SOL' },
-    { sym: 'BNBUSDT', name: 'BNB' },
-    { sym: 'XRPUSDT', name: 'XRP' },
-    { sym: 'DOGEUSDT', name: 'DOGE' },
-    { sym: 'SUIUSDT', name: 'SUI' }
+    { sym: 'BTCUSDT', name: 'BTC', slug: 'bitcoin' },
+    { sym: 'ETHUSDT', name: 'ETH', slug: 'ethereum' },
+    { sym: 'SOLUSDT', name: 'SOL', slug: 'solana' },
+    { sym: 'BNBUSDT', name: 'BNB', slug: 'binancecoin' },
+    { sym: 'XRPUSDT', name: 'XRP', slug: 'ripple' },
+    { sym: 'DOGEUSDT', name: 'DOGE', slug: 'dogecoin' },
+    { sym: 'SUIUSDT', name: 'SUI', slug: 'sui' }
   ];
 
   return (
@@ -85,7 +85,7 @@ export default function Header() {
 
               <span className="text-[var(--border)] hidden sm:inline">•</span>
 
-              {featuredSymbols.map(({ sym, name }) => {
+              {featuredSymbols.map(({ sym, name, slug }) => {
                 const tick = tickers[sym] || defaultTickers[sym as keyof typeof defaultTickers];
                 if (!tick) return null;
                 const isPositive = tick.change24h >= 0;
@@ -93,16 +93,17 @@ export default function Header() {
                 return (
                   <Link
                     key={sym}
-                    href={`/likidasyon/${name.toLowerCase()}/`}
+                    href={`/kripto/${slug}/`}
+                    title={`${name} Canlı Kripto Terminali ve Verileri`}
                     className="flex items-center gap-1.5 transition-colors hover:text-[#2962FF]"
                   >
                     <span className="font-semibold text-[var(--card-muted)]">{name}:</span>
                     <span className={`font-mono font-medium text-[var(--foreground)] px-1 rounded transition-colors ${
-                      flash === 'UP' ? 'tick-flash-up text-[#00C087]' : flash === 'DOWN' ? 'tick-flash-down text-[#F6465D]' : ''
+                      flash === 'UP' ? 'tick-flash-up text-[#00E699]' : flash === 'DOWN' ? 'tick-flash-down text-[#FF3B56]' : ''
                     }`}>
                       ${tick.price > 10 ? tick.price.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : tick.price.toFixed(4)}
                     </span>
-                    <span className={`font-mono font-bold text-[11px] ${isPositive ? 'text-[#00C087]' : 'text-[#F6465D]'}`}>
+                    <span className={`font-mono font-bold text-[11px] ${isPositive ? 'text-[#00E699]' : 'text-[#FF3B56]'}`}>
                       {isPositive ? '+' : ''}{tick.change24h.toFixed(2)}%
                     </span>
                   </Link>

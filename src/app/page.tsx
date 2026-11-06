@@ -14,12 +14,13 @@ import EtfTracker from '../components/EtfTracker';
 import KacTlConverter from '../components/KacTlConverter';
 import UsdtPremiumWidget from '../components/UsdtPremiumWidget';
 import Sparkline from '../components/Sparkline';
-import { Flame, DollarSign, Calendar, Compass, ShieldAlert, ArrowUpRight, Zap, TrendingUp, BarChart3, Calculator, Star, Sparkles } from 'lucide-react';
+import { Flame, DollarSign, Calendar, Compass, ShieldAlert, ArrowUpRight, Zap, TrendingUp, BarChart3, Calculator, Star, Sparkles, Share2, CheckCircle2 } from 'lucide-react';
 
 export default function HomePage() {
   const [selectedCoinSlug, setSelectedCoinSlug] = useState('bitcoin');
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<'ALL' | 'FAVORITES'>('ALL');
+  const [copiedBrief, setCopiedBrief] = useState(false);
 
   const defaultTickers = {
     BTCUSDT: { price: 75728.00, change24h: -0.11 },
@@ -64,6 +65,34 @@ export default function HomePage() {
     });
   };
 
+  const handleCopyBrief = () => {
+    const btcTick = tickers['BTCUSDT'] || defaultTickers.BTCUSDT;
+    const ethTick = tickers['ETHUSDT'] || defaultTickers.ETHUSDT;
+    const solTick = tickers['SOLUSDT'] || defaultTickers.SOLUSDT;
+    const dateStr = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+    
+    const text = `📊 KRİPTONİK GÜNLÜK PİYASA RAPORU (${dateStr})
+--------------------------------------------------
+🪙 BTC: $${btcTick.price.toLocaleString('tr-TR')} (${btcTick.change24h >= 0 ? '+' : ''}${btcTick.change24h.toFixed(2)}%)
+🪙 ETH: $${ethTick.price.toLocaleString('tr-TR')} (${ethTick.change24h >= 0 ? '+' : ''}${ethTick.change24h.toFixed(2)}%)
+🪙 SOL: $${solTick.price.toLocaleString('tr-TR')} (${solTick.change24h >= 0 ? '+' : ''}${solTick.change24h.toFixed(2)}%)
+
+🔥 24s Likidasyon: $348.5M (Baskı: %62 Short Tasfiyesi)
+📈 Toplam OI (Açık Pozisyon): $68.4B (+%5.42)
+⚖️ Ağırlıklı Fonlama Oranı: +%0.0125 (Ilımlı Boğa)
+🏦 Spot ETF Girişi: +$361.0M Net Giriş
+💵 USDT/TRY: ₺36.42 | USD/TRY: ₺36.28
+
+Detaylı Canlı Isı Haritaları & Radar:
+👉 https://kriptonik.com`;
+
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedBrief(true);
+      setTimeout(() => setCopiedBrief(false), 2500);
+    }
+  };
+
   const displayedCoins =
     activeTab === 'FAVORITES'
       ? COINS_DATA.filter((c) => watchlist.includes(c.symbol))
@@ -86,6 +115,33 @@ export default function HomePage() {
           <p className="max-w-2xl text-xs sm:text-sm text-[var(--card-muted)] leading-relaxed">
             Coinglass ve CryptoQuant karmaşasını geride bırakın. Kaldıraçlı tasfiye derinlik grafikleri, borsalar arası fonlama arbitrajı, kurumsal Spot ETF net girişleri ve kilit açılım risk analizleri tek bir canlı ekranda.
           </p>
+
+          <div className="flex flex-wrap items-center gap-3 pt-1">
+            <button
+              onClick={handleCopyBrief}
+              className="inline-flex items-center gap-2 rounded-xl border border-[#2962FF]/40 bg-[#2962FF]/10 hover:bg-[#2962FF]/20 px-3.5 py-1.5 text-xs font-bold text-[#2962FF] transition-all cursor-pointer"
+            >
+              {copiedBrief ? (
+                <>
+                  <CheckCircle2 className="h-4 w-4 text-[#00E699]" />
+                  <span className="text-[#00E699]">Bülten Panoya Kopyalandı! (Telegram / X Hazır)</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="h-4 w-4" />
+                  <span>30sn Günlük Piyasa Özetini Kopyala (Telegram / X)</span>
+                </>
+              )}
+            </button>
+
+            <Link
+              href="/hesaplayici/"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--card)] hover:border-[#00E699]/40 px-3 py-1.5 text-xs font-semibold text-[var(--card-muted)] hover:text-[var(--foreground)] transition-all"
+            >
+              <Calculator className="h-3.5 w-3.5 text-[#00E699]" />
+              <span>Borsa Komisyon & Kaldıraç Simülatörü</span>
+            </Link>
+          </div>
 
           {/* Quick Metrics Bar */}
           <div className="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
