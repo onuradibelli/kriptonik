@@ -1,0 +1,247 @@
+---
+---
+
+<div class="cmd-palette-backdrop" id="cmd-backdrop" style="display: none;">
+	<div class="cmd-palette-modal" role="dialog" aria-modal="true" aria-label="Hızlı Arama ve Komut Paleti">
+		<div class="cmd-search-header">
+			<svg class="cmd-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<circle cx="11" cy="11" r="8"></circle>
+				<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+			</svg>
+			<input type="text" id="cmd-input" class="cmd-input" placeholder="Araç, problem veya rehber ara... (ESC ile kapat)" autocomplete="off" />
+			<span class="cmd-kbd">ESC</span>
+		</div>
+
+		<div class="cmd-results" id="cmd-results">
+			<div class="cmd-group-title">Popüler Çözüm Araçları</div>
+			<a href="/araclar/yanlis-aga-gonderdim" class="cmd-item">
+				<span class="item-icon">🧭</span>
+				<div class="item-text">
+					<strong>Yanlış Ağa Gönderdim Sihirbazı</strong>
+					<span>Kurtarılabilirlik tespiti ve borsa destek mesaj şablonu</span>
+				</div>
+			</a>
+			<a href="/araclar/takilan-islem" class="cmd-item">
+				<span class="item-icon">⏱️</span>
+				<div class="cmd-text">
+					<strong>Takılan İşlem Teşhisi (Pending)</strong>
+					<span>Mempool kuyruğu, RBF ve Nonce hızlandırma/iptal</span>
+				</div>
+			</a>
+			<a href="/araclar/adres-ag-eslestirici" class="cmd-item">
+				<span class="item-icon">🔍</span>
+				<div class="cmd-text">
+					<strong>Adres Ağ Eşleştirici</strong>
+					<span>Format doğrulama ve çapraz ağ risk uyarıları</span>
+				</div>
+			</a>
+			<a href="/araclar/maliyet-karsilastirici" class="cmd-item">
+				<span class="item-icon">⚖️</span>
+				<div class="cmd-text">
+					<strong>Gerçek Maliyet Karşılaştırıcı</strong>
+					<span>Komisyon + spread + ağ çekim ücreti en ucuz borsa rotası</span>
+				</div>
+			</a>
+			<a href="/araclar/dca-simulator" class="cmd-item">
+				<span class="item-icon">📈</span>
+				<div class="cmd-text">
+					<strong>DCA Geri Test Simülatörü</strong>
+					<span>Düzenli kripto alımı kâr/zarar simülasyonu</span>
+				</div>
+			</a>
+
+			<div class="cmd-group-title">Hızlı Kısayollar</div>
+			<a href="/yardim" class="cmd-item">
+				<span class="item-icon">⚡</span>
+				<div class="cmd-text">
+					<strong>Acil Durum Merkezi</strong>
+					<span>Cüzdan veya transfer sorunları için ilk yardım rehberi</span>
+				</div>
+			</a>
+			<a href="/sozluk" class="cmd-item">
+				<span class="item-icon">📚</span>
+				<div class="cmd-text">
+					<strong>Kripto Terimleri Sözlüğü</strong>
+					<span>Nonce, Gas, Seed Phrase, Slippage terim açıklamaları</span>
+				</div>
+			</a>
+			<a href="/piyasa" class="cmd-item">
+				<span class="item-icon">📊</span>
+				<div class="cmd-text">
+					<strong>Canlı Piyasa & Gas Takipçisi</strong>
+					<span>Anlık kurlar, Gwei, Korku Endeksi ve Depeg Monitörü</span>
+				</div>
+			</a>
+		</div>
+	</div>
+</div>
+
+<script>
+	function setupCmdPalette() {
+		const backdrop = document.getElementById('cmd-backdrop');
+		const input = document.getElementById('cmd-input') as HTMLInputElement;
+		const results = document.getElementById('cmd-results');
+		const triggerBtns = document.querySelectorAll('[data-open-cmd]');
+
+		function openCmd() {
+			if (backdrop) {
+				backdrop.style.display = 'flex';
+				input?.focus();
+			}
+		}
+
+		function closeCmd() {
+			if (backdrop) {
+				backdrop.style.display = 'none';
+				if (input) input.value = '';
+				filterCmd('');
+			}
+		}
+
+		function filterCmd(q: string) {
+			if (!results) return;
+			const items = results.querySelectorAll('.cmd-item');
+			items.forEach(item => {
+				const text = (item as HTMLElement).innerText.toLowerCase();
+				if (q === '' || text.includes(q.toLowerCase())) {
+					(item as HTMLElement).style.display = 'flex';
+				} else {
+					(item as HTMLElement).style.display = 'none';
+				}
+			});
+		}
+
+		triggerBtns.forEach(btn => btn.addEventListener('click', openCmd));
+
+		window.addEventListener('keydown', (e) => {
+			if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+				e.preventDefault();
+				if (backdrop?.style.display === 'flex') {
+					closeCmd();
+				} else {
+					openCmd();
+				}
+			} else if (e.key === 'Escape' && backdrop?.style.display === 'flex') {
+				closeCmd();
+			}
+		});
+
+		backdrop?.addEventListener('click', (e) => {
+			if (e.target === backdrop) closeCmd();
+		});
+
+		input?.addEventListener('input', (e) => {
+			filterCmd((e.target as HTMLInputElement).value);
+		});
+	}
+
+	setupCmdPalette();
+	document.addEventListener('astro:after-swap', setupCmdPalette);
+</script>
+
+<style>
+	.cmd-palette-backdrop {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.65);
+		backdrop-filter: blur(8px);
+		z-index: 200;
+		display: flex;
+		align-items: flex-start;
+		justify-content: center;
+		padding: 80px 20px 20px;
+	}
+
+	.cmd-palette-modal {
+		background: var(--bg-elev);
+		border: 1px solid var(--border-strong);
+		border-radius: 16px;
+		width: 100%;
+		max-width: 600px;
+		box-shadow: var(--shadow-md);
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.cmd-search-header {
+		display: flex;
+		align-items: center;
+		padding: 16px 20px;
+		border-bottom: 1px solid var(--border);
+		gap: 12px;
+	}
+
+	.cmd-icon {
+		color: var(--text-faint);
+		flex-shrink: 0;
+	}
+
+	.cmd-input {
+		flex-grow: 1;
+		background: transparent;
+		border: none;
+		outline: none;
+		font-size: 16px;
+		color: var(--text);
+		font-family: inherit;
+	}
+
+	.cmd-kbd {
+		font-size: 11px;
+		font-family: var(--font-mono, monospace);
+		background: var(--bg-sunken);
+		border: 1px solid var(--border);
+		color: var(--text-muted);
+		padding: 3px 6px;
+		border-radius: 4px;
+	}
+
+	.cmd-results {
+		max-height: 400px;
+		overflow-y: auto;
+		padding: 12px;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.cmd-group-title {
+		font-size: 11px;
+		font-weight: 700;
+		color: var(--text-faint);
+		letter-spacing: 0.5px;
+		text-transform: uppercase;
+		padding: 8px 12px 4px;
+	}
+
+	.cmd-item {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 10px 12px;
+		border-radius: 8px;
+		text-decoration: none;
+		color: var(--text);
+		transition: background 150ms ease;
+	}
+
+	.cmd-item:hover {
+		background: var(--bg-sunken);
+	}
+
+	.item-icon {
+		font-size: 20px;
+	}
+
+	.cmd-item strong {
+		display: block;
+		font-size: 14px;
+		color: var(--text);
+	}
+
+	.cmd-item span {
+		font-size: 12px;
+		color: var(--text-muted);
+	}
+</style>

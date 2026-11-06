@@ -1,60 +1,60 @@
 ---
+import tr from '../i18n/tr.json';
 ---
 
 <footer class="site-footer">
 	<div class="container footer-grid">
 		<!-- Brand & Mission Column -->
 		<div class="footer-col brand-col">
-			<a href="/" class="footer-brand">
+			<a href="/" class="footer-brand" aria-label="Kriptonik">
 				<span class="symbol">◈</span>
-				<span class="name">KRİPTONİK</span>
+				<span class="name">Kriptonik</span>
 			</a>
-			<p class="brand-slogan">Kripto'da takıldığın an, çözüm burada.</p>
+			<p class="brand-slogan">{tr.brand.slogan}</p>
 			<p class="brand-desc">
-				Kripto para kullanıcılarının hesap açmadan, verilerini sunucuya göndermeden anında sorun çözebildiği ve hesaplama yapabildiği bağımsız araç seti platformu.
+				{tr.brand.privacy_promise}
 			</p>
-			<div class="trust-tags">
-				<span class="trust-tag">🔒 Sıfır Veri Saklama</span>
-				<span class="trust-tag">⚡ Hesapsız & Ücretsiz</span>
-				<span class="trust-tag">🌐 Cloudflare Edge</span>
+			<div class="lang-selector">
+				<span class="lang-item active">🇹🇷 Türkçe</span>
+				<span class="lang-item disabled">🇬🇧 English <small class="soon-badge">Yakında</small></span>
 			</div>
 		</div>
 
 		<!-- Araçlar Column -->
 		<div class="footer-col">
-			<h4 class="col-title">Popüler Araçlar</h4>
+			<h4 class="col-title">{tr.footer.tools_title}</h4>
 			<ul class="footer-links">
 				<li><a href="/araclar/yanlis-aga-gonderdim">Yanlış Ağa Gönderdim Sihirbazı</a></li>
 				<li><a href="/araclar/takilan-islem">Takılan İşlem & Gas Teşhisi</a></li>
 				<li><a href="/araclar/adres-ag-eslestirici">Adres Ağ Eşleştirici</a></li>
-				<li><a href="/araclar/dca-simulator">DCA Geri Test Simülatörü</a></li>
 				<li><a href="/araclar/maliyet-karsilastirici">Gerçek Maliyet Karşılaştırıcı</a></li>
+				<li><a href="/araclar/dca-simulator">DCA Geri Test Simülatörü</a></li>
 				<li><a href="/araclar">Tüm 12 Aracı İncele →</a></li>
 			</ul>
 		</div>
 
 		<!-- İçerik & Bilgi Column -->
 		<div class="footer-col">
-			<h4 class="col-title">Bilgi & Acil Durum</h4>
+			<h4 class="col-title">{tr.footer.knowledge_title}</h4>
 			<ul class="footer-links">
 				<li><a href="/yardim">Acil Durum Merkezi</a></li>
 				<li><a href="/sozluk">Kripto Terimleri Sözlüğü</a></li>
-				<li><a href="/rehber">Kripto Güvenlik Rehberleri</a></li>
+				<li><a href="/rehber">Güvenlik ve Çözüm Rehberleri</a></li>
 				<li><a href="/piyasa">Canlı Piyasa & Gas Takibi</a></li>
-				<li><a href="/metodoloji">Metodoloji & Veri Kaynakları</a></li>
-				<li><a href="/hakkimizda">Hakkımızda & Vizyon</a></li>
+				<li><a href="/metodoloji">Metodoloji & Hesaplama</a></li>
+				<li><a href="/durum">Sistem Durumu (Status)</a></li>
 			</ul>
 		</div>
 
 		<!-- Yasal & Şeffaflık Column -->
 		<div class="footer-col">
-			<h4 class="col-title">Şeffaflık & Yasal</h4>
+			<h4 class="col-title">{tr.footer.legal_title}</h4>
 			<ul class="footer-links">
 				<li><a href="/gizlilik">Gizlilik Politikası (KVKK/GDPR)</a></li>
 				<li><a href="/kullanim-sartlari">Kullanım Şartları</a></li>
 				<li><a href="/risk-uyarisi">Risk Uyarısı & Sorumluluk Reddi</a></li>
 				<li><a href="/affiliate-aciklamasi">Affiliate & Gelir Politikası</a></li>
-				<li><a href="https://github.com/onuradibelli/kriptonik" target="_blank" rel="noopener">GitHub Kaynak Kodları</a></li>
+				<li><a href="/rapor">Hatalı Bilgi / İtiraz Bildirimi</a></li>
 			</ul>
 		</div>
 	</div>
@@ -63,9 +63,7 @@
 	<div class="container">
 		<div class="legal-disclaimer">
 			<span class="disclaimer-badge">ÖNEMLİ YASAL UYARI</span>
-			<p>
-				Kriptonik (kriptonik.com) yalnızca tarafsız bilgi, teşhis simülasyonu ve teknik hesaplama araçları sunar. Sitede yer alan hiçbir içerik, araç çıktısı veya analiz <strong>yatırım tavsiyesi (YTD)</strong> niteliğinde değildir. Kripto varlıklar yüksek volatilite ve risk içerir; işlem yapmadan önce kendi araştırmanızı yapınız (DYOR). Kriptonik özel anahtar (private key) veya seed phrase <u>asla</u> talep etmez.
-			</p>
+			<p>{tr.footer.disclaimer}</p>
 		</div>
 	</div>
 
@@ -73,13 +71,13 @@
 	<div class="footer-bottom">
 		<div class="container bottom-container">
 			<div class="cf-badge">
-				<span>⚡ Powered by</span>
+				<span>⚡ Hosted on</span>
 				<strong>Cloudflare Workers & Pages</strong>
 				<span class="separator">•</span>
-				<span>Astro 5 Architecture</span>
+				<a href="/durum" class="status-link">Sistemler Aktif</a>
 			</div>
 			<div class="copyright">
-				© 2026 Kriptonik (kriptonik.com). Tüm hakları saklıdır.
+				{tr.footer.rights}
 			</div>
 		</div>
 	</div>
@@ -88,16 +86,16 @@
 <style>
 	.site-footer {
 		margin-top: auto;
-		background: #070A12;
-		border-top: 1px solid var(--surface-border);
-		padding: 64px 0 0;
+		background: var(--bg-sunken);
+		border-top: 1px solid var(--border);
+		padding: 56px 0 0;
 	}
 
 	.footer-grid {
 		display: grid;
 		grid-template-columns: 2fr 1.2fr 1.2fr 1.2fr;
-		gap: 40px;
-		margin-bottom: 48px;
+		gap: 36px;
+		margin-bottom: 40px;
 	}
 
 	.footer-brand {
@@ -105,57 +103,67 @@
 		align-items: center;
 		gap: 8px;
 		text-decoration: none;
-		color: var(--text-main);
-		margin-bottom: 12px;
+		color: var(--text);
+		margin-bottom: 8px;
 	}
 
 	.footer-brand .symbol {
-		font-size: 24px;
-		color: var(--accent-cyan);
+		font-size: 22px;
+		color: var(--primary);
 	}
 
 	.footer-brand .name {
-		font-family: var(--font-heading);
+		font-family: 'Space Grotesk', sans-serif;
 		font-weight: 700;
-		font-size: 20px;
-		letter-spacing: 1.2px;
+		font-size: 19px;
+		letter-spacing: 0.5px;
 	}
 
 	.brand-slogan {
 		font-size: 14px;
-		color: var(--accent-cyan);
+		color: var(--primary);
 		font-weight: 600;
-		margin-bottom: 12px;
+		margin-bottom: 8px;
 	}
 
 	.brand-desc {
 		font-size: 13px;
 		line-height: 1.6;
 		color: var(--text-muted);
-		margin-bottom: 20px;
+		margin-bottom: 16px;
 	}
 
-	.trust-tags {
+	.lang-selector {
 		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
+		align-items: center;
+		gap: 12px;
+		font-size: 12px;
 	}
 
-	.trust-tag {
-		font-size: 11px;
-		background: rgba(255, 255, 255, 0.05);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		padding: 4px 10px;
-		border-radius: 999px;
-		color: #CBD5E1;
+	.lang-item.active {
+		color: var(--text);
+		font-weight: 600;
+	}
+
+	.lang-item.disabled {
+		color: var(--text-faint);
+		cursor: not-allowed;
+	}
+
+	.soon-badge {
+		font-size: 10px;
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
+		padding: 1px 4px;
+		border-radius: 4px;
 	}
 
 	.col-title {
-		font-family: var(--font-heading);
-		font-size: 15px;
+		font-family: 'Space Grotesk', sans-serif;
+		font-size: 14px;
 		font-weight: 700;
-		color: #F8FAFC;
-		margin-bottom: 18px;
+		color: var(--text);
+		margin-bottom: 16px;
 		letter-spacing: 0.5px;
 	}
 
@@ -170,53 +178,42 @@
 		font-size: 13px;
 		color: var(--text-muted);
 		text-decoration: none;
-		transition: color 0.2s, transform 0.2s;
-		display: inline-block;
+		transition: color 150ms ease;
 	}
 
 	.footer-links a:hover {
-		color: var(--accent-cyan);
-		transform: translateX(2px);
+		color: var(--primary);
 	}
 
 	.legal-disclaimer {
-		background: rgba(18, 24, 41, 0.7);
-		border: 1px solid rgba(30, 41, 59, 0.8);
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
 		border-radius: 10px;
 		padding: 16px 20px;
 		font-size: 12px;
 		line-height: 1.6;
-		color: #94A3B8;
-		margin-bottom: 32px;
+		color: var(--text-muted);
+		margin-bottom: 28px;
 	}
 
 	.disclaimer-badge {
 		display: inline-block;
-		font-family: var(--font-mono);
+		font-family: var(--font-mono, monospace);
 		font-size: 10px;
 		font-weight: 700;
 		color: var(--warning);
-		background: rgba(245, 158, 11, 0.12);
-		border: 1px solid rgba(245, 158, 11, 0.3);
+		background: var(--warning-soft);
+		border: 1px solid var(--warning);
 		padding: 2px 6px;
 		border-radius: 4px;
 		margin-bottom: 6px;
 	}
 
-	.legal-disclaimer strong {
-		color: #F8FAFC;
-	}
-
-	.legal-disclaimer u {
-		text-decoration-color: var(--danger);
-		color: #FCA5A5;
-	}
-
 	.footer-bottom {
-		border-top: 1px solid rgba(255, 255, 255, 0.06);
-		padding: 20px 0;
-		font-size: 13px;
-		color: var(--text-dim);
+		border-top: 1px solid var(--border);
+		padding: 18px 0;
+		font-size: 12px;
+		color: var(--text-faint);
 	}
 
 	.bottom-container {
@@ -231,25 +228,22 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		font-size: 12px;
 	}
 
-	.cf-badge strong {
-		color: #F38020; /* Cloudflare orange */
+	.status-link {
+		color: var(--success);
+		text-decoration: none;
+		font-weight: 500;
 	}
 
 	.separator {
-		color: #334155;
-	}
-
-	.copyright {
-		font-size: 12px;
+		color: var(--border-strong);
 	}
 
 	@media (max-width: 900px) {
 		.footer-grid {
 			grid-template-columns: 1fr 1fr;
-			gap: 32px;
+			gap: 28px;
 		}
 		.brand-col {
 			grid-column: span 2;

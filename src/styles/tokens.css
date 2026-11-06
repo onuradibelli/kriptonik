@@ -1,0 +1,72 @@
+/**
+ * Kriptonik Tasarım Sistemi Renk ve Boşluk Tokenları
+ * Master Spesifikasyon v2 - Bölüm 3.3
+ */
+
+:root, :root[data-theme="light"] {
+  --bg: #F6F7F9;
+  --bg-elev: #FFFFFF;
+  --bg-sunken: #EEF0F4;
+  --border: #E1E5EC;
+  --border-strong: #CBD2DD;
+  --text: #0F172A;
+  --text-muted: #475569;
+  --text-faint: #64748B;
+  --primary: #0F766E;
+  --primary-hover: #0B5F59;
+  --primary-contrast: #FFFFFF;
+  --primary-soft: #D9F3EF;
+  --accent: #6D28D9;
+  --accent-soft: #EDE5FB;
+  --success: #15803D;
+  --success-soft: #DCF5E3;
+  --warning: #B45309;
+  --warning-soft: #FDF0D5;
+  --danger:  #B91C1C;
+  --danger-soft:  #FBE0E0;
+  --info:    #1D4ED8;
+  --info-soft:    #DFE8FD;
+  --ring: #0F766E;
+  --shadow-sm: 0 1px 2px rgba(15,23,42,.06), 0 1px 3px rgba(15,23,42,.08);
+  --shadow-md: 0 4px 12px rgba(15,23,42,.08), 0 2px 4px rgba(15,23,42,.06);
+  --chart-1: #0F766E;
+  --chart-2: #6D28D9;
+  --chart-3: #B45309;
+  --chart-4: #1D4ED8;
+  --chart-5: #BE185D;
+  --grid-line: rgba(15,23,42,.08);
+}
+
+:root[data-theme="dark"] {
+  --bg: #0A0D14;
+  --bg-elev: #111622;
+  --bg-sunken: #070A10;
+  --border: #1F2735;
+  --border-strong: #2C3648;
+  --text: #E8ECF3;
+  --text-muted: #A3AEC2;
+  --text-faint: #8391A8;
+  --primary: #2DD4BF;
+  --primary-hover: #5EEAD4;
+  --primary-contrast: #04211D;
+  --primary-soft: #0F2E2B;
+  --accent: #A78BFA;
+  --accent-soft: #231B3F;
+  --success: #4ADE80;
+  --success-soft: #0F2A1A;
+  --warning: #FBBF24;
+  --warning-soft: #33260A;
+  --danger:  #F87171;
+  --danger-soft:  #3A1414;
+  --info:    #60A5FA;
+  --info-soft:    #10223F;
+  --ring: #2DD4BF;
+  --shadow-sm: none;
+  --shadow-md: 0 8px 24px rgba(0,0,0,.45);
+  --chart-1: #2DD4BF;
+  --chart-2: #A78BFA;
+  --chart-3: #FBBF24;
+  --chart-4: #60A5FA;
+  --chart-5: #F472B6;
+  --grid-line: rgba(232,236,243,.08);
+}

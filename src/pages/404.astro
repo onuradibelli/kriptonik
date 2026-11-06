@@ -1,0 +1,65 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Sayfa Bulunamadı (404) | Kriptonik" description="Aradığınız sayfa taşınmış veya silinmiş olabilir.">
+	<div class="container error-container">
+		<div class="error-box card">
+			<span class="error-badge">404</span>
+			<h1 class="error-title">Sayfa Bulunamadı</h1>
+			<p class="error-desc">
+				Aradığınız sayfa adresi değişmiş veya kaldırılmış olabilir. Aşağıdaki popüler araçlardan birini seçebilir veya arama yapabilirsiniz:
+			</p>
+
+			<div class="quick-links">
+				<a href="/araclar/yanlis-aga-gonderdim" class="btn btn-secondary btn-sm">🧭 Yanlış Ağa Gönderdim</a>
+				<a href="/araclar/takilan-islem" class="btn btn-secondary btn-sm">⏱️ Takılan İşlem</a>
+				<a href="/araclar/maliyet-karsilastirici" class="btn btn-secondary btn-sm">⚖️ Maliyet Kıyası</a>
+				<a href="/araclar" class="btn btn-primary btn-sm">Tüm Araçlar →</a>
+			</div>
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.error-container {
+		padding: 80px 20px;
+		display: flex;
+		justify-content: center;
+		text-align: center;
+	}
+
+	.error-box {
+		max-width: 540px;
+		padding: 48px 32px;
+	}
+
+	.error-badge {
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 64px;
+		font-weight: 800;
+		color: var(--primary);
+		line-height: 1;
+		display: block;
+		margin-bottom: 16px;
+	}
+
+	.error-title {
+		font-size: 26px;
+		margin-bottom: 12px;
+	}
+
+	.error-desc {
+		color: var(--text-muted);
+		font-size: 14px;
+		line-height: 1.6;
+		margin-bottom: 28px;
+	}
+
+	.quick-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		justify-content: center;
+	}
+</style>

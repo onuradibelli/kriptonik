@@ -1,4 +1,7 @@
 ---
+import ThemeToggle from './ThemeToggle.astro';
+import CommandPalette from './CommandPalette.astro';
+
 const currentPath = Astro.url.pathname;
 ---
 
@@ -6,13 +9,38 @@ const currentPath = Astro.url.pathname;
 	<div class="container header-container">
 		<a href="/" class="brand-logo" aria-label="Kriptonik Ana Sayfa">
 			<span class="logo-symbol">◈</span>
-			<span class="logo-name">KRİPTONİK</span>
-			<span class="logo-badge">PRO</span>
+			<span class="logo-name">Kriptonik</span>
 		</a>
 
 		<nav class="nav-links">
 			<a href="/" class={currentPath === '/' ? 'nav-item active' : 'nav-item'}>Ana Sayfa</a>
-			<a href="/araclar" class={currentPath.startsWith('/araclar') ? 'nav-item active' : 'nav-item'}>Araçlar</a>
+			<div class="nav-dropdown-wrapper">
+				<a href="/araclar" class={currentPath.startsWith('/araclar') ? 'nav-item active' : 'nav-item'}>
+					Araçlar <span class="arrow-down">▾</span>
+				</a>
+				<div class="mega-menu">
+					<div class="mega-grid">
+						<div class="mega-col">
+							<span class="mega-heading">Acil Sorun Çözücüler</span>
+							<a href="/araclar/yanlis-aga-gonderdim">🧭 Yanlış Ağa Gönderdim</a>
+							<a href="/araclar/takilan-islem">⏱️ Takılan İşlem (Pending)</a>
+							<a href="/yardim">⚡ Acil Durum Merkezi</a>
+						</div>
+						<div class="mega-col">
+							<span class="mega-heading">Hesaplayıcılar</span>
+							<a href="/araclar/maliyet-karsilastirici">⚖️ Gerçek Maliyet Karşılaştırıcı</a>
+							<a href="/araclar/dca-simulator">📈 DCA Geri Test Simülatörü</a>
+							<a href="/araclar/kripto-donusturucu">🔄 Kripto Dönüştürücü</a>
+						</div>
+						<div class="mega-col">
+							<span class="mega-heading">Güvenlik & Doğrulama</span>
+							<a href="/araclar/adres-ag-eslestirici">🔍 Adres Ağ Eşleştirici</a>
+							<a href="/piyasa">⚡ Stablecoin Depeg Monitörü</a>
+							<a href="/araclar">Tüm 12 Aracı Gör →</a>
+						</div>
+					</div>
+				</div>
+			</div>
 			<a href="/yardim" class={currentPath.startsWith('/yardim') ? 'nav-item active' : 'nav-item'}>Acil Yardım</a>
 			<a href="/piyasa" class={currentPath.startsWith('/piyasa') ? 'nav-item active' : 'nav-item'}>Piyasa</a>
 			<a href="/sozluk" class={currentPath.startsWith('/sozluk') ? 'nav-item active' : 'nav-item'}>Sözlük</a>
@@ -20,13 +48,21 @@ const currentPath = Astro.url.pathname;
 		</nav>
 
 		<div class="header-right">
-			<div class="edge-status" title="Cloudflare Workers Global Edge Network aktif">
-				<span class="live-dot"></span>
-				<span class="status-text">Cloudflare Edge: <strong>Aktif</strong></span>
-			</div>
+			<button type="button" class="search-trigger-btn" data-open-cmd aria-label="Arama Yap (Ctrl+K)">
+				<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<circle cx="11" cy="11" r="8"></circle>
+					<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+				</svg>
+				<span class="search-label">Ara...</span>
+				<kbd class="search-kbd">⌘K</kbd>
+			</button>
+
+			<ThemeToggle />
+
 			<a href="/yardim" class="btn btn-primary btn-sm mobile-hide">
 				<span>⚡ Sorunum Var</span>
 			</a>
+
 			<button class="mobile-toggle" id="mobile-toggle" aria-label="Menüyü Aç">
 				<span></span>
 				<span></span>
@@ -37,9 +73,12 @@ const currentPath = Astro.url.pathname;
 
 	<!-- Mobile Menu Dropdown -->
 	<div class="mobile-nav" id="mobile-nav">
+		<button type="button" class="mobile-search-btn" data-open-cmd>
+			🔍 Hızlı Arama (Ctrl+K)
+		</button>
 		<a href="/" class="mobile-nav-item">Ana Sayfa</a>
-		<a href="/araclar" class="mobile-nav-item">Tüm Araçlar</a>
-		<a href="/yardim" class="mobile-nav-item">Acil Yardım Sihirbazları</a>
+		<a href="/araclar" class="mobile-nav-item">Tüm Araçlar Dizini</a>
+		<a href="/yardim" class="mobile-nav-item">Acil Durum Merkezi</a>
 		<a href="/piyasa" class="mobile-nav-item">Canlı Piyasa & Gas</a>
 		<a href="/sozluk" class="mobile-nav-item">Kripto Terimleri Sözlüğü</a>
 		<a href="/rehber" class="mobile-nav-item">Rehberler</a>
@@ -49,12 +88,19 @@ const currentPath = Astro.url.pathname;
 	</div>
 </header>
 
+<CommandPalette />
+
 <script>
-	const toggle = document.getElementById('mobile-toggle');
-	const nav = document.getElementById('mobile-nav');
-	toggle?.addEventListener('click', () => {
-		nav?.classList.toggle('open');
-	});
+	function setupHeader() {
+		const toggle = document.getElementById('mobile-toggle');
+		const nav = document.getElementById('mobile-nav');
+		toggle?.addEventListener('click', () => {
+			nav?.classList.toggle('open');
+		});
+	}
+
+	setupHeader();
+	document.addEventListener('astro:after-swap', setupHeader);
 </script>
 
 <style>
@@ -62,14 +108,14 @@ const currentPath = Astro.url.pathname;
 		position: sticky;
 		top: 0;
 		z-index: 100;
-		background: rgba(11, 15, 26, 0.88);
-		backdrop-filter: blur(14px);
-		-webkit-backdrop-filter: blur(14px);
-		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		background: var(--bg-elev);
+		border-bottom: 1px solid var(--border);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
 	}
 
 	.header-container {
-		height: 72px;
+		height: 68px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -80,38 +126,25 @@ const currentPath = Astro.url.pathname;
 		align-items: center;
 		gap: 8px;
 		text-decoration: none;
-		color: #F8FAFC;
+		color: var(--text);
 	}
 
 	.logo-symbol {
-		font-size: 24px;
-		color: var(--accent-cyan);
-		text-shadow: 0 0 16px rgba(34, 211, 238, 0.7);
+		font-size: 22px;
+		color: var(--primary);
 	}
 
 	.logo-name {
-		font-family: var(--font-heading);
+		font-family: 'Space Grotesk', sans-serif;
 		font-weight: 700;
 		font-size: 20px;
-		letter-spacing: 1.2px;
-	}
-
-	.logo-badge {
-		font-family: var(--font-mono);
-		font-size: 9px;
-		font-weight: 700;
-		background: rgba(34, 211, 238, 0.15);
-		color: var(--accent-cyan);
-		border: 1px solid rgba(34, 211, 238, 0.4);
-		padding: 2px 6px;
-		border-radius: 4px;
 		letter-spacing: 0.5px;
 	}
 
 	.nav-links {
 		display: flex;
 		align-items: center;
-		gap: 24px;
+		gap: 20px;
 	}
 
 	.nav-item {
@@ -121,60 +154,114 @@ const currentPath = Astro.url.pathname;
 		text-decoration: none;
 		padding: 6px 0;
 		position: relative;
-		transition: color 0.2s;
+		transition: color 150ms ease;
+		display: flex;
+		align-items: center;
+		gap: 4px;
+	}
+
+	.arrow-down {
+		font-size: 10px;
+		opacity: 0.6;
 	}
 
 	.nav-item:hover {
-		color: var(--text-main);
+		color: var(--text);
 	}
 
 	.nav-item.active {
-		color: var(--accent-cyan);
+		color: var(--primary);
 		font-weight: 600;
 	}
 
-	.nav-item.active::after {
-		content: '';
+	.nav-dropdown-wrapper {
+		position: relative;
+	}
+
+	.mega-menu {
+		display: none;
 		position: absolute;
-		bottom: -2px;
-		left: 0;
-		right: 0;
-		height: 2px;
-		background: var(--accent-cyan);
-		box-shadow: 0 0 8px var(--accent-cyan);
-		border-radius: 2px;
+		top: 100%;
+		left: -20px;
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
+		border-radius: 14px;
+		padding: 20px;
+		width: 580px;
+		box-shadow: var(--shadow-md);
+		z-index: 50;
+	}
+
+	.nav-dropdown-wrapper:hover .mega-menu {
+		display: block;
+	}
+
+	.mega-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 16px;
+	}
+
+	.mega-heading {
+		display: block;
+		font-size: 11px;
+		font-weight: 700;
+		color: var(--text-faint);
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		margin-bottom: 10px;
+	}
+
+	.mega-col {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.mega-col a {
+		font-size: 13px;
+		color: var(--text);
+		text-decoration: none;
+		padding: 4px 0;
+		transition: color 150ms ease;
+	}
+
+	.mega-col a:hover {
+		color: var(--primary);
 	}
 
 	.header-right {
 		display: flex;
 		align-items: center;
-		gap: 16px;
+		gap: 12px;
 	}
 
-	.edge-status {
+	.search-trigger-btn {
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		background: rgba(16, 185, 129, 0.08);
-		border: 1px solid rgba(16, 185, 129, 0.25);
-		padding: 5px 12px;
-		border-radius: 999px;
-		font-size: 12px;
-		color: #A7F3D0;
+		background: var(--bg-sunken);
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		padding: 6px 10px;
+		font-size: 13px;
+		color: var(--text-muted);
+		cursor: pointer;
+		transition: border-color 150ms ease;
 	}
 
-	.live-dot {
-		width: 7px;
-		height: 7px;
-		border-radius: 50%;
-		background-color: var(--success);
-		box-shadow: 0 0 8px var(--success);
-		animation: pulse-dot 2s infinite;
+	.search-trigger-btn:hover {
+		border-color: var(--border-strong);
+		color: var(--text);
 	}
 
-	@keyframes pulse-dot {
-		0%, 100% { opacity: 1; transform: scale(1); }
-		50% { opacity: 0.5; transform: scale(0.85); }
+	.search-kbd {
+		font-family: var(--font-mono, monospace);
+		font-size: 10px;
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
+		border-radius: 4px;
+		padding: 2px 5px;
 	}
 
 	.mobile-toggle {
@@ -190,14 +277,14 @@ const currentPath = Astro.url.pathname;
 	.mobile-toggle span {
 		width: 22px;
 		height: 2px;
-		background-color: var(--text-main);
+		background-color: var(--text);
 		border-radius: 2px;
 	}
 
 	.mobile-nav {
 		display: none;
-		background: var(--surface-dark);
-		border-bottom: 1px solid var(--surface-border);
+		background: var(--bg-elev);
+		border-bottom: 1px solid var(--border);
 		padding: 16px 24px 24px;
 	}
 
@@ -207,13 +294,25 @@ const currentPath = Astro.url.pathname;
 		gap: 14px;
 	}
 
+	.mobile-search-btn {
+		width: 100%;
+		background: var(--bg-sunken);
+		border: 1px solid var(--border);
+		padding: 12px;
+		border-radius: 8px;
+		color: var(--text-muted);
+		font-size: 14px;
+		text-align: left;
+		cursor: pointer;
+	}
+
 	.mobile-nav-item {
-		color: var(--text-main);
+		color: var(--text);
 		font-size: 15px;
 		font-weight: 500;
 		text-decoration: none;
 		padding: 8px 0;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		border-bottom: 1px solid var(--border);
 	}
 
 	.mobile-menu-cta {
@@ -221,7 +320,7 @@ const currentPath = Astro.url.pathname;
 	}
 
 	@media (max-width: 900px) {
-		.nav-links, .mobile-hide {
+		.nav-links, .mobile-hide, .search-trigger-btn {
 			display: none;
 		}
 		.mobile-toggle {

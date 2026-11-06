@@ -1,0 +1,121 @@
+---
+---
+
+<div class="theme-toggle" role="radiogroup" aria-label="Görünüm teması seçimi">
+	<button type="button" class="theme-btn" data-theme-val="light" role="radio" aria-checked="false" title="Açık Tema" aria-label="Açık Tema">
+		<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<circle cx="12" cy="12" r="5"></circle>
+			<line x1="12" y1="1" x2="12" y2="3"></line>
+			<line x1="12" y1="21" x2="12" y2="23"></line>
+			<line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+			<line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+			<line x1="1" y1="12" x2="3" y2="12"></line>
+			<line x1="21" y1="12" x2="23" y2="12"></line>
+			<line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+			<line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+		</svg>
+	</button>
+	<button type="button" class="theme-btn" data-theme-val="system" role="radio" aria-checked="true" title="Sistem Teması" aria-label="Sistem Teması">
+		<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+			<line x1="8" y1="21" x2="16" y2="21"></line>
+			<line x1="12" y1="17" x2="12" y2="21"></line>
+		</svg>
+	</button>
+	<button type="button" class="theme-btn" data-theme-val="dark" role="radio" aria-checked="false" title="Koyu Tema" aria-label="Koyu Tema">
+		<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+		</svg>
+	</button>
+</div>
+
+<script>
+	function initTheme() {
+		const buttons = document.querySelectorAll('.theme-btn');
+		const root = document.documentElement;
+		const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+		function applyTheme(pref: string) {
+			const isDark = pref === 'dark' || (pref === 'system' && mediaQuery.matches);
+			root.dataset.theme = isDark ? 'dark' : 'light';
+			root.dataset.themePref = pref;
+			root.style.colorScheme = isDark ? 'dark' : 'light';
+
+			const metaTheme = document.querySelector('meta[name="theme-color"]');
+			if (metaTheme) {
+				metaTheme.setAttribute('content', isDark ? '#0A0D14' : '#F6F7F9');
+			}
+
+			buttons.forEach(btn => {
+				const val = btn.getAttribute('data-theme-val');
+				const isCurrent = val === pref;
+				btn.classList.toggle('active', isCurrent);
+				btn.setAttribute('aria-checked', isCurrent ? 'true' : 'false');
+			});
+		}
+
+		const currentPref = localStorage.getItem('kriptonik-theme') || 'system';
+		applyTheme(currentPref);
+
+		buttons.forEach(btn => {
+			btn.addEventListener('click', () => {
+				const val = btn.getAttribute('data-theme-val') || 'system';
+				localStorage.setItem('kriptonik-theme', val);
+				applyTheme(val);
+			});
+		});
+
+		mediaQuery.addEventListener('change', () => {
+			const pref = localStorage.getItem('kriptonik-theme') || 'system';
+			if (pref === 'system') {
+				applyTheme('system');
+			}
+		});
+
+		window.addEventListener('storage', (e) => {
+			if (e.key === 'kriptonik-theme' && e.newValue) {
+				applyTheme(e.newValue);
+			}
+		});
+	}
+
+	initTheme();
+	document.addEventListener('astro:after-swap', initTheme);
+</script>
+
+<style>
+	.theme-toggle {
+		display: inline-flex;
+		align-items: center;
+		background: var(--bg-sunken);
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		padding: 3px;
+		gap: 2px;
+	}
+
+	.theme-btn {
+		background: transparent;
+		border: none;
+		color: var(--text-muted);
+		padding: 6px;
+		border-radius: 999px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 150ms ease;
+		min-width: 28px;
+		min-height: 28px;
+	}
+
+	.theme-btn:hover {
+		color: var(--text);
+	}
+
+	.theme-btn.active {
+		background: var(--bg-elev);
+		color: var(--primary);
+		box-shadow: var(--shadow-sm);
+	}
+</style>

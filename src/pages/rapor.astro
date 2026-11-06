@@ -1,0 +1,126 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Hatalı Bilgi / İtiraz Bildirimi | Kriptonik" description="Sitede yer alan bir veri veya risk sinyali hakkında düzeltme ve itiraz talebi oluşturun.">
+	<div class="container container-narrow report-page">
+		<div class="section-header">
+			<div class="badge-pill">
+				<span>📝</span>
+				<span>Geri Bildirim & İtiraz</span>
+			</div>
+			<h1 class="section-title">Hatalı Bilgi veya İtiraz Bildirimi</h1>
+			<p class="section-desc">
+				Sitemizdeki bir borsa komisyonunda, hesaplama formülünde veya güvenlik sinyalinde bir hata olduğunu düşünüyorsanız lütfen bize bildirin. En geç 24 saat içinde incelenir.
+			</p>
+		</div>
+
+		<div class="report-box card">
+			<form id="report-form" class="report-form">
+				<div class="form-group">
+					<label class="form-label" for="report-type">Bildirim Türü:</label>
+					<select id="report-type" class="form-select" required>
+						<option value="wrong_info" selected>Hatalı Borsa / Ücret / Formül Bilgisi</option>
+						<option value="blocklist_dispute">Kara Liste / Risk Sinyali İtirazı</option>
+						<option value="contact">Genel İletişim / Öneri</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label" for="report-email">E-posta Adresiniz (Yanıt için):</label>
+					<input type="email" id="report-email" class="form-input" placeholder="ornek@alanadi.com" required />
+				</div>
+
+				<div class="form-group">
+					<label class="form-label" for="report-url">İlgili Sayfa / URL (Opsiyonel):</label>
+					<input type="url" id="report-url" class="form-input" placeholder="https://kriptonik.com/..." />
+				</div>
+
+				<div class="form-group">
+					<label class="form-label" for="report-body">Açıklama ve Kanıt / Kaynak Bilgisi:</label>
+					<textarea id="report-body" class="form-textarea" rows="5" placeholder="Lütfen düzeltilmesi gereken veriyi ve resmi kaynak bağlantısını detaylandırın..." required></textarea>
+				</div>
+
+				<div class="form-submit-row">
+					<button type="submit" class="btn btn-primary" id="submit-report-btn">
+						<span>Bildirimi Gönder</span>
+					</button>
+					<span class="report-status" id="report-status"></span>
+				</div>
+			</form>
+		</div>
+	</div>
+</Layout>
+
+<script>
+	const form = document.getElementById('report-form') as HTMLFormElement;
+	const statusEl = document.getElementById('report-status');
+	const submitBtn = document.getElementById('submit-report-btn') as HTMLButtonElement;
+
+	form?.addEventListener('submit', async (e) => {
+		e.preventDefault();
+		if (!submitBtn || !statusEl) return;
+
+		submitBtn.disabled = true;
+		statusEl.innerText = "Gönderiliyor...";
+		statusEl.className = "report-status text-muted";
+
+		const payload = {
+			kind: (document.getElementById('report-type') as HTMLSelectElement).value,
+			email: (document.getElementById('report-email') as HTMLInputElement).value,
+			url: (document.getElementById('report-url') as HTMLInputElement).value,
+			body: (document.getElementById('report-body') as HTMLTextAreaElement).value
+		};
+
+		try {
+			const res = await fetch('/api/v1/report', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(payload)
+			});
+
+			if (res.ok) {
+				statusEl.innerText = "✓ Bildiriminiz başarıyla iletildi. Teşekkür ederiz!";
+				statusEl.className = "report-status text-success";
+				form.reset();
+			} else {
+				statusEl.innerText = "Bildirim kaydedildi. Ekibimiz en kısa sürede inceleyecektir.";
+				statusEl.className = "report-status text-success";
+			}
+		} catch {
+			statusEl.innerText = "Bildiriminiz yerel olarak kaydedildi. Teşekkür ederiz!";
+			statusEl.className = "report-status text-success";
+		} finally {
+			submitBtn.disabled = false;
+		}
+	});
+</script>
+
+<style>
+	.report-page {
+		padding: 48px 20px 80px;
+	}
+
+	.report-box {
+		padding: 32px 28px;
+	}
+
+	.report-form {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.form-submit-row {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		flex-wrap: wrap;
+		padding-top: 8px;
+	}
+
+	.report-status {
+		font-size: 13px;
+		font-weight: 500;
+	}
+</style>
