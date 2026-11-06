@@ -423,7 +423,7 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
 
               {/* Coin Switcher Tabs */}
               <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                {COINS_DATA.slice(0, 6).map((c) => (
+                {COINS_DATA.slice(0, 8).map((c) => (
                   <button
                     key={c.id}
                     onClick={() => setSelectedCoinSlug(c.slug)}

@@ -124,8 +124,8 @@ export default function CommandPalette() {
     id: `coin-${coin.slug}`,
     category: 'VARLIKLAR',
     title: `${coin.name} (${coin.symbol})`,
-    subtitle: `Fiyat: $${coin.price.toLocaleString('tr-TR')} • 24s: ${coin.change24h >= 0 ? '+' : ''}${coin.change24h.toFixed(2)}% • Fonlama: %${(coin.fundingRates.binance * 100).toFixed(3)}`,
-    href: `/likidasyon/${coin.slug}/`,
+    subtitle: `Fiyat: $${coin.price > 10 ? coin.price.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : coin.price.toFixed(4)} • 24s: ${coin.change24h >= 0 ? '+' : ''}${coin.change24h.toFixed(2)}% • Sıra #${coin.marketCapRank}`,
+    href: `/kripto/${coin.slug}/`,
     badge: coin.symbol
   }));
 

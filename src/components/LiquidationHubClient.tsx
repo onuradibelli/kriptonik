@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { CoinData } from '../lib/types';
 import LiquidationHeatmap from './LiquidationHeatmap';
-import { Flame, ArrowRight, Layers, HelpCircle, ArrowUpRight } from 'lucide-react';
+import { Flame, ArrowRight, Search, Layers, HelpCircle, ArrowUpRight } from 'lucide-react';
 
 interface LiquidationHubClientProps {
   coins: CoinData[];
@@ -12,46 +12,93 @@ interface LiquidationHubClientProps {
 
 export default function LiquidationHubClient({ coins }: LiquidationHubClientProps) {
   const [selectedSlug, setSelectedSlug] = useState('bitcoin');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [visibleCount, setVisibleCount] = useState<number>(24);
+
   const selectedCoin = coins.find((c) => c.slug === selectedSlug) || coins[0];
+
+  const filteredCoins = useMemo(() => {
+    if (!searchQuery.trim()) return coins;
+    const q = searchQuery.toLowerCase().trim();
+    return coins.filter((c) => c.name.toLowerCase().includes(q) || c.symbol.toLowerCase().includes(q));
+  }, [coins, searchQuery]);
+
+  // Featured top coins for quick tabs
+  const prioritySlugs = ['bitcoin', 'ethereum', 'solana', 'binancecoin', 'ripple', 'dogecoin', 'sui', 'near', 'pepe', 'bittensor', 'avalanche-2', 'chainlink'];
+  const priorityCoins = prioritySlugs.map((s) => coins.find((c) => c.slug === s)).filter(Boolean) as CoinData[];
 
   return (
     <div className="space-y-8">
-      {/* Coin Selector Chips */}
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-        {coins.map((c) => (
-          <button
-            key={c.id}
-            onClick={() => setSelectedSlug(c.slug)}
-            className={`rounded-xl px-4 py-2 font-mono text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
-              selectedSlug === c.slug
-                ? 'bg-[#FF3B56] text-white shadow-md shadow-[#FF3B56]/20'
-                : 'bg-[var(--card)] text-[var(--card-muted)] hover:text-[var(--foreground)] border border-[var(--border)]'
-            }`}
-          >
-            <span>{c.name} ({c.symbol})</span>
-            <span className="text-[10px] opacity-80">${(c.totalLiquidation24hUsd / 1_000_000).toFixed(0)}M</span>
-          </button>
-        ))}
+      {/* Search & Quick Chips Bar */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        {/* Quick Priority Chips */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+          {priorityCoins.map((c) => (
+            <button
+              key={c.id}
+              onClick={() => setSelectedSlug(c.slug)}
+              className={`rounded-xl px-3.5 py-1.5 font-mono text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                selectedSlug === c.slug
+                  ? 'bg-[#FF3B56] text-white shadow-md shadow-[#FF3B56]/20'
+                  : 'bg-[var(--card)] text-[var(--card-muted)] hover:text-[var(--foreground)] border border-[var(--border)]'
+              }`}
+            >
+              <span>{c.symbol}</span>
+              <span className="text-[10px] opacity-80">${(c.totalLiquidation24hUsd / 1_000_000).toFixed(0)}M</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Search for any coin */}
+        <div className="relative w-full sm:w-60 shrink-0">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--card-muted)]" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Coin ara..."
+            className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] pl-8 pr-3 py-1.5 text-xs text-[var(--foreground)] placeholder:text-[var(--card-muted)] focus:border-[#FF3B56] focus:outline-none"
+          />
+        </div>
       </div>
 
       {/* Featured Heatmap */}
       <LiquidationHeatmap coin={selectedCoin} />
 
       {/* Grid of All Coins for Direct Navigation */}
-      <div className="panel-card p-6 space-y-4">
+      <div className="panel-card p-5 sm:p-6 space-y-5">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
           <div>
             <h2 className="text-base font-bold text-[var(--foreground)]">
-              Tüm Kripto Varlıklar İçin Tasfiye Kümeleri
+              Tüm Kripto Varlıklar İçin Tasfiye Kümeleri ({filteredCoins.length})
             </h2>
             <p className="text-xs text-[var(--card-muted)] mt-0.5">
-              Her coin için Coinglass modelinde hesaplanan 10x - 100x kaldıraç likidasyon duvarları ve açık pozisyon tasfiye haritaları.
+              Coinglass modelinde hesaplanan 10x - 100x kaldıraç likidasyon duvarları ve açık pozisyon tasfiye haritaları.
             </p>
+          </div>
+
+          <div className="flex items-center gap-1 font-mono text-xs">
+            <button
+              onClick={() => setVisibleCount(24)}
+              className={`rounded-lg px-2.5 py-1 transition-all cursor-pointer ${
+                visibleCount === 24 ? 'bg-[#FF3B56] text-white' : 'text-[var(--card-muted)] border border-[var(--border)]'
+              }`}
+            >
+              24 Kart
+            </button>
+            <button
+              onClick={() => setVisibleCount(coins.length)}
+              className={`rounded-lg px-2.5 py-1 transition-all cursor-pointer ${
+                visibleCount === coins.length ? 'bg-[#FF3B56] text-white' : 'text-[var(--card-muted)] border border-[var(--border)]'
+              }`}
+            >
+              Tüm 60+
+            </button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {coins.map((coin) => (
+          {filteredCoins.slice(0, visibleCount).map((coin) => (
             <Link
               key={coin.id}
               href={`/likidasyon/${coin.slug}/`}
@@ -63,12 +110,12 @@ export default function LiquidationHubClient({ coins }: LiquidationHubClientProp
                     <span className="font-mono text-xs font-black px-1.5 py-0.5 rounded bg-[var(--border)] text-[var(--foreground)]">
                       {coin.symbol}
                     </span>
-                    <span className="font-bold text-[var(--foreground)] group-hover:text-[#FF3B56] transition-colors">
+                    <span className="font-bold text-[var(--foreground)] group-hover:text-[#FF3B56] transition-colors truncate max-w-[110px]">
                       {coin.name}
                     </span>
                   </div>
                   <span className="font-mono text-xs font-bold text-[var(--foreground)]">
-                    ${coin.price > 10 ? coin.price.toLocaleString('tr-TR') : coin.price.toFixed(4)}
+                    ${coin.price > 10 ? coin.price.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : coin.price.toFixed(4)}
                   </span>
                 </div>
 
@@ -97,44 +144,17 @@ export default function LiquidationHubClient({ coins }: LiquidationHubClientProp
             </Link>
           ))}
         </div>
-      </div>
 
-      {/* SEO FAQ Section for Rich Snippets */}
-      <div className="panel-card p-6 space-y-4">
-        <h3 className="text-base font-bold text-[var(--foreground)] flex items-center gap-2">
-          <HelpCircle className="h-5 w-5 text-[#2962FF]" />
-          <span>Likidasyon Isı Haritası Hakkında Sıkça Sorulan Sorular (SSS)</span>
-        </h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs leading-relaxed">
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4 space-y-1.5">
-            <h4 className="font-bold text-[var(--foreground)] text-sm">Likidasyon Isı Haritası (Liquidation Heatmap) Nedir?</h4>
-            <p className="text-[var(--card-muted)]">
-              Vadeli kripto para borsalarında (Binance, Bybit, OKX vb.) açılan yüksek kaldıraçlı (10x, 25x, 50x, 100x) pozisyonların zorunlu tasfiye edileceği kritik fiyat bölgelerini görselleştiren derinlik analiz aracıdır.
-            </p>
+        {visibleCount < filteredCoins.length && (
+          <div className="text-center pt-2">
+            <button
+              onClick={() => setVisibleCount(coins.length)}
+              className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-6 py-2.5 text-xs font-bold text-[var(--foreground)] hover:border-[#FF3B56] hover:text-[#FF3B56] transition-all cursor-pointer"
+            >
+              Kalan {filteredCoins.length - visibleCount} Varlığın Likidasyon Haritasını Göster ↓
+            </button>
           </div>
-
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4 space-y-1.5">
-            <h4 className="font-bold text-[var(--foreground)] text-sm">Short Squeeze ve Long Cascade Nasıl Gerçekleşir?</h4>
-            <p className="text-[var(--card-muted)]">
-              Fiyat yoğun short tasfiye kümelerinin bulunduğu seviyeye ulaştığında, borsalar otomatik piyasa alım emirleri gönderir. Bu zincirleme alımlar fiyatı aniden yukarı fırlatarak Short Squeeze yaratır. Ters yönde ise Long Cascade (şelale düşüşü) oluşur.
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4 space-y-1.5">
-            <h4 className="font-bold text-[var(--foreground)] text-sm">Coinglass ile Kriptonik Arasındaki Fark Nedir?</h4>
-            <p className="text-[var(--card-muted)]">
-              Kriptonik, Coinglass ve CryptoQuant verilerini karmaşıklaştırmadan, Türkçe finansal terminolojiye uygun, anlık WebSocket senkronizasyonu ve Türk Lirası entegrasyonuyla sunar.
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-4 space-y-1.5">
-            <h4 className="font-bold text-[var(--foreground)] text-sm">Dominant Tasfiye Seviyesi Nasıl Kullanılır?</h4>
-            <p className="text-[var(--card-muted)]">
-              Dominant seviye, piyasa yapıcıların ve balinaların likidite avlamak için fiyatı çekmek isteyebileceği en yüksek hacimli tasfiye duvarıdır. Destek ve direnç tespitinde kullanılır.
-            </p>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /admin/private/
+Disallow: /admin/
 
 Sitemap: https://kriptonik.com/sitemap.xml

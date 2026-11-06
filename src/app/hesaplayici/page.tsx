@@ -7,11 +7,12 @@ import { ArrowLeft, HelpCircle } from 'lucide-react';
 export const metadata: Metadata = {
   title: 'Kripto Kaldıraç, Likidasyon ve Borsa Komisyon Hesaplayıcı | Kriptonik',
   description:
-    'Binance TR, BtcTurk, Paribu komisyon kıyaslama, 1x-125x kaldıraç likidasyon fiyatı, DCA ortalama maliyet düşürme ve net kâr (PnL) simülatörü.',
+    'Binance TR, Bybit TR, BtcTurk, Paribu komisyon kıyaslama, 1x-125x kaldıraç likidasyon fiyatı, DCA ortalama maliyet düşürme ve net kâr (PnL) simülatörü.',
   keywords: [
     'kripto kaldıraç hesaplama',
     'likidasyon fiyatı hesaplayıcı',
     'binance tr komisyon hesaplama',
+    'bybit tr komisyon oranları',
     'btcturk komisyon hesaplama',
     'paribu komisyon oranları',
     'dca hesaplayıcı',

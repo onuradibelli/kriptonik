@@ -16,7 +16,9 @@ import {
   DollarSign,
   Compass,
   Layers,
-  ArrowUpDown
+  ArrowUpDown,
+  SlidersHorizontal,
+  ChevronDown
 } from 'lucide-react';
 
 interface LiveCryptoMarketTableProps {
@@ -28,6 +30,7 @@ interface LiveCryptoMarketTableProps {
 
 type SortField = 'rank' | 'price' | 'change' | 'liquidation' | 'funding' | 'oi';
 type SortOrder = 'asc' | 'desc';
+type CategoryType = 'ALL' | 'L1' | 'DEFI' | 'AI' | 'MEME' | 'GAINERS' | 'LOSERS' | 'LIQUIDATION' | 'OI' | 'FAVORITES';
 
 export default function LiveCryptoMarketTable({
   coins,
@@ -36,10 +39,11 @@ export default function LiveCryptoMarketTable({
   onToggleWatchlist,
 }: LiveCryptoMarketTableProps) {
   const router = useRouter();
-  const [activeCategory, setActiveCategory] = useState<'ALL' | 'GAINERS' | 'LOSERS' | 'LIQUIDATION' | 'OI' | 'FAVORITES'>('ALL');
+  const [activeCategory, setActiveCategory] = useState<CategoryType>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortField, setSortField] = useState<SortField>('rank');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+  const [visibleCount, setVisibleCount] = useState<number>(20);
 
   const usdtRate = LIVE_CURRENCY_RATES.USDT_TRY;
 
@@ -74,7 +78,15 @@ export default function LiveCryptoMarketTable({
     }
 
     // 2. Category filter
-    if (activeCategory === 'GAINERS') {
+    if (activeCategory === 'L1') {
+      result = result.filter((c) => (c.category || '').toLowerCase().includes('katman 1') || ['BTC', 'ETH', 'SOL', 'BNB', 'AVAX', 'SUI', 'ADA', 'NEAR', 'APT', 'DOT', 'TRX', 'KAS', 'SEI', 'FTM'].includes(c.symbol));
+    } else if (activeCategory === 'DEFI') {
+      result = result.filter((c) => (c.category || '').toLowerCase().includes('defi') || (c.category || '').toLowerCase().includes('dex') || ['UNI', 'AAVE', 'CRV', 'RAY', 'CAKE', 'JUP', 'ENA', 'MORPHO'].includes(c.symbol));
+    } else if (activeCategory === 'AI') {
+      result = result.filter((c) => (c.category || '').toLowerCase().includes('yapay zeka') || (c.category || '').toLowerCase().includes('ai') || ['TAO', 'RENDER', 'NEAR', 'WLD', 'FET'].includes(c.symbol));
+    } else if (activeCategory === 'MEME') {
+      result = result.filter((c) => (c.category || '').toLowerCase().includes('meme') || ['DOGE', 'SHIB', 'PEPE', 'WIF', 'BONK', 'FLOKI', 'PUMP'].includes(c.symbol));
+    } else if (activeCategory === 'GAINERS') {
       result = result.filter((c) => c.effectiveChange > 0).sort((a, b) => b.effectiveChange - a.effectiveChange);
     } else if (activeCategory === 'LOSERS') {
       result = result.filter((c) => c.effectiveChange < 0).sort((a, b) => a.effectiveChange - b.effectiveChange);
@@ -87,7 +99,7 @@ export default function LiveCryptoMarketTable({
     }
 
     // 3. Sorting
-    if (activeCategory === 'ALL' || activeCategory === 'FAVORITES') {
+    if (activeCategory === 'ALL' || activeCategory === 'L1' || activeCategory === 'DEFI' || activeCategory === 'AI' || activeCategory === 'MEME' || activeCategory === 'FAVORITES') {
       result.sort((a, b) => {
         let diff = 0;
         if (sortField === 'rank') diff = a.marketCapRank - b.marketCapRank;
@@ -103,9 +115,11 @@ export default function LiveCryptoMarketTable({
     return result;
   }, [coins, tickers, searchQuery, activeCategory, sortField, sortOrder, watchlist]);
 
+  const displayedCoins = filteredCoins.slice(0, visibleCount);
+
   return (
     <div className="panel-card p-5 sm:p-6 space-y-5">
-      {/* 1. Header with Title and Search Filter */}
+      {/* 1. Header with Title, Search Filter and Count Selector */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-[var(--border)] pb-4">
         <div>
           <div className="flex items-center gap-2">
@@ -120,7 +134,7 @@ export default function LiveCryptoMarketTable({
             </span>
           </div>
           <p className="mt-1 text-xs text-[var(--card-muted)]">
-            Binance vadeli tahta derinliği, tasfiye seviyeleri ve borsalar arası fonlama oranlarıyla anlık güncellenen pazar tarayıcısı.
+            Binance vadeli tahta derinliği, tasfiye seviyeleri ve borsalar arası fonlama oranlarıyla anlık güncellenen pazar tarayıcısı ({coins.length} Varlık).
           </p>
         </div>
 
@@ -149,15 +163,22 @@ export default function LiveCryptoMarketTable({
       <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
         {[
           { id: 'ALL', label: `Tüm Varlıklar (${coins.length})` },
+          { id: 'L1', label: '⛓️ Katman 1' },
+          { id: 'DEFI', label: '🏦 DeFi & DEX' },
+          { id: 'AI', label: '🤖 Yapay Zeka (AI)' },
+          { id: 'MEME', label: '🐸 Meme Coinler' },
           { id: 'GAINERS', label: '🔥 En Çok Yükselenler' },
           { id: 'LOSERS', label: '🔻 En Çok Düşenler' },
           { id: 'LIQUIDATION', label: '⚡ Yüksek Likidasyon' },
-          { id: 'OI', label: '📊 Yüksek Açık Pozisyon' },
+          { id: 'OI', label: '📊 Açık Pozisyon Liderleri' },
           { id: 'FAVORITES', label: `⭐ Takip Listem (${watchlist.length})` },
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveCategory(tab.id as any)}
+            onClick={() => {
+              setActiveCategory(tab.id as CategoryType);
+              setVisibleCount(20);
+            }}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
               activeCategory === tab.id
                 ? 'bg-[#2962FF] text-white shadow-xs font-bold'
@@ -192,9 +213,7 @@ export default function LiveCryptoMarketTable({
                   <ArrowUpDown className="h-3 w-3 opacity-60" />
                 </div>
               </th>
-              <th className="py-3 px-3 hidden lg:table-cell font-semibold">
-                <span>24s Aralık</span>
-              </th>
+              <th className="py-3 px-3 hidden lg:table-cell">24s Fiyat Aralığı</th>
               <th className="py-3 px-3 cursor-pointer hover:text-[var(--foreground)] hidden md:table-cell" onClick={() => handleSort('liquidation')}>
                 <div className="flex items-center gap-1 font-semibold">
                   <span>24s Likidasyon</span>
@@ -203,41 +222,33 @@ export default function LiveCryptoMarketTable({
               </th>
               <th className="py-3 px-3 cursor-pointer hover:text-[var(--foreground)] hidden sm:table-cell" onClick={() => handleSort('funding')}>
                 <div className="flex items-center gap-1 font-semibold">
-                  <span>Fonlama APR</span>
+                  <span>Fonlama (APR)</span>
                   <ArrowUpDown className="h-3 w-3 opacity-60" />
                 </div>
               </th>
               <th className="py-3 px-3 cursor-pointer hover:text-[var(--foreground)] hidden xl:table-cell" onClick={() => handleSort('oi')}>
                 <div className="flex items-center gap-1 font-semibold">
-                  <span>Açık Pozisyon</span>
+                  <span>Açık Pozisyon (OI)</span>
                   <ArrowUpDown className="h-3 w-3 opacity-60" />
                 </div>
               </th>
-              <th className="py-3 px-3 hidden sm:table-cell text-center font-semibold">
-                <span>7G Trend</span>
-              </th>
-              <th className="py-3 px-3 text-right font-semibold">
-                <span>Detay</span>
-              </th>
+              <th className="py-3 px-3 hidden sm:table-cell text-center">24s Trend</th>
+              <th className="py-3 px-3 text-right">İşlem</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[var(--border)] bg-[var(--card)]">
-            {filteredCoins.map((coin) => {
-              const isFav = watchlist.includes(coin.symbol);
+          <tbody className="divide-y divide-[var(--border)]">
+            {displayedCoins.map((coin) => {
               const isPos = coin.effectiveChange >= 0;
-              const flash = coin.flash;
               const tryPrice = coin.effectivePrice * usdtRate;
+              const isFav = watchlist.includes(coin.symbol);
 
-              // Estimated 24h range
-              const low24 = coin.effectivePrice * 0.965;
-              const high24 = coin.effectivePrice * 1.035;
+              const high24 = coin.high24h || coin.effectivePrice * 1.025;
+              const low24 = coin.low24h || coin.effectivePrice * 0.975;
               const rangePercent = Math.min(100, Math.max(0, ((coin.effectivePrice - low24) / (high24 - low24)) * 100));
 
-              // Liquidation values
               const liqTotal = (coin.totalLiquidation24hUsd / 1_000_000).toFixed(1);
               const shortPercent = coin.shortPercentage;
 
-              // Funding rate (3-session annualized approx)
               const fundingApr = (coin.fundingRates.binance * 3 * 365 * 100).toFixed(2);
               const isFundingPos = coin.fundingRates.binance >= 0;
 
@@ -245,7 +256,7 @@ export default function LiveCryptoMarketTable({
                 <tr
                   key={coin.id}
                   onClick={() => router.push(`/kripto/${coin.slug}/`)}
-                  className="hover:bg-[var(--hover-bg)] transition-colors cursor-pointer group text-xs"
+                  className="hover:bg-[var(--card-hover)] transition-colors cursor-pointer group"
                 >
                   {/* # Rank & Asset */}
                   <td className="py-3.5 px-3">
@@ -283,9 +294,7 @@ export default function LiveCryptoMarketTable({
 
                   {/* Price ($ and ₺) */}
                   <td className="py-3.5 px-3">
-                    <div className={`font-mono font-bold text-sm sm:text-base text-[var(--foreground)] px-1 rounded transition-colors inline-block ${
-                      flash === 'UP' ? 'tick-flash-up text-[#00E699]' : flash === 'DOWN' ? 'tick-flash-down text-[#FF3B56]' : ''
-                    }`}>
+                    <div className="font-mono font-bold text-sm sm:text-base text-[var(--foreground)] inline-block">
                       ${coin.effectivePrice > 10 ? coin.effectivePrice.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : coin.effectivePrice.toFixed(4)}
                     </div>
                     <div className="text-xs font-mono text-[var(--card-muted)]">
@@ -388,6 +397,43 @@ export default function LiveCryptoMarketTable({
           </div>
         )}
       </div>
+
+      {/* Pagination / Expand Control */}
+      {filteredCoins.length > 20 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs font-mono text-[var(--card-muted)]">
+          <div>
+            Gösterilen: <strong className="text-[var(--foreground)]">{displayedCoins.length}</strong> / {filteredCoins.length} Varlık
+          </div>
+
+          <div className="flex items-center gap-2">
+            {visibleCount < filteredCoins.length ? (
+              <button
+                onClick={() => setVisibleCount((prev) => Math.min(filteredCoins.length, prev + 20))}
+                className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-2 font-bold text-[var(--foreground)] hover:border-[#2962FF] hover:text-[#2962FF] transition-all cursor-pointer flex items-center gap-1.5"
+              >
+                <span>Daha Fazla Göster (+20 Varlık)</span>
+                <ChevronDown className="h-3.5 w-3.5" />
+              </button>
+            ) : (
+              <button
+                onClick={() => setVisibleCount(20)}
+                className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-2 font-bold text-[var(--card-muted)] hover:text-[var(--foreground)] transition-all cursor-pointer"
+              >
+                İlk 20 Varlığa Daralt ↑
+              </button>
+            )}
+
+            {visibleCount < filteredCoins.length && (
+              <button
+                onClick={() => setVisibleCount(filteredCoins.length)}
+                className="rounded-xl border border-[#2962FF]/30 bg-[#2962FF]/10 px-4 py-2 font-bold text-[#2962FF] hover:bg-[#2962FF] hover:text-white transition-all cursor-pointer"
+              >
+                Tümünü Aç ({filteredCoins.length})
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

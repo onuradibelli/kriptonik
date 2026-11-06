@@ -69,11 +69,11 @@ export default function Footer() {
           <div className="space-y-3">
             <h4 className="text-xs font-semibold text-[var(--foreground)] uppercase tracking-wider font-mono">Coin Terminali</h4>
             <ul className="space-y-2 text-xs">
-              {COINS_DATA.slice(0, 6).map((coin) => (
+              {COINS_DATA.slice(0, 8).map((coin) => (
                 <li key={coin.id}>
-                  <Link href={`/likidasyon/${coin.slug}/`} className="hover:text-[#2962FF] transition-colors flex items-center justify-between">
+                  <Link href={`/kripto/${coin.slug}/`} className="hover:text-[#2962FF] transition-colors flex items-center justify-between">
                     <span>{coin.name} ({coin.symbol})</span>
-                    <span className="font-mono text-[10px] text-[var(--card-muted)]">${coin.price.toLocaleString('tr-TR')}</span>
+                    <span className="font-mono text-[10px] text-[var(--card-muted)]">${coin.price > 10 ? coin.price.toLocaleString('tr-TR', { maximumFractionDigits: 0 }) : coin.price.toFixed(4)}</span>
                   </Link>
                 </li>
               ))}
