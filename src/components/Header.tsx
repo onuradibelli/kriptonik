@@ -1,18 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useBinanceTickers } from '../lib/useBinanceTickers';
-import { COINS_DATA, FEAR_AND_GREED } from '../lib/data';
+import { FEAR_AND_GREED } from '../lib/data';
 import ThemeToggle from './ThemeToggle';
 import BreakingNewsTicker from './BreakingNewsTicker';
 import { Activity, Flame, DollarSign, Calendar, Compass, ShieldAlert, Newspaper, Search, BarChart3, Calculator } from 'lucide-react';
 
 export default function Header() {
   const pathname = usePathname();
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
   // Verified accurate live seed tickers from Binance API
   const defaultTickers = {
@@ -27,17 +25,16 @@ export default function Header() {
 
   const { tickers, isConnected } = useBinanceTickers(defaultTickers);
 
-  const filteredCoins = searchQuery.trim()
-    ? COINS_DATA.filter(
-        (c) =>
-          c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          c.symbol.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : [];
+  const handleOpenSearch = () => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('open-command-palette'));
+    }
+  };
 
   const navItems = [
     { label: 'Piyasa Nabzı', href: '/', icon: Activity },
     { label: 'Likidasyon Haritası', href: '/likidasyon/', icon: Flame },
+    { label: 'Kaldıraç Hesaplayıcı', href: '/hesaplayici/', icon: Calculator, isNew: true },
     { label: 'Fonlama Oranları', href: '/fonlama-oranlari/', icon: DollarSign },
     { label: 'Spot ETF Akışları', href: '/etf/', icon: BarChart3 },
     { label: 'Kaç TL? Çevirici', href: '/kac-tl/', icon: Calculator },
@@ -132,7 +129,7 @@ export default function Header() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all relative ${
                     isActive
                       ? 'bg-[#2962FF]/10 text-[#2962FF] border border-[#2962FF]/30 shadow-xs'
                       : 'text-[var(--card-muted)] hover:text-[var(--foreground)] hover:bg-[var(--card)]'
@@ -140,6 +137,11 @@ export default function Header() {
                 >
                   <Icon className="h-3.5 w-3.5" />
                   {item.label}
+                  {item.isNew && (
+                    <span className="rounded bg-[#00C087]/20 text-[#00C087] px-1 py-0.1 text-[9px] font-mono font-bold">
+                      YENİ
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -149,8 +151,9 @@ export default function Header() {
         {/* Search & Actions */}
         <div className="flex items-center gap-2.5">
           <button
-            onClick={() => setSearchOpen(true)}
-            className="flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 text-xs text-[var(--card-muted)] hover:border-[#2962FF] hover:text-[var(--foreground)] transition-colors"
+            onClick={handleOpenSearch}
+            className="flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 text-xs text-[var(--card-muted)] hover:border-[#2962FF] hover:text-[var(--foreground)] transition-colors cursor-pointer"
+            title="Global Arama ve Komut Paleti (Ctrl+K / ⌘K)"
           >
             <Search className="h-3.5 w-3.5 text-[#2962FF]" />
             <span className="hidden sm:inline">Varlık veya Sinyal Ara...</span>
@@ -179,6 +182,9 @@ export default function Header() {
             >
               <Icon className="h-3 w-3" />
               {item.label}
+              {item.isNew && (
+                <span className="h-1.5 w-1.5 rounded-full bg-[#00C087]" />
+              )}
             </Link>
           );
         })}
@@ -186,68 +192,6 @@ export default function Header() {
 
       {/* 3. Breaking News Marquee Ticker */}
       <BreakingNewsTicker />
-
-      {/* Search Modal */}
-      {searchOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/70 p-4 pt-20 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-[var(--border)] pb-3">
-              <div className="flex items-center gap-2 text-[var(--foreground)]">
-                <Search className="h-4 w-4 text-[#2962FF]" />
-                <span className="text-sm font-bold">Kriptonik Radar Arama</span>
-              </div>
-              <button
-                onClick={() => setSearchOpen(false)}
-                className="rounded px-2 py-0.5 text-xs text-[var(--card-muted)] hover:bg-[var(--border)] hover:text-[var(--foreground)]"
-              >
-                ESC
-              </button>
-            </div>
-
-            <input
-              type="text"
-              autoFocus
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Bitcoin, Solana, Dolar, ETF, Fonlama..."
-              className="mt-3 w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3.5 py-2.5 text-sm text-[var(--foreground)] placeholder-[var(--card-muted)] outline-none focus:border-[#2962FF]"
-            />
-
-            <div className="mt-3 max-h-72 overflow-y-auto space-y-1">
-              {filteredCoins.length > 0 ? (
-                filteredCoins.map((coin) => (
-                  <Link
-                    key={coin.id}
-                    href={`/likidasyon/${coin.slug}/`}
-                    onClick={() => setSearchOpen(false)}
-                    className="flex items-center justify-between rounded-lg p-2.5 hover:bg-[var(--hover-bg)] transition-colors"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex h-7 w-7 items-center justify-center rounded bg-[var(--border)] font-mono text-xs font-bold text-[var(--foreground)]">
-                        {coin.symbol.slice(0, 3)}
-                      </div>
-                      <div>
-                        <div className="text-xs font-bold text-[var(--foreground)]">{coin.name} ({coin.symbol})</div>
-                        <div className="text-[10px] text-[var(--card-muted)]">Spot: ${coin.price.toLocaleString('tr-TR')} • Fonlama: %{(coin.fundingRates.binance * 100).toFixed(3)}</div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-mono text-xs font-bold text-[var(--foreground)]">${coin.price.toLocaleString('tr-TR')}</div>
-                      <div className={`font-mono text-[10px] font-semibold ${coin.change24h >= 0 ? 'text-[#00C087]' : 'text-[#F6465D]'}`}>
-                        {coin.change24h >= 0 ? '+' : ''}{coin.change24h.toFixed(2)}%
-                      </div>
-                    </div>
-                  </Link>
-                ))
-              ) : (
-                <div className="py-6 text-center text-xs text-[var(--card-muted)]">
-                  {searchQuery ? 'Eşleşen coin bulunamadı.' : 'Aramak istediğin coinin adını veya sembolünü yaz (örn: BTC, SOL, ETF, SUI)'}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </header>
   );
 }

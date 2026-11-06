@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { getKacTlItems } from '../../../lib/data';
-import KacTlConverter from '../../../components/KacTlConverter';
+import InteractiveKacTlBox from '../../../components/InteractiveKacTlBox';
 import { Calculator, HelpCircle, ArrowLeft, TrendingUp, TableProperties, ArrowRight } from 'lucide-react';
 
 export async function generateStaticParams() {
@@ -160,8 +160,14 @@ export default async function KacTlDetailPage({ params }: { params: Promise<{ sl
         </div>
       </div>
 
-      {/* Interactive Converter Component */}
-      <KacTlConverter initialSlug={item.slug} />
+      {/* Interactive Custom Amount Converter */}
+      <InteractiveKacTlBox
+        initialAmount={item.unitAmount}
+        symbol={item.symbol}
+        name={item.name}
+        rateTry={item.rateTry}
+        rateUsd={item.rateUsd}
+      />
 
       {/* Programmatic Popular Conversion Tiers Table (SEO Traffic Multiplier) */}
       <section className="panel-card p-6 space-y-4">

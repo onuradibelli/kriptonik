@@ -54,6 +54,7 @@ export default function Footer() {
             <h4 className="text-xs font-semibold text-[var(--foreground)] uppercase tracking-wider font-mono">Sinyal Merkezleri</h4>
             <ul className="space-y-2 text-xs">
               <li><Link href="/likidasyon/" className="hover:text-[#2962FF] transition-colors">Likidasyon Isı Haritası</Link></li>
+              <li><Link href="/hesaplayici/" className="text-[#2962FF] font-semibold hover:underline flex items-center gap-1.5"><span>Kaldıraç Hesaplayıcı</span><span className="rounded bg-[#2962FF]/15 text-[9px] px-1 font-mono">PRO</span></Link></li>
               <li><Link href="/fonlama-oranlari/" className="hover:text-[#2962FF] transition-colors">Borsalar Arası Fonlama</Link></li>
               <li><Link href="/etf/" className="text-[#00C087] font-semibold hover:underline">Spot ETF Akışları</Link></li>
               <li><Link href="/kac-tl/" className="text-[#2962FF] font-semibold hover:underline">Kaç TL? Canlı Çevirici</Link></li>

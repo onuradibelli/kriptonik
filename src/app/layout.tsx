@@ -2,15 +2,18 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import CommandPalette from '../components/CommandPalette';
+import MobileBottomNav from '../components/MobileBottomNav';
 
 export const metadata: Metadata = {
   title: 'Kriptonik — Finansal Veri ve Canlı On-Chain Analiz Terminali',
   description:
-    'Sıfır gürültü, maksimum sinyal. Canlı likidasyon ısı haritası, borsalar arası fonlama oranları, balina transferleri ve token kilit açılım takvimi.',
+    'Sıfır gürültü, maksimum sinyal. Canlı likidasyon ısı haritası, borsalar arası fonlama oranları, balina transferleri, kaldıraç hesaplayıcı ve token kilit açılım takvimi.',
   keywords: [
     'kripto likidasyon haritası',
     'canlı fonlama oranları',
     'funding rate',
+    'kaldıraç hesaplama',
     'token unlock takvimi',
     'balina hareketleri',
     'açık pozisyon',
@@ -55,10 +58,12 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased selection:bg-[#2962FF] selection:text-white flex flex-col transition-colors duration-200">
         <Header />
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-6">
+        <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 pb-20 md:pb-6">
           {children}
         </main>
         <Footer />
+        <CommandPalette />
+        <MobileBottomNav />
       </body>
     </html>
   );

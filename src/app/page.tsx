@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { COINS_DATA, WHALE_TRANSACTIONS } from '../lib/data';
 import LiquidationHeatmap from '../components/LiquidationHeatmap';
@@ -11,12 +11,50 @@ import FearGreedWidget from '../components/FearGreedWidget';
 import OpenInterestRadar from '../components/OpenInterestRadar';
 import EtfTracker from '../components/EtfTracker';
 import KacTlConverter from '../components/KacTlConverter';
+import UsdtPremiumWidget from '../components/UsdtPremiumWidget';
 import Sparkline from '../components/Sparkline';
-import { Flame, DollarSign, Calendar, Compass, ShieldAlert, ArrowUpRight, Zap, TrendingUp, BarChart3, Calculator } from 'lucide-react';
+import { Flame, DollarSign, Calendar, Compass, ShieldAlert, ArrowUpRight, Zap, TrendingUp, BarChart3, Calculator, Star, Sparkles } from 'lucide-react';
 
 export default function HomePage() {
   const [selectedCoinSlug, setSelectedCoinSlug] = useState('bitcoin');
+  const [watchlist, setWatchlist] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState<'ALL' | 'FAVORITES'>('ALL');
+
   const selectedCoin = COINS_DATA.find((c) => c.slug === selectedCoinSlug) || COINS_DATA[0];
+
+  // Load watchlist from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('kriptonik_watchlist');
+      if (saved) {
+        setWatchlist(JSON.parse(saved));
+      } else {
+        // Default favorites
+        setWatchlist(['BTC', 'ETH', 'SOL']);
+      }
+    } catch (e) {
+      // Ignore
+    }
+  }, []);
+
+  const toggleFavorite = (symbol: string) => {
+    setWatchlist((prev) => {
+      const next = prev.includes(symbol)
+        ? prev.filter((s) => s !== symbol)
+        : [...prev, symbol];
+      try {
+        localStorage.setItem('kriptonik_watchlist', JSON.stringify(next));
+      } catch (e) {
+        // Ignore
+      }
+      return next;
+    });
+  };
+
+  const displayedCoins =
+    activeTab === 'FAVORITES'
+      ? COINS_DATA.filter((c) => watchlist.includes(c.symbol))
+      : COINS_DATA;
 
   return (
     <div className="space-y-8">
@@ -110,74 +148,160 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 4. Spot ETF Daily Institutional Flows */}
+      {/* 4. Leverage Calculator Interactive Promo Banner */}
+      <section className="rounded-2xl border border-[var(--border)] bg-gradient-to-r from-[var(--card)] via-[var(--card-subtle)] to-[var(--card)] p-5 sm:p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-[#00C087]/15 px-2.5 py-0.5 text-[10px] font-mono font-bold text-[#00C087] border border-[#00C087]/30">
+            <Sparkles className="h-3 w-3" />
+            YENİ PRO ARAÇ
+          </div>
+          <h3 className="text-base sm:text-lg font-black text-[var(--foreground)]">
+            Kaldıraç & Likidasyon Fiyatı Simülatörü
+          </h3>
+          <p className="text-xs text-[var(--card-muted)] max-w-xl">
+            1x ile 125x arasında pozisyon açmadan önce tahmini tasfiye seviyenizi, bakım marjı mesafenizi ve komisyon sonrası net kâr/zarar senaryolarını hesaplayın.
+          </p>
+        </div>
+
+        <Link
+          href="/hesaplayici/"
+          className="shrink-0 flex items-center gap-2 rounded-xl bg-[#2962FF] px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-[#2962FF]/20 hover:bg-[#1E4BD8] transition-all"
+        >
+          <Calculator className="h-4 w-4" />
+          Hesaplayıcıyı Başlat
+          <ArrowUpRight className="h-3.5 w-3.5" />
+        </Link>
+      </section>
+
+      {/* 5. Spot ETF Daily Institutional Flows */}
       <section>
         <EtfTracker />
       </section>
 
-      {/* 5. Token Unlock 30-Day Calendar */}
+      {/* 6. Token Unlock 30-Day Calendar */}
       <section>
         <TokenUnlockCalendar coins={COINS_DATA} />
       </section>
 
-      {/* 6. Open Interest Radar & Whale Transactions */}
+      {/* 7. Open Interest Radar & Whale Transactions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <OpenInterestRadar coins={COINS_DATA} />
         <WhaleTracker transactions={WHALE_TRANSACTIONS} />
       </div>
 
-      {/* 7. Kaç TL? Canlı Kur ve Kripto Çevirici */}
+      {/* 8. Tether Primi & Döviz Arbitraj Göstergesi */}
+      <section>
+        <UsdtPremiumWidget />
+      </section>
+
+      {/* 9. Kaç TL? Canlı Kur ve Kripto Çevirici */}
       <section>
         <KacTlConverter />
       </section>
 
-      {/* 8. Programmatic 360 Coin Directory (pSEO Master Section) */}
+      {/* 10. Programmatic 360 Coin Directory with Watchlist Support */}
       <section className="panel-card p-6 space-y-4">
-        <div className="border-b border-[var(--border)] pb-4">
-          <h3 className="text-base font-bold text-[var(--foreground)]">Kriptonik Türev ve On-Chain İndeksi</h3>
-          <p className="text-xs text-[var(--card-muted)] mt-1">
-            Her coin için algoritmik olarak oluşturulan anlık likidasyon duvarları, fonlama geçmişi ve kilit açılım raporları.
-          </p>
-        </div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
+          <div>
+            <h3 className="text-base font-bold text-[var(--foreground)]">
+              Kriptonik Türev ve On-Chain İndeksi
+            </h3>
+            <p className="text-xs text-[var(--card-muted)] mt-0.5">
+              Her coin için algoritmik olarak oluşturulan anlık likidasyon duvarları, fonlama geçmişi ve kilit açılım raporları.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 text-xs">
-          {COINS_DATA.map((coin) => (
-            <div
-              key={coin.id}
-              className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3 hover:border-[#2962FF] transition-all flex flex-col justify-between"
+          {/* Watchlist Filter Tabs */}
+          <div className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-1 text-xs">
+            <button
+              onClick={() => setActiveTab('ALL')}
+              className={`rounded-lg px-3 py-1 font-mono font-semibold transition-all ${
+                activeTab === 'ALL'
+                  ? 'bg-[#2962FF] text-white shadow-xs'
+                  : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+              }`}
             >
-              <div>
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-[var(--foreground)]">{coin.symbol}</span>
-                  <span className={`font-mono text-[11px] font-bold ${coin.change24h >= 0 ? 'text-[#00C087]' : 'text-[#F6465D]'}`}>
-                    {coin.change24h >= 0 ? '+' : ''}{coin.change24h.toFixed(1)}%
-                  </span>
-                </div>
-                <div className="text-[11px] text-[var(--card-muted)] truncate">{coin.name}</div>
-                <div className="font-mono text-xs font-bold text-[var(--foreground)] mt-1">
-                  ${coin.price > 10 ? coin.price.toLocaleString('tr-TR') : coin.price.toFixed(4)}
-                </div>
-
-                {/* 24h Trend Sparkline */}
-                <div className="mt-2 flex justify-center">
-                  <Sparkline change24h={coin.change24h} width={120} height={28} />
-                </div>
-              </div>
-
-              <div className="mt-3 pt-2 border-t border-[var(--border)] flex flex-col gap-1 text-[10px] font-mono">
-                <Link href={`/likidasyon/${coin.slug}/`} className="text-[#2962FF] hover:underline font-semibold">
-                  → Likidasyon
-                </Link>
-                <Link href={`/fonlama-oranlari/${coin.slug}/`} className="text-[#00C087] hover:underline font-semibold">
-                  → Fonlama
-                </Link>
-                <Link href={`/kripto/${coin.slug}/`} className="text-[var(--card-muted)] hover:text-[var(--foreground)] hover:underline">
-                  → 360 Analiz
-                </Link>
-              </div>
-            </div>
-          ))}
+              Tüm Varlıklar ({COINS_DATA.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('FAVORITES')}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1 font-mono font-semibold transition-all ${
+                activeTab === 'FAVORITES'
+                  ? 'bg-[#2962FF] text-white shadow-xs'
+                  : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+              }`}
+            >
+              <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+              Takip Listem ({watchlist.length})
+            </button>
+          </div>
         </div>
+
+        {displayedCoins.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 text-xs">
+            {displayedCoins.map((coin) => {
+              const isFav = watchlist.includes(coin.symbol);
+
+              return (
+                <div
+                  key={coin.id}
+                  className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3 hover:border-[#2962FF] transition-all flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => toggleFavorite(coin.symbol)}
+                          title={isFav ? 'Takip listesinden çıkar' : 'Takip listesine ekle'}
+                          className="text-[var(--card-muted)] hover:text-amber-400 transition-colors"
+                        >
+                          <Star className={`h-3.5 w-3.5 ${isFav ? 'fill-amber-400 text-amber-400' : ''}`} />
+                        </button>
+                        <span className="font-bold text-[var(--foreground)]">{coin.symbol}</span>
+                      </div>
+                      <span className={`font-mono text-[11px] font-bold ${coin.change24h >= 0 ? 'text-[#00C087]' : 'text-[#F6465D]'}`}>
+                        {coin.change24h >= 0 ? '+' : ''}{coin.change24h.toFixed(1)}%
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-[var(--card-muted)] truncate mt-0.5">{coin.name}</div>
+                    <div className="font-mono text-xs font-bold text-[var(--foreground)] mt-1">
+                      ${coin.price > 10 ? coin.price.toLocaleString('tr-TR') : coin.price.toFixed(4)}
+                    </div>
+
+                    {/* 24h Trend Sparkline */}
+                    <div className="mt-2 flex justify-center">
+                      <Sparkline change24h={coin.change24h} width={120} height={28} />
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-2 border-t border-[var(--border)] flex flex-col gap-1 text-[10px] font-mono">
+                    <Link href={`/likidasyon/${coin.slug}/`} className="text-[#2962FF] hover:underline font-semibold">
+                      → Likidasyon
+                    </Link>
+                    <Link href={`/fonlama-oranlari/${coin.slug}/`} className="text-[#00C087] hover:underline font-semibold">
+                      → Fonlama
+                    </Link>
+                    <Link href={`/kripto/${coin.slug}/`} className="text-[var(--card-muted)] hover:text-[var(--foreground)] hover:underline">
+                      → 360 Analiz
+                    </Link>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="py-12 text-center text-xs text-[var(--card-muted)] space-y-2">
+            <Star className="mx-auto h-8 w-8 text-amber-400/40" />
+            <p className="font-bold text-[var(--foreground)]">Takip listeniz henüz boş</p>
+            <p>Coin kartlarındaki yıldız (⭐) ikonuna tıklayarak sık takip ettiğiniz varlıkları buraya sabitleyebilirsiniz.</p>
+            <button
+              onClick={() => setActiveTab('ALL')}
+              className="mt-2 rounded-lg bg-[#2962FF]/15 text-[#2962FF] px-3 py-1 font-semibold text-xs border border-[#2962FF]/30 hover:bg-[#2962FF]/25 transition-colors"
+            >
+              Tüm Varlıkları Göster
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );
