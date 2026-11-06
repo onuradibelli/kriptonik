@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useBinanceTickers } from '../lib/useBinanceTickers';
-import { FEAR_AND_GREED } from '../lib/data';
+import { FEAR_AND_GREED, LIVE_CURRENCY_RATES } from '../lib/data';
 import ThemeToggle from './ThemeToggle';
 import BreakingNewsTicker from './BreakingNewsTicker';
 import { Activity, Flame, DollarSign, Calendar, Compass, ShieldAlert, Newspaper, Search, BarChart3, Calculator } from 'lucide-react';
@@ -66,6 +66,25 @@ export default function Header() {
             </span>
 
             <div className="flex items-center gap-4">
+              {/* Live FX & Stablecoin Telemetry */}
+              <Link
+                href="/kac-tl/1-dolar-kac-tl/"
+                className="flex items-center gap-1 transition-colors hover:text-[#2962FF]"
+              >
+                <span className="font-semibold text-[var(--card-muted)]">USD/TRY:</span>
+                <span className="font-mono font-bold text-[var(--foreground)]">₺{LIVE_CURRENCY_RATES.USD_TRY.toFixed(2)}</span>
+              </Link>
+
+              <Link
+                href="/kac-tl/1-usdt-kac-tl/"
+                className="flex items-center gap-1 transition-colors hover:text-[#00C087]"
+              >
+                <span className="font-semibold text-[var(--card-muted)]">USDT/TRY:</span>
+                <span className="font-mono font-bold text-[#00C087]">₺{LIVE_CURRENCY_RATES.USDT_TRY.toFixed(2)}</span>
+              </Link>
+
+              <span className="text-[var(--border)] hidden sm:inline">•</span>
+
               {featuredSymbols.map(({ sym, name }) => {
                 const tick = tickers[sym] || defaultTickers[sym as keyof typeof defaultTickers];
                 if (!tick) return null;

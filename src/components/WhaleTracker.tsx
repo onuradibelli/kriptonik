@@ -10,10 +10,12 @@ interface WhaleTrackerProps {
 
 export default function WhaleTracker({ transactions }: WhaleTrackerProps) {
   const [filterType, setFilterType] = useState<'ALL' | 'INFLOW' | 'OUTFLOW'>('ALL');
+  const [symbolFilter, setSymbolFilter] = useState<string>('ALL');
 
   const filtered = transactions.filter((tx) => {
-    if (filterType === 'ALL') return true;
-    return tx.type === filterType;
+    if (filterType !== 'ALL' && tx.type !== filterType) return false;
+    if (symbolFilter !== 'ALL' && tx.symbol !== symbolFilter) return false;
+    return true;
   });
 
   return (
@@ -35,19 +37,39 @@ export default function WhaleTracker({ transactions }: WhaleTrackerProps) {
           </p>
         </div>
 
-        {/* Filter buttons */}
-        <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--background)] p-1 text-xs font-mono">
-          {(['ALL', 'INFLOW', 'OUTFLOW'] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setFilterType(t)}
-              className={`rounded px-2.5 py-1 font-semibold transition-all ${
-                filterType === t ? 'bg-[#2962FF] text-white shadow-xs' : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
-              }`}
-            >
-              {t === 'ALL' ? 'TÜMÜ' : t === 'INFLOW' ? 'BORSA GİRİŞİ' : 'BORSA ÇIKIŞI'}
-            </button>
-          ))}
+        {/* Dual Filter Controls */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Coin Selector */}
+          <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--background)] p-1 text-xs font-mono">
+            {['ALL', 'BTC', 'ETH', 'SOL', 'USDT'].map((sym) => (
+              <button
+                key={sym}
+                onClick={() => setSymbolFilter(sym)}
+                className={`rounded px-2 py-0.5 font-bold transition-all ${
+                  symbolFilter === sym
+                    ? 'bg-[#00C087] text-white shadow-xs'
+                    : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+                }`}
+              >
+                {sym}
+              </button>
+            ))}
+          </div>
+
+          {/* Flow Direction Filter buttons */}
+          <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--background)] p-1 text-xs font-mono">
+            {(['ALL', 'INFLOW', 'OUTFLOW'] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setFilterType(t)}
+                className={`rounded px-2.5 py-1 font-semibold transition-all ${
+                  filterType === t ? 'bg-[#2962FF] text-white shadow-xs' : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+                }`}
+              >
+                {t === 'ALL' ? 'TÜMÜ' : t === 'INFLOW' ? 'GİRİŞ' : 'ÇIKIŞ'}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

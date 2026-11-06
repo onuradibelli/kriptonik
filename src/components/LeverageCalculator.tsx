@@ -1,19 +1,44 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { COINS_DATA } from '../lib/data';
-import { Calculator, AlertTriangle, ShieldCheck, TrendingUp, TrendingDown, DollarSign, Percent, ArrowRightLeft, RefreshCw, Info } from 'lucide-react';
+import { useBinanceTickers } from '../lib/useBinanceTickers';
+import { Calculator, AlertTriangle, ShieldCheck, TrendingUp, TrendingDown, DollarSign, Percent, ArrowRightLeft, RefreshCw, Info, Radio } from 'lucide-react';
 
 export default function LeverageCalculator() {
   const [selectedCoinSlug, setSelectedCoinSlug] = useState('bitcoin');
   const [side, setSide] = useState<'LONG' | 'SHORT'>('LONG');
   const [leverage, setLeverage] = useState<number>(20);
   const [margin, setMargin] = useState<number>(1000); // $1000 USDT
+  const [liveSync, setLiveSync] = useState(false);
 
   const selectedCoin = COINS_DATA.find((c) => c.slug === selectedCoinSlug) || COINS_DATA[0];
 
+  const defaultTickers = {
+    BTCUSDT: { price: 75728.00, change24h: -0.11 },
+    ETHUSDT: { price: 2227.60, change24h: -0.85 },
+    SOLUSDT: { price: 90.50, change24h: 0.85 },
+    BNBUSDT: { price: 695.50, change24h: 1.04 },
+    XRPUSDT: { price: 1.185, change24h: -4.63 },
+    DOGEUSDT: { price: 0.0729, change24h: 1.87 },
+    SUIUSDT: { price: 0.871, change24h: 2.85 }
+  };
+
+  const { tickers, isConnected } = useBinanceTickers(defaultTickers);
+
+  const currentLivePrice =
+    tickers[selectedCoin.binanceSymbol]?.price || selectedCoin.price;
+
   const [entryPrice, setEntryPrice] = useState<number>(selectedCoin.price);
   const [exitPrice, setExitPrice] = useState<number>(selectedCoin.price * 1.05); // Default +5% target
+
+  // Live price auto-sync if toggled
+  useEffect(() => {
+    if (liveSync && currentLivePrice > 0) {
+      setEntryPrice(currentLivePrice);
+      setExitPrice(side === 'LONG' ? currentLivePrice * 1.05 : currentLivePrice * 0.95);
+    }
+  }, [currentLivePrice, liveSync, side]);
 
   // When coin changes, update entry and exit prices
   const handleCoinChange = (slug: string) => {
@@ -88,16 +113,35 @@ export default function LeverageCalculator() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => {
-                setEntryPrice(selectedCoin.price);
-                setExitPrice(side === 'LONG' ? selectedCoin.price * 1.05 : selectedCoin.price * 0.95);
+                const next = !liveSync;
+                setLiveSync(next);
+                if (next && currentLivePrice > 0) {
+                  setEntryPrice(currentLivePrice);
+                }
+              }}
+              className={`flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-colors ${
+                liveSync
+                  ? 'border-[#00C087] bg-[#00C087]/15 text-[#00C087]'
+                  : 'border-[var(--border)] bg-[var(--card)] text-[var(--card-muted)] hover:text-[var(--foreground)]'
+              }`}
+            >
+              <Radio className={`h-3.5 w-3.5 ${liveSync ? 'animate-pulse text-[#00C087]' : ''}`} />
+              {liveSync ? 'Canlı Senkronize Açık' : 'Canlı Fiyatı Senkronize Et'}
+            </button>
+
+            <button
+              onClick={() => {
+                setLiveSync(false);
+                setEntryPrice(currentLivePrice);
+                setExitPrice(side === 'LONG' ? currentLivePrice * 1.05 : currentLivePrice * 0.95);
               }}
               className="flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 text-xs font-semibold text-[var(--foreground)] hover:border-[#2962FF] transition-colors"
             >
               <RefreshCw className="h-3.5 w-3.5 text-[#2962FF]" />
-              Canlı Fiyatı Geri Yükle
+              Güncel Fiyatı Çek (${currentLivePrice > 10 ? currentLivePrice.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : currentLivePrice.toFixed(4)})
             </button>
           </div>
         </div>

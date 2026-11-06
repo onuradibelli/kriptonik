@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { COINS_DATA } from '../../../lib/data';
-import LiquidationHeatmap from '../../../components/LiquidationHeatmap';
+import CoinTerminalTabs from '../../../components/CoinTerminalTabs';
 import Sparkline from '../../../components/Sparkline';
 import { Flame, DollarSign, Compass, Calendar, ArrowRight, ShieldCheck } from 'lucide-react';
 
@@ -174,8 +174,8 @@ export default async function CoinTerminalPage({ params }: { params: Promise<{ s
         </Link>
       </div>
 
-      {/* Embedded Heatmap */}
-      <LiquidationHeatmap coin={coin} />
+      {/* Embedded Chart & Heatmap Suite */}
+      <CoinTerminalTabs coin={coin} />
     </div>
   );
 }

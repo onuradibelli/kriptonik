@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { COINS_DATA, FEAR_AND_GREED, BITCOIN_ETF_SUMMARY, ETHEREUM_ETF_SUMMARY, LIVE_CURRENCY_RATES } from '../../lib/data';
-import { Newspaper, Flame, Clock, ArrowRight, RefreshCw, Sparkles, TrendingUp, ShieldAlert, DollarSign, CheckCircle2, X } from 'lucide-react';
+import { Newspaper, Flame, Clock, ArrowRight, RefreshCw, Sparkles, TrendingUp, ShieldAlert, DollarSign, CheckCircle2, X, Share2, Check } from 'lucide-react';
 
 interface ReportArticle {
   id: string;
@@ -22,6 +22,18 @@ export default function BulletinPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeArticle, setActiveArticle] = useState<ReportArticle | null>(null);
   const [lastUpdated, setLastUpdated] = useState('Bugün, 16:15');
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleShareArticle = (art: ReportArticle) => {
+    const text = `📰 [Kriptonik Raporu] ${art.title}\n\nDetaylar: https://kriptonik.com/bulten/`;
+    if (navigator.share) {
+      navigator.share({ title: art.title, text, url: 'https://kriptonik.com/bulten/' }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(text);
+      setCopiedId(art.id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
+  };
 
   const btc = COINS_DATA.find((c) => c.slug === 'bitcoin') || COINS_DATA[0];
   const eth = COINS_DATA.find((c) => c.slug === 'ethereum') || COINS_DATA[1];
@@ -313,9 +325,23 @@ export default function BulletinPage() {
 
             {/* Footer */}
             <div className="border-t border-[var(--border)] pt-4 flex items-center justify-between">
-              <span className="text-[11px] text-[var(--card-muted)] font-mono">
-                Doğrulanmış Canlı API Kaynağı
-              </span>
+              <button
+                onClick={() => handleShareArticle(activeArticle)}
+                className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] px-3 py-1.5 text-xs font-semibold text-[var(--foreground)] hover:border-[#2962FF] transition-all"
+              >
+                {copiedId === activeArticle.id ? (
+                  <>
+                    <Check className="h-3.5 w-3.5 text-[#00C087]" />
+                    <span className="text-[#00C087]">Bağlantı Kopyalandı</span>
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="h-3.5 w-3.5 text-[#2962FF]" />
+                    <span>Raporu Paylaş</span>
+                  </>
+                )}
+              </button>
+
               <button
                 onClick={() => setActiveArticle(null)}
                 className="rounded-xl bg-[#2962FF] px-4 py-2 text-xs font-bold text-white hover:bg-[#2563EB] transition-colors"

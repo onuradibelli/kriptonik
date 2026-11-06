@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { CoinData } from '../lib/types';
-import { Flame, Info, Layers, BarChart2, ShieldAlert, ArrowUpRight, ArrowDownRight, Crosshair, Zap, Building2 } from 'lucide-react';
+import { Flame, Info, Layers, BarChart2, ShieldAlert, ArrowUpRight, ArrowDownRight, Crosshair, Zap, Building2, Volume2, VolumeX, Share2, Check } from 'lucide-react';
 
 interface LiquidationHeatmapProps {
   coin: CoinData;
@@ -12,6 +12,46 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
   const [timeframe, setTimeframe] = useState<'12h' | '24h' | '7d' | '30d'>('24h');
   const [exchange, setExchange] = useState<'ALL' | 'BINANCE' | 'BYBIT' | 'OKX'>('ALL');
   const [hoveredCluster, setHoveredCluster] = useState<number | null>(null);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // Web Audio API Synthesizer for high-tech liquidation ping
+  const playRadarPing = (type: 'short' | 'long' = 'short') => {
+    if (!soundEnabled) return;
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(type === 'short' ? 880 : 587.33, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(type === 'short' ? 1760 : 293.66, ctx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.06, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.12);
+    } catch (e) {
+      // Audio autoplay policy handled safely
+    }
+  };
+
+  const handleShare = () => {
+    const text = `🔥 ${coin.name} (${coin.symbol}) Canlı Likidasyon Haritası: Dominant Tasfiye Seviyesi $${coin.dominantLiquidationLevel.toLocaleString('tr-TR')}. İncele: https://kriptonik.com/likidasyon/${coin.slug}/`;
+    if (navigator.share) {
+      navigator.share({
+        title: `${coin.name} Likidasyon Isı Haritası`,
+        text,
+        url: `https://kriptonik.com/likidasyon/${coin.slug}/`
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const currentPrice = coin.price;
   const tfMultiplier = timeframe === '12h' ? 0.6 : timeframe === '24h' ? 1.0 : timeframe === '7d' ? 3.4 : 8.2;
@@ -101,6 +141,52 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
               </button>
             ))}
           </div>
+
+          {/* Radar Audio Ping Toggle */}
+          <button
+            onClick={() => {
+              const next = !soundEnabled;
+              setSoundEnabled(next);
+              if (next) playRadarPing('short');
+            }}
+            title={soundEnabled ? 'Tasfiye radar sesini kapat' : 'Tasfiye radar sesini aç'}
+            className={`flex items-center gap-1 rounded-lg border border-[var(--border)] px-2.5 py-1.5 font-mono text-xs font-semibold transition-all ${
+              soundEnabled
+                ? 'bg-[#2962FF] text-white border-[#2962FF]'
+                : 'bg-[var(--card)] text-[var(--card-muted)] hover:text-[var(--foreground)]'
+            }`}
+          >
+            {soundEnabled ? (
+              <>
+                <Volume2 className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">SES AÇIK</span>
+              </>
+            ) : (
+              <>
+                <VolumeX className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">SES</span>
+              </>
+            )}
+          </button>
+
+          {/* Quick Share Button */}
+          <button
+            onClick={handleShare}
+            title="Likidasyon Haritasını Paylaş"
+            className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--card)] px-2.5 py-1.5 font-mono text-xs font-semibold text-[var(--card-muted)] hover:text-[var(--foreground)] hover:border-[#2962FF] transition-all"
+          >
+            {copied ? (
+              <>
+                <Check className="h-3.5 w-3.5 text-[#00C087]" />
+                <span className="text-[#00C087] hidden sm:inline">Kopyalandı</span>
+              </>
+            ) : (
+              <>
+                <Share2 className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Paylaş</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
 
@@ -201,7 +287,12 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
             return (
               <div
                 key={idx}
-                onMouseEnter={() => setHoveredCluster(idx)}
+                onMouseEnter={() => {
+                  setHoveredCluster(idx);
+                  if (cluster.intensity > 0.8) {
+                    playRadarPing(isShort ? 'short' : 'long');
+                  }
+                }}
                 onMouseLeave={() => setHoveredCluster(null)}
                 className={`group relative flex items-center justify-between py-1.5 px-3 rounded-lg transition-all cursor-pointer ${
                   isHovered ? 'bg-[var(--card)] shadow-xs scale-[1.01]' : 'hover:bg-[var(--card)]/60'

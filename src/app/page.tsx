@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { COINS_DATA, WHALE_TRANSACTIONS } from '../lib/data';
+import { useBinanceTickers } from '../lib/useBinanceTickers';
 import LiquidationHeatmap from '../components/LiquidationHeatmap';
 import FundingMatrix from '../components/FundingMatrix';
 import TokenUnlockCalendar from '../components/TokenUnlockCalendar';
@@ -19,6 +20,18 @@ export default function HomePage() {
   const [selectedCoinSlug, setSelectedCoinSlug] = useState('bitcoin');
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<'ALL' | 'FAVORITES'>('ALL');
+
+  const defaultTickers = {
+    BTCUSDT: { price: 75728.00, change24h: -0.11 },
+    ETHUSDT: { price: 2227.60, change24h: -0.85 },
+    SOLUSDT: { price: 90.50, change24h: 0.85 },
+    BNBUSDT: { price: 695.50, change24h: 1.04 },
+    XRPUSDT: { price: 1.185, change24h: -4.63 },
+    DOGEUSDT: { price: 0.0729, change24h: 1.87 },
+    SUIUSDT: { price: 0.871, change24h: 2.85 }
+  };
+
+  const { tickers } = useBinanceTickers(defaultTickers);
 
   const selectedCoin = COINS_DATA.find((c) => c.slug === selectedCoinSlug) || COINS_DATA[0];
 
@@ -241,6 +254,9 @@ export default function HomePage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 text-xs">
             {displayedCoins.map((coin) => {
               const isFav = watchlist.includes(coin.symbol);
+              const liveTick = tickers[coin.binanceSymbol];
+              const displayPrice = liveTick?.price || coin.price;
+              const displayChange = liveTick?.change24h !== undefined ? liveTick.change24h : coin.change24h;
 
               return (
                 <div
@@ -259,18 +275,20 @@ export default function HomePage() {
                         </button>
                         <span className="font-bold text-[var(--foreground)]">{coin.symbol}</span>
                       </div>
-                      <span className={`font-mono text-[11px] font-bold ${coin.change24h >= 0 ? 'text-[#00C087]' : 'text-[#F6465D]'}`}>
-                        {coin.change24h >= 0 ? '+' : ''}{coin.change24h.toFixed(1)}%
+                      <span className={`font-mono text-[11px] font-bold ${displayChange >= 0 ? 'text-[#00C087]' : 'text-[#F6465D]'}`}>
+                        {displayChange >= 0 ? '+' : ''}{displayChange.toFixed(1)}%
                       </span>
                     </div>
                     <div className="text-[11px] text-[var(--card-muted)] truncate mt-0.5">{coin.name}</div>
-                    <div className="font-mono text-xs font-bold text-[var(--foreground)] mt-1">
-                      ${coin.price > 10 ? coin.price.toLocaleString('tr-TR') : coin.price.toFixed(4)}
+                    <div className={`font-mono text-xs font-bold text-[var(--foreground)] mt-1 transition-colors px-1 rounded inline-block ${
+                      liveTick?.flashDirection === 'UP' ? 'tick-flash-up text-[#00C087]' : liveTick?.flashDirection === 'DOWN' ? 'tick-flash-down text-[#F6465D]' : ''
+                    }`}>
+                      ${displayPrice > 10 ? displayPrice.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : displayPrice.toFixed(4)}
                     </div>
 
                     {/* 24h Trend Sparkline */}
                     <div className="mt-2 flex justify-center">
-                      <Sparkline change24h={coin.change24h} width={120} height={28} />
+                      <Sparkline change24h={displayChange} width={120} height={28} />
                     </div>
                   </div>
 
