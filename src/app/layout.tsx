@@ -41,11 +41,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="tr" className="dark">
+    <html lang="tr" className="dark" suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#0B0E14" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('kriptonik-theme');if(t==='light'||(!t&&window.matchMedia('(prefers-color-scheme: light)').matches&&t!=='dark')){document.documentElement.classList.remove('dark');document.documentElement.classList.add('light');}else{document.documentElement.classList.remove('light');document.documentElement.classList.add('dark');}}catch(e){}})();`
+          }}
+        />
       </head>
-      <body className="min-h-screen bg-[#0B0E14] text-[#F0F3F8] antialiased selection:bg-[#2962FF] selection:text-white flex flex-col">
+      <body className="min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased selection:bg-[#2962FF] selection:text-white flex flex-col transition-colors duration-200">
         <Header />
         <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-6">
           {children}

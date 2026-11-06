@@ -2,24 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+:root, html.dark {
   --background: #0B0E14;
   --foreground: #F0F3F8;
   --card: #151A23;
+  --card-subtle: #0D121A;
   --card-foreground: #F0F3F8;
+  --card-muted: #848E9C;
   --primary: #2962FF;
   --bull: #00C087;
   --bear: #F6465D;
   --border: #222938;
+  --subtle: #080B0F;
+  --hover-bg: #1A212D;
+  --ticker-bg: #080B0F;
+  --tab-active-bg: #2962FF;
+  --tab-active-text: #FFFFFF;
+}
+
+html.light {
+  --background: #F8FAFC;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --card-subtle: #F1F5F9;
+  --card-foreground: #0F172A;
+  --card-muted: #64748B;
+  --primary: #2563EB;
+  --bull: #059669;
+  --bear: #E11D48;
+  --border: #E2E8F0;
+  --subtle: #F8FAFC;
+  --hover-bg: #F1F5F9;
+  --ticker-bg: #FFFFFF;
+  --tab-active-bg: #2563EB;
+  --tab-active-text: #FFFFFF;
 }
 
 body {
-  background-color: #0B0E14;
-  color: #F0F3F8;
+  background-color: var(--background);
+  color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   min-height: 100vh;
   margin: 0;
   overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Custom scrollbars */
@@ -28,20 +54,26 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0B0E14;
+  background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: #222938;
+  background: var(--border);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2E384D;
+  background: #3B82F6;
 }
 
 .panel-card {
-  background-color: #151A23;
-  border: 1px solid #222938;
-  border-radius: 0.75rem;
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.85rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.panel-card:hover {
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
 }
 
 .badge-bull {
@@ -65,6 +97,16 @@ body {
   0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 192, 135, 0.7); }
   70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(0, 192, 135, 0); }
   100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 192, 135, 0); }
+}
+
+.pulse-red {
+  box-shadow: 0 0 0 0 rgba(246, 70, 93, 0.7);
+  animation: pulse-red-anim 1.8s infinite;
+}
+@keyframes pulse-red-anim {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(246, 70, 93, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(246, 70, 93, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(246, 70, 93, 0); }
 }
 
 /* Hide scrollbar utility */

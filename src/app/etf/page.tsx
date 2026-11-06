@@ -13,10 +13,10 @@ export default function EtfHubPage() {
   return (
     <div className="space-y-8">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-xs text-[#848E9C] font-mono">
-        <Link href="/" className="hover:text-white">Kriptonik</Link>
+      <nav className="flex items-center gap-2 text-xs text-[var(--card-muted)] font-mono">
+        <Link href="/" className="hover:text-[var(--foreground)]">Kriptonik</Link>
         <span>/</span>
-        <span className="text-white font-semibold">Spot ETF Akışları</span>
+        <span className="text-[var(--foreground)] font-semibold">Spot ETF Akışları</span>
       </nav>
 
       {/* Hero */}
@@ -25,11 +25,11 @@ export default function EtfHubPage() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#2962FF]/15 text-[#2962FF]">
             <BarChart3 className="h-5 w-5" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white">
+          <h1 className="text-2xl sm:text-3xl font-black text-[var(--foreground)]">
             Spot Bitcoin & Ethereum ETF Kurumsal Akışları
           </h1>
         </div>
-        <p className="text-xs sm:text-sm text-[#848E9C] max-w-3xl leading-relaxed">
+        <p className="text-xs sm:text-sm text-[var(--card-muted)] max-w-3xl leading-relaxed">
           Wall Street fonlarının spot kripto piyasasına getirdiği taze sermaye akışlarını anlık takip edin. Her işlem günü sonunda BlackRock, Fidelity ve Grayscale dahil 11 fonun net alım/satım bilançoları burada güncellenir.
         </p>
       </div>
