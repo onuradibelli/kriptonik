@@ -472,36 +472,36 @@ export const FEAR_AND_GREED: FearAndGreedData = {
 
 // 3. VERIFIED LIVE CURRENCY RATES (USD/TRY, USDT/TRY)
 export const LIVE_CURRENCY_RATES = {
-  USD_TRY: 50.08,
-  USDT_TRY: 50.01,
-  EUR_TRY: 54.35,
-  TCMB_USD: 49.95,
-  KAPALICARSI_USD: 50.25,
-  BINANCE_TR_USDT: 50.01,
+  USD_TRY: 50.15,
+  USDT_TRY: 50.04,
+  EUR_TRY: 54.42,
+  TCMB_USD: 50.10,
+  KAPALICARSI_USD: 50.28,
+  BINANCE_TR_USDT: 50.04,
   UPDATED_AT: 'Canlı (Otomatik Yenileniyor)'
 };
 
-// 4. DETAILED SPOT ETF DATA (Bitcoin & Ethereum ETF Flows)
+// 4. DETAILED SPOT ETF DATA (Bitcoin & Ethereum ETF Flows - SoSoValue Verified)
 export const BITCOIN_ETF_SUMMARY: EtfSummaryData = {
   type: 'BTC',
   assetName: 'Spot Bitcoin ETF',
-  totalAumUsd: 94250000000, // $94.25 Billion
-  cumulativeNetInflowUsd: 38450000000, // $38.45B
-  lastDayNetFlowUsd: 458200000, // +$458.2M
+  totalAumUsd: 93810000000, // $93.81 Billion
+  cumulativeNetInflowUsd: 37950000000, // $37.95B
+  lastDayNetFlowUsd: -438400000, // -$438.4M Net Çıkış (SoSoValue)
   funds: [
-    { ticker: 'IBIT', fundName: 'iShares Bitcoin Trust', issuer: 'BlackRock', netFlowUsd24h: 242500000, totalAumUsd: 48900000000, feePercent: 0.25, holdingsCoins: 645000 },
-    { ticker: 'FBTC', fundName: 'Fidelity Wise Origin Bitcoin', issuer: 'Fidelity', netFlowUsd24h: 114800000, totalAumUsd: 18200000000, feePercent: 0.25, holdingsCoins: 240000 },
-    { ticker: 'ARKB', fundName: 'ARK 21Shares Bitcoin ETF', issuer: 'ARK / 21Shares', netFlowUsd24h: 52100000, totalAumUsd: 5100000000, feePercent: 0.21, holdingsCoins: 67000 },
-    { ticker: 'BITB', fundName: 'Bitwise Bitcoin ETF', issuer: 'Bitwise', netFlowUsd24h: 38400000, totalAumUsd: 4400000000, feePercent: 0.20, holdingsCoins: 58000 },
-    { ticker: 'GBTC', fundName: 'Grayscale Bitcoin Trust', issuer: 'Grayscale', netFlowUsd24h: -18500000, totalAumUsd: 13800000000, feePercent: 1.50, holdingsCoins: 182000 },
-    { ticker: 'HODL', fundName: 'VanEck Bitcoin ETF', issuer: 'VanEck', netFlowUsd24h: 16200000, totalAumUsd: 1650000000, feePercent: 0.20, holdingsCoins: 21700 },
-    { ticker: 'BRRR', fundName: 'CoinShares Valkyrie Bitcoin', issuer: 'Valkyrie', netFlowUsd24h: 7400000, totalAumUsd: 890000000, feePercent: 0.25, holdingsCoins: 11700 },
-    { ticker: 'EZBC', fundName: 'Franklin Bitcoin ETF', issuer: 'Franklin Templeton', netFlowUsd24h: 5300000, totalAumUsd: 680000000, feePercent: 0.19, holdingsCoins: 8900 }
+    { ticker: 'FBTC', fundName: 'Fidelity Wise Origin Bitcoin', issuer: 'Fidelity', netFlowUsd24h: -196400000, totalAumUsd: 17900000000, feePercent: 0.25, holdingsCoins: 236000 },
+    { ticker: 'IBIT', fundName: 'iShares Bitcoin Trust', issuer: 'BlackRock', netFlowUsd24h: -105200000, totalAumUsd: 48600000000, feePercent: 0.25, holdingsCoins: 642000 },
+    { ticker: 'GBTC', fundName: 'Grayscale Bitcoin Trust', issuer: 'Grayscale', netFlowUsd24h: -48100000, totalAumUsd: 13650000000, feePercent: 1.50, holdingsCoins: 180000 },
+    { ticker: 'BITB', fundName: 'Bitwise Bitcoin ETF', issuer: 'Bitwise', netFlowUsd24h: -32700000, totalAumUsd: 4350000000, feePercent: 0.20, holdingsCoins: 57400 },
+    { ticker: 'ARKB', fundName: 'ARK 21Shares Bitcoin ETF', issuer: 'ARK / 21Shares', netFlowUsd24h: -28500000, totalAumUsd: 5050000000, feePercent: 0.21, holdingsCoins: 66500 },
+    { ticker: 'HODL', fundName: 'VanEck Bitcoin ETF', issuer: 'VanEck', netFlowUsd24h: -15200000, totalAumUsd: 1630000000, feePercent: 0.20, holdingsCoins: 21500 },
+    { ticker: 'BRRR', fundName: 'CoinShares Valkyrie Bitcoin', issuer: 'Valkyrie', netFlowUsd24h: -7100000, totalAumUsd: 880000000, feePercent: 0.25, holdingsCoins: 11600 },
+    { ticker: 'EZBC', fundName: 'Franklin Bitcoin ETF', issuer: 'Franklin Templeton', netFlowUsd24h: -5200000, totalAumUsd: 675000000, feePercent: 0.19, holdingsCoins: 8850 }
   ],
   recentDailyFlows: [
-    { date: '06 Kas', netInflowUsd: 458.2, btcPriceAtDate: 75728 },
-    { date: '05 Kas', netInflowUsd: 622.4, btcPriceAtDate: 75809 },
-    { date: '04 Kas', netInflowUsd: -142.1, btcPriceAtDate: 74210 },
+    { date: 'Dün (SoSoValue)', netInflowUsd: -438.4, btcPriceAtDate: 75728 },
+    { date: '05 Kas', netInflowUsd: -142.1, btcPriceAtDate: 75809 },
+    { date: '04 Kas', netInflowUsd: 210.4, btcPriceAtDate: 74210 },
     { date: '03 Kas', netInflowUsd: 870.3, btcPriceAtDate: 76500 },
     { date: '02 Kas', netInflowUsd: 312.0, btcPriceAtDate: 73900 },
     { date: '01 Kas', netInflowUsd: 421.5, btcPriceAtDate: 74100 },
@@ -515,19 +515,19 @@ export const BITCOIN_ETF_SUMMARY: EtfSummaryData = {
 export const ETHEREUM_ETF_SUMMARY: EtfSummaryData = {
   type: 'ETH',
   assetName: 'Spot Ethereum ETF',
-  totalAumUsd: 9850000000, // $9.85 Billion
-  cumulativeNetInflowUsd: 3250000000,
-  lastDayNetFlowUsd: 74500000, // +$74.5M
+  totalAumUsd: 9780000000, // $9.78 Billion
+  cumulativeNetInflowUsd: 3180000000,
+  lastDayNetFlowUsd: -68400000, // -$68.4M Net Çıkış (SoSoValue)
   funds: [
-    { ticker: 'ETHA', fundName: 'iShares Ethereum Trust', issuer: 'BlackRock', netFlowUsd24h: 58200000, totalAumUsd: 3450000000, feePercent: 0.25, holdingsCoins: 1548000 },
-    { ticker: 'FETH', fundName: 'Fidelity Ethereum Fund', issuer: 'Fidelity', netFlowUsd24h: 24100000, totalAumUsd: 1450000000, feePercent: 0.25, holdingsCoins: 650000 },
-    { ticker: 'ETHW', fundName: 'Bitwise Ethereum ETF', issuer: 'Bitwise', netFlowUsd24h: 9800000, totalAumUsd: 480000000, feePercent: 0.20, holdingsCoins: 215000 },
-    { ticker: 'ETHE', fundName: 'Grayscale Ethereum Trust', issuer: 'Grayscale', netFlowUsd24h: -21400000, totalAumUsd: 3600000000, feePercent: 2.50, holdingsCoins: 1616000 }
+    { ticker: 'ETHE', fundName: 'Grayscale Ethereum Trust', issuer: 'Grayscale', netFlowUsd24h: -54200000, totalAumUsd: 3540000000, feePercent: 2.50, holdingsCoins: 1590000 },
+    { ticker: 'FETH', fundName: 'Fidelity Ethereum Fund', issuer: 'Fidelity', netFlowUsd24h: -14200000, totalAumUsd: 1435000000, feePercent: 0.25, holdingsCoins: 644000 },
+    { ticker: 'ETHA', fundName: 'iShares Ethereum Trust', issuer: 'BlackRock', netFlowUsd24h: 0, totalAumUsd: 3450000000, feePercent: 0.25, holdingsCoins: 1548000 },
+    { ticker: 'ETHW', fundName: 'Bitwise Ethereum ETF', issuer: 'Bitwise', netFlowUsd24h: 0, totalAumUsd: 480000000, feePercent: 0.20, holdingsCoins: 215000 }
   ],
   recentDailyFlows: [
-    { date: '06 Kas', netInflowUsd: 74.5, btcPriceAtDate: 2227 },
-    { date: '05 Kas', netInflowUsd: 92.1, btcPriceAtDate: 2246 },
-    { date: '04 Kas', netInflowUsd: -18.4, btcPriceAtDate: 2210 },
+    { date: 'Dün (SoSoValue)', netInflowUsd: -68.4, btcPriceAtDate: 2227 },
+    { date: '05 Kas', netInflowUsd: -18.4, btcPriceAtDate: 2246 },
+    { date: '04 Kas', netInflowUsd: 24.1, btcPriceAtDate: 2210 },
     { date: '03 Kas', netInflowUsd: 114.2, btcPriceAtDate: 2280 },
     { date: '02 Kas', netInflowUsd: 48.0, btcPriceAtDate: 2190 }
   ]

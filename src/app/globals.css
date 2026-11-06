@@ -5,37 +5,37 @@
 @tailwind utilities;
 
 :root, html.dark {
-  --background: #080B11;
-  --foreground: #F0F4FC;
-  --card: rgba(18, 24, 38, 0.75);
-  --card-subtle: rgba(11, 16, 27, 0.65);
-  --card-foreground: #F0F4FC;
+  --background: #090D16;
+  --foreground: #F2F5FC;
+  --card: rgba(15, 21, 35, 0.78);
+  --card-subtle: rgba(11, 16, 28, 0.72);
+  --card-foreground: #F2F5FC;
   --card-muted: #8E9BAE;
   --primary: #2962FF;
   --bull: #00E699;
   --bear: #FF3B56;
   --border: rgba(255, 255, 255, 0.08);
-  --subtle: #06080D;
+  --subtle: #060910;
   --hover-bg: rgba(41, 98, 255, 0.08);
-  --ticker-bg: rgba(8, 11, 17, 0.88);
+  --ticker-bg: rgba(9, 13, 22, 0.92);
   --tab-active-bg: #2962FF;
   --tab-active-text: #FFFFFF;
 }
 
 html.light {
-  --background: #F4F7FC;
-  --foreground: #0B132B;
-  --card: rgba(255, 255, 255, 0.85);
-  --card-subtle: rgba(241, 245, 251, 0.75);
-  --card-foreground: #0B132B;
+  --background: #F8FAFD;
+  --foreground: #091228;
+  --card: rgba(255, 255, 255, 0.92);
+  --card-subtle: rgba(243, 246, 252, 0.85);
+  --card-foreground: #091228;
   --card-muted: #64748B;
   --primary: #2563EB;
   --bull: #059669;
   --bear: #E11D48;
-  --border: rgba(226, 232, 240, 0.85);
-  --subtle: #F8FAFC;
+  --border: rgba(226, 232, 240, 0.9);
+  --subtle: #F8FAFD;
   --hover-bg: rgba(37, 99, 235, 0.06);
-  --ticker-bg: rgba(255, 255, 255, 0.9);
+  --ticker-bg: rgba(255, 255, 255, 0.95);
   --tab-active-bg: #2563EB;
   --tab-active-text: #FFFFFF;
 }
@@ -49,15 +49,15 @@ body {
   overflow-x: hidden;
   transition: background-color 0.25s ease, color 0.25s ease;
   background-image: 
-    radial-gradient(at 10% 5%, rgba(41, 98, 255, 0.10) 0px, transparent 45%),
-    radial-gradient(at 90% 95%, rgba(0, 230, 153, 0.07) 0px, transparent 45%);
+    radial-gradient(at 15% 10%, rgba(41, 98, 255, 0.12) 0px, transparent 50%),
+    radial-gradient(at 85% 90%, rgba(0, 230, 153, 0.08) 0px, transparent 50%);
   background-attachment: fixed;
 }
 
 html.light body {
   background-image: 
-    radial-gradient(at 10% 5%, rgba(37, 99, 235, 0.07) 0px, transparent 45%),
-    radial-gradient(at 90% 95%, rgba(5, 150, 105, 0.05) 0px, transparent 45%);
+    radial-gradient(at 15% 10%, rgba(37, 99, 235, 0.08) 0px, transparent 50%),
+    radial-gradient(at 85% 90%, rgba(5, 150, 105, 0.06) 0px, transparent 50%);
 }
 
 /* Custom scrollbars */
@@ -79,21 +79,34 @@ html.light body {
 /* High-End Glassmorphism Panel Card */
 .panel-card {
   background-color: var(--card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--border);
-  border-radius: 1.1rem;
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+  border-radius: 1.25rem;
+  box-shadow: 0 12px 36px -12px rgba(0, 0, 0, 0.40), inset 0 1px 0 0 rgba(255, 255, 255, 0.07);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html.light .panel-card {
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 30px -10px rgba(9, 18, 40, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 1);
 }
 
 .panel-card:hover {
   border-color: rgba(41, 98, 255, 0.35);
-  box-shadow: 0 16px 40px -10px rgba(41, 98, 255, 0.12), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 18px 45px -12px rgba(41, 98, 255, 0.14), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+}
+
+.cockpit-card {
+  background: linear-gradient(135deg, rgba(18, 26, 44, 0.78) 0%, rgba(12, 17, 30, 0.88) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.15rem;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+}
+html.light .cockpit-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(246, 249, 255, 0.9) 100%);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 10px 30px -10px rgba(9, 18, 40, 0.05);
 }
 
 .font-mono {

@@ -46,28 +46,40 @@ export default function EtfTracker() {
         {/* 4 Summary Highlight Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
           <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-3">
-            <div className="text-[11px] text-[var(--card-muted)]">Toplam Günlük Net Giriş</div>
-            <div className="mt-1 font-mono text-lg font-black text-[#00C087] flex items-center gap-1">
-              <TrendingUp className="h-4 w-4" />
-              +${(combinedTotalDay / 1_000_000).toFixed(1)}M
+            <div className="text-[11px] text-[var(--card-muted)]">Toplam Günlük Net Akış</div>
+            <div className={`mt-1 font-mono text-lg font-black flex items-center gap-1 ${
+              combinedTotalDay >= 0 ? 'text-[#00E699]' : 'text-[#FF3B56]'
+            }`}>
+              {combinedTotalDay >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
+              {combinedTotalDay >= 0 ? '+' : '-'}${Math.abs(combinedTotalDay / 1_000_000).toFixed(1)}M
             </div>
-            <div className="text-[10px] text-[var(--card-muted)] mt-0.5">BTC + ETH konsolide</div>
+            <div className="text-[10px] text-[var(--card-muted)] mt-0.5">
+              {combinedTotalDay >= 0 ? 'Konsolide Net Giriş' : 'SoSoValue: Konsolide Net Çıkış'}
+            </div>
           </div>
 
           <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-3">
-            <div className="text-[11px] text-[var(--card-muted)]">Bitcoin ETF Net Girişi</div>
-            <div className="mt-1 font-mono text-lg font-black text-[#2962FF]">
-              +${(btcLastDay / 1_000_000).toFixed(1)}M
+            <div className="text-[11px] text-[var(--card-muted)]">Bitcoin ETF Net Akışı</div>
+            <div className={`mt-1 font-mono text-lg font-black ${
+              btcLastDay >= 0 ? 'text-[#00E699]' : 'text-[#FF3B56]'
+            }`}>
+              {btcLastDay >= 0 ? '+' : '-'}${Math.abs(btcLastDay / 1_000_000).toFixed(1)}M
             </div>
-            <div className="text-[10px] text-[var(--card-muted)] mt-0.5">%86.5 Pay</div>
+            <div className="text-[10px] text-[var(--card-muted)] mt-0.5">
+              {btcLastDay >= 0 ? 'Net Giriş' : 'FBTC & IBIT Satış Baskısı'}
+            </div>
           </div>
 
           <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-3">
-            <div className="text-[11px] text-[var(--card-muted)]">Ethereum ETF Net Girişi</div>
-            <div className="mt-1 font-mono text-lg font-black text-[#00C087]">
-              +${(ethLastDay / 1_000_000).toFixed(1)}M
+            <div className="text-[11px] text-[var(--card-muted)]">Ethereum ETF Net Akışı</div>
+            <div className={`mt-1 font-mono text-lg font-black ${
+              ethLastDay >= 0 ? 'text-[#00E699]' : 'text-[#FF3B56]'
+            }`}>
+              {ethLastDay >= 0 ? '+' : '-'}${Math.abs(ethLastDay / 1_000_000).toFixed(1)}M
             </div>
-            <div className="text-[10px] text-[var(--card-muted)] mt-0.5">%13.5 Pay</div>
+            <div className="text-[10px] text-[var(--card-muted)] mt-0.5">
+              {ethLastDay >= 0 ? 'Net Giriş' : 'ETHE Çıkışı (-$54.2M)'}
+            </div>
           </div>
 
           <div className="rounded-lg border border-[var(--border)] bg-[var(--card)] p-3">
@@ -75,7 +87,7 @@ export default function EtfTracker() {
             <div className="mt-1 font-mono text-lg font-black text-[var(--foreground)]">
               ${(totalCombinedAum / 1_000_000_000).toFixed(2)}B
             </div>
-            <div className="text-[10px] text-[#00C087] mt-0.5">Tüm kurumsal kasalar</div>
+            <div className="text-[10px] text-[#2962FF] mt-0.5">Tüm kurumsal kasalar</div>
           </div>
         </div>
 

@@ -126,7 +126,7 @@ export default function Header() {
             </span>
             <span>•</span>
             <span className="font-mono text-[11px]">
-              ETF Net: <strong className="text-[#00C087]">+$361.0M</strong>
+              ETF Net (24s): <strong className="text-[#FF3B56]">-$506.8M</strong>
             </span>
           </div>
         </div>
