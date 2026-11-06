@@ -9,13 +9,5 @@
 	"assets": {
 		"directory": "./dist",
 		"binding": "ASSETS"
-	},
-	"observability": {
-		"enabled": true
-	},
-	"upload_source_maps": true,
-	"vars": {
-		"ENV": "production",
-		"SITE_URL": "https://kriptonik.com"
 	}
 }
