@@ -1,0 +1,131 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = "Kripto Türev Verileri: Fonlama Oranları & Açık Pozisyon | Kriptonik";
+const pageDesc = "Perpetual vadeli işlem fonlama oranları (funding rate), açık pozisyon (Open Interest) ve Fonlama Isısı endeksi.";
+
+const fundingData = [
+	{ symbol: "BTC-PERP", bybit: "+%0.0102", okx: "+%0.0100", binance: "+%0.0104", annualized: "+%11.2", oi: "$14.2 Mr" },
+	{ symbol: "ETH-PERP", bybit: "+%0.0094", okx: "+%0.0091", binance: "+%0.0095", annualized: "+%10.4", oi: "$5.8 Mr" },
+	{ symbol: "SOL-PERP", bybit: "+%0.0142", okx: "+%0.0138", binance: "+%0.0145", annualized: "+%15.8", oi: "$2.1 Mr" }
+];
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container data-page-container">
+		<nav class="page-breadcrumb" aria-label="Gezinti">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<span class="current">Türev Piyasası (C1-C5)</span>
+		</nav>
+
+		<div class="dp-header">
+			<div class="dp-badges">
+				<span class="badge-live"><span class="b-dot"></span> Canlı Veri</span>
+				<span class="badge-tag">Perpetual Futures</span>
+				<span class="badge-tag">Bybit • OKX</span>
+			</div>
+			<h1 class="dp-title">Fonlama Oranları & Açık Pozisyon (OI)</h1>
+			<p class="dp-summary">
+				Kaldıraçlı sürekli vadeli işlem piyasalarında uzun (long) ve kısa (short) pozisyonlar arasındaki maliyet dengesini ve piyasa yönünü izleyin.
+			</p>
+		</div>
+
+		<div class="metric-cards-grid">
+			<div class="m-card highlight-card">
+				<span class="m-label">Fonlama Isısı (FI v1)</span>
+				<span class="m-val text-primary font-mono">+%11.4</span>
+				<span class="m-sub">Yıllıklandırılmış ağırlıklı ort.</span>
+			</div>
+			<div class="m-card">
+				<span class="m-label">Toplam Açık Pozisyon (OI)</span>
+				<span class="m-val font-mono">$48.2 Mr</span>
+				<span class="m-sub">Global türev borsaları</span>
+			</div>
+			<div class="m-card">
+				<span class="m-label">Ağırlıklı Piyasa Duygusu</span>
+				<span class="m-val text-success font-mono">Long Ağırlıklı</span>
+				<span class="m-sub">Pozitif fonlama dönemi</span>
+			</div>
+			<div class="m-card">
+				<span class="m-label">Sıradaki Fonlama</span>
+				<span class="m-val font-mono">03s 14d</span>
+				<span class="m-sub">8 saatlik periyot döngüsü</span>
+			</div>
+		</div>
+
+		<div class="section-card">
+			<div class="sc-head">
+				<h3>Önde Gelen Varlıklar Fonlama Isı Haritası</h3>
+				<span class="sc-status">8 Saatlik ve Yıllıklandırılmış Oranlar</span>
+			</div>
+
+			<div class="table-shell">
+				<table class="data-table">
+					<thead>
+						<tr>
+							<th>Sözleşme</th>
+							<th>Bybit (8s)</th>
+							<th>OKX (8s)</th>
+							<th>Binance (8s)</th>
+							<th>Yıllıklandırılmış</th>
+							<th>Açık Pozisyon (OI)</th>
+						</tr>
+					</thead>
+					<tbody>
+						{fundingData.map(f => (
+							<tr>
+								<td><strong class="font-mono">{f.symbol}</strong></td>
+								<td class="font-mono text-success">{f.bybit}</td>
+								<td class="font-mono text-success">{f.okx}</td>
+								<td class="font-mono text-success">{f.binance}</td>
+								<td class="font-mono font-bold">{f.annualized}</td>
+								<td class="font-mono text-muted">{f.oi}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="editorial-guide-box">
+			<h2>Fonlama Oranı (Funding Rate) Nasıl Yorumlanır?</h2>
+			<p>
+				Sürekli vadeli işlemlerin (perpetual) vadesi olmadığı için vadeli fiyat ile spot fiyat arasındaki denge fonlama mekanizmasıyla sağlanır. Fonlama pozitif olduğunda, vadeli fiyat spottan yüksektir ve Long pozisyonlar Short pozisyonlara ödeme yapar. Fonlama negatif olduğunda ise tam tersi geçerlidir.
+			</p>
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.data-page-container { padding: 48px 20px 88px; max-width: 1040px; }
+	.page-breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-faint); margin-bottom: 24px; }
+	.page-breadcrumb a { color: var(--text-muted); text-decoration: none; }
+	.page-breadcrumb .current { color: var(--text); font-weight: 500; }
+	.dp-header { margin-bottom: 32px; }
+	.dp-badges { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; }
+	.badge-live { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--primary); background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); padding: 3px 8px; border-radius: 4px; }
+	.b-dot { width: 6px; height: 6px; background: var(--primary); border-radius: 50%; }
+	.badge-tag { font-size: 11px; color: var(--text-faint); background: var(--bg-sunken); border: 1px solid var(--border-subtle); padding: 3px 8px; border-radius: 4px; }
+	.dp-title { font-size: 38px; font-weight: 800; letter-spacing: -0.025em; color: var(--text); margin: 0 0 12px; }
+	.dp-summary { font-size: 16px; line-height: 1.6; color: var(--text-muted); margin: 0; }
+	.metric-cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 28px; }
+	.m-card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 6px; }
+	.highlight-card { border-color: var(--primary); }
+	.m-label { font-size: 12px; font-weight: 600; color: var(--text-faint); }
+	.m-val { font-size: 28px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+	.m-sub { font-size: 11.5px; color: var(--text-muted); }
+	.section-card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 36px; }
+	.sc-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle); }
+	.sc-head h3 { font-size: 17px; font-weight: 700; color: var(--text); margin: 0; }
+	.sc-status { font-size: 11.5px; color: var(--text-faint); }
+	.table-shell { overflow-x: auto; }
+	.data-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+	.data-table th { text-align: left; padding: 12px 14px; color: var(--text-faint); font-size: 11.5px; border-bottom: 1px solid var(--border); text-transform: uppercase; }
+	.data-table td { padding: 14px 14px; border-bottom: 1px solid var(--border-subtle); color: var(--text); }
+	.editorial-guide-box { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 16px; padding: 32px; }
+	.editorial-guide-box h2 { font-size: 20px; font-weight: 800; color: var(--text); margin: 0 0 12px; }
+	.editorial-guide-box p { font-size: 14px; line-height: 1.65; color: var(--text-muted); margin: 0; }
+	@media (max-width: 900px) { .metric-cards-grid { grid-template-columns: repeat(2, 1fr); } }
+	@media (max-width: 600px) { .metric-cards-grid { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,135 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = "Stablecoin Piyasası: Toplam Arz, Peg Sapmaları & Basım/Yakım | Kriptonik";
+const pageDesc = "USDT, USDC ve popüler sabit coinlerin 1$ çıpa sağlığı, toplam piyasa arzı, zincir dağılımı ve günlük net basım/yakım hareketleri.";
+
+const stables = [
+	{ symbol: "USDT", name: "Tether USD", price: "$1.0001", devBps: "+1 bps", supply: "$128.4 Mr", share: "%69.8", chain: "Tron (%51), Ethereum (%43)", status: "Stabil" },
+	{ symbol: "USDC", name: "USD Coin", price: "$0.9999", devBps: "-1 bps", supply: "$38.2 Mr", share: "%20.7", chain: "Ethereum (%72), Solana (%14)", status: "Stabil" },
+	{ symbol: "DAI", name: "Dai (MakerDAO)", price: "$1.0000", devBps: "0 bps", supply: "$5.1 Mr", share: "%2.8", chain: "Ethereum (%88), Gnosis (%7)", status: "Stabil" },
+	{ symbol: "FDUSD", name: "First Digital USD", price: "$1.0002", devBps: "+2 bps", supply: "$2.9 Mr", share: "%1.6", chain: "BNB Chain (%85), Ethereum (%15)", status: "Stabil" }
+];
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container data-page-container">
+		<nav class="page-breadcrumb" aria-label="Gezinti">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<span class="current">Stablecoin Verisi (D1-D5)</span>
+		</nav>
+
+		<div class="dp-header">
+			<div class="dp-badges">
+				<span class="badge-live"><span class="b-dot"></span> Canlı Veri</span>
+				<span class="badge-tag">Peg Sağlığı & Arz</span>
+				<span class="badge-tag">Kaynak: DefiLlama</span>
+			</div>
+			<h1 class="dp-title">Stablecoin Piyasası & Peg İzleme</h1>
+			<p class="dp-summary">
+				Dolar çıpalı sabit coinlerin 1.00$ fiyat dengesi, toplam likidite büyüklüğü ve blokzincir ağlarına göre arz dağılımı.
+			</p>
+		</div>
+
+		<div class="metric-cards-grid">
+			<div class="m-card highlight-card">
+				<span class="m-label">Toplam Stablecoin Arzı</span>
+				<span class="m-val text-primary font-mono">$184.2 Mr</span>
+				<span class="m-sub">Tüm zamanların en yükseğine yakın</span>
+			</div>
+			<div class="m-card">
+				<span class="m-label">7 Günlük Net Basım (SNB)</span>
+				<span class="m-val text-success font-mono">+$1.82 Mr</span>
+				<span class="m-sub">Net taze likidite girişi</span>
+			</div>
+			<div class="m-card">
+				<span class="m-label">Tether (USDT) Pazar Payı</span>
+				<span class="m-val font-mono">%69.8</span>
+				<span class="m-sub">Dominant rezerv varlığı</span>
+			</div>
+			<div class="m-card">
+				<span class="m-label">Piyasa Peg Sağlığı</span>
+				<span class="m-val text-success font-mono">%99.98</span>
+				<span class="m-sub">Kritik depeg riski yok</span>
+			</div>
+		</div>
+
+		<div class="section-card">
+			<div class="sc-head">
+				<h3>Önde Gelen Stablecoinlerin Anlık Durumu</h3>
+				<span class="sc-status">15 dakikada bir güncellenir</span>
+			</div>
+
+			<div class="table-shell">
+				<table class="data-table">
+					<thead>
+						<tr>
+							<th>Varlık</th>
+							<th>Fiyat</th>
+							<th>Çıpa Sapması (bps)</th>
+							<th>Dolaşımdaki Arz</th>
+							<th>Pazar Payı</th>
+							<th>Baskın Blokzincir Ağları</th>
+							<th>Durum</th>
+						</tr>
+					</thead>
+					<tbody>
+						{stables.map(s => (
+							<tr>
+								<td><strong>{s.name} ({s.symbol})</strong></td>
+								<td class="font-mono font-bold">{s.price}</td>
+								<td class="font-mono text-success">{s.devBps}</td>
+								<td class="font-mono">{s.supply}</td>
+								<td class="font-mono text-muted">{s.share}</td>
+								<td class="text-muted">{s.chain}</td>
+								<td><span class="status-tag text-success">{s.status}</span></td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="editorial-guide-box">
+			<h2>Stablecoin Net Basımı Neden Boğa Sinyalidir?</h2>
+			<p>
+				Kripto piyasasında yeni alım yapmak isteyen kurumsal veya bireysel sermaye, fiat paralarını (USD, EUR vb.) önce stablecoinlere çevirerek zincir üzerine aktarır. Stablecoin arzındaki net artış (Minting), piyasada kenarda bekleyen ve alıma hazır olan likiditenin büyüdüğünü gösterir.
+			</p>
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.data-page-container { padding: 48px 20px 88px; max-width: 1040px; }
+	.page-breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-faint); margin-bottom: 24px; }
+	.page-breadcrumb a { color: var(--text-muted); text-decoration: none; }
+	.page-breadcrumb .current { color: var(--text); font-weight: 500; }
+	.dp-header { margin-bottom: 32px; }
+	.dp-badges { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; }
+	.badge-live { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--primary); background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); padding: 3px 8px; border-radius: 4px; }
+	.b-dot { width: 6px; height: 6px; background: var(--primary); border-radius: 50%; }
+	.badge-tag { font-size: 11px; color: var(--text-faint); background: var(--bg-sunken); border: 1px solid var(--border-subtle); padding: 3px 8px; border-radius: 4px; }
+	.dp-title { font-size: 38px; font-weight: 800; letter-spacing: -0.025em; color: var(--text); margin: 0 0 12px; }
+	.dp-summary { font-size: 16px; line-height: 1.6; color: var(--text-muted); margin: 0; }
+	.metric-cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 28px; }
+	.m-card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 6px; }
+	.highlight-card { border-color: var(--primary); }
+	.m-label { font-size: 12px; font-weight: 600; color: var(--text-faint); }
+	.m-val { font-size: 28px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+	.m-sub { font-size: 11.5px; color: var(--text-muted); }
+	.section-card { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 36px; }
+	.sc-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle); }
+	.sc-head h3 { font-size: 17px; font-weight: 700; color: var(--text); margin: 0; }
+	.sc-status { font-size: 11.5px; color: var(--text-faint); }
+	.table-shell { overflow-x: auto; }
+	.data-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+	.data-table th { text-align: left; padding: 12px 14px; color: var(--text-faint); font-size: 11.5px; border-bottom: 1px solid var(--border); text-transform: uppercase; }
+	.data-table td { padding: 14px 14px; border-bottom: 1px solid var(--border-subtle); color: var(--text); }
+	.status-tag { font-size: 11px; font-weight: 600; background: var(--bg-sunken); border: 1px solid var(--border-subtle); padding: 2px 7px; border-radius: 4px; }
+	.editorial-guide-box { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 16px; padding: 32px; }
+	.editorial-guide-box h2 { font-size: 20px; font-weight: 800; color: var(--text); margin: 0 0 12px; }
+	.editorial-guide-box p { font-size: 14px; line-height: 1.65; color: var(--text-muted); margin: 0; }
+	@media (max-width: 900px) { .metric-cards-grid { grid-template-columns: repeat(2, 1fr); } }
+	@media (max-width: 600px) { .metric-cards-grid { grid-template-columns: 1fr; } }
+</style>

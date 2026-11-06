@@ -1,0 +1,290 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = "ABD Spot Kripto ETF Giriş & Çıkış Verileri (BTC, ETH) | Kriptonik";
+const pageDesc = "BlackRock IBIT, Fidelity FBTC ve ABD spot Bitcoin/Ethereum ETF'lerinin günlük net giriş/çıkışları, AUM varlık büyüklükleri ve pazar payı tablosu.";
+
+const btcEtfFunds = [
+	{ ticker: "IBIT", name: "iShares Bitcoin Trust", issuer: "BlackRock", flowToday: "+$248.5M", aum: "$42.8 Mr", fee: "%0.25", share: "%41.1" },
+	{ ticker: "FBTC", name: "Fidelity Wise Origin", issuer: "Fidelity", flowToday: "+$78.2M", aum: "$18.4 Mr", fee: "%0.25", share: "%17.6" },
+	{ ticker: "ARKB", name: "ARK 21Shares Bitcoin", issuer: "21Shares / Ark", flowToday: "+$18.4M", aum: "$4.9 Mr", fee: "%0.21", share: "%4.7" },
+	{ ticker: "BITB", name: "Bitwise Bitcoin ETF", issuer: "Bitwise", flowToday: "+$12.1M", aum: "$3.8 Mr", fee: "%0.20", share: "%3.6" },
+	{ ticker: "GBTC", name: "Grayscale Bitcoin Trust", issuer: "Grayscale", flowToday: "-$14.7M", aum: "$16.2 Mr", fee: "%1.50", share: "%15.5" }
+];
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container data-page-container">
+		<nav class="page-breadcrumb" aria-label="Gezinti">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<span class="current">Spot ETF Veri Merkezi (B1-B5)</span>
+		</nav>
+
+		<div class="dp-header">
+			<div class="dp-badges">
+				<span class="badge-live"><span class="b-dot"></span> Günlük Veri</span>
+				<span class="badge-tag">ABD SEC Onaylı Fonlar</span>
+				<span class="badge-tag">Son İşlem Günü Kapanışı</span>
+			</div>
+			<h1 class="dp-title">Spot Bitcoin ve Ethereum ETF Akışları</h1>
+			<p class="dp-summary">
+				Kurumsal sermayenin kripto piyasasına giriş hızını ölçen ABD spot ETF'lerinin fon bazında net giriş/çıkışları, varlık büyüklükleri (AUM) ve prim/iskonto oranları.
+			</p>
+		</div>
+
+		<div class="metric-cards-grid">
+			<div class="m-card highlight-card">
+				<span class="m-label">Son Günlük Net Akış (BTC)</span>
+				<span class="m-val text-success font-mono">+$342.5M</span>
+				<span class="m-sub">≈ +3,728 BTC net alım</span>
+			</div>
+			<div class="m-card">
+				<span class="m-label">Toplam BTC ETF AUM</span>
+				<span class="m-val font-mono">$104.2 Mr</span>
+				<span class="m-sub">Dolaşımdaki arzın %5.4'ü</span>
+			</div>
+			<div class="m-card">
+				<span class="m-label">Son Günlük Net Akış (ETH)</span>
+				<span class="m-val text-success font-mono">+$42.8M</span>
+				<span class="m-sub">BlackRock & Fidelity öncülüğünde</span>
+			</div>
+			<div class="m-card">
+				<span class="m-label">ETF Akış Momentumu (EAM)</span>
+				<span class="m-val text-primary font-mono">+1.84 σ</span>
+				<span class="m-sub">90 günlük pencerede %88 dilim</span>
+			</div>
+		</div>
+
+		<div class="section-card">
+			<div class="sc-head">
+				<h3>Spot Bitcoin ETF'leri: Fon Kırılımı ve Günlük Girişler</h3>
+				<span class="sc-status">İhraççı Resmi Raporları Baz Alınmıştır</span>
+			</div>
+
+			<div class="table-shell">
+				<table class="data-table">
+					<thead>
+						<tr>
+							<th>Fon Kodu</th>
+							<th>Fon Adı</th>
+							<th>İhraççı</th>
+							<th>Son Net Giriş</th>
+							<th>AUM (Varlık)</th>
+							<th>Yönetim Ücreti</th>
+							<th>Pazar Payı</th>
+						</tr>
+					</thead>
+					<tbody>
+						{btcEtfFunds.map(f => (
+							<tr>
+								<td><strong class="font-mono text-primary">{f.ticker}</strong></td>
+								<td>{f.name}</td>
+								<td>{f.issuer}</td>
+								<td class="font-mono text-success font-bold">{f.flowToday}</td>
+								<td class="font-mono font-bold">{f.aum}</td>
+								<td class="font-mono text-muted">{f.fee}</td>
+								<td class="font-mono">{f.share}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="editorial-guide-box">
+			<h2>Spot ETF Giriş ve Çıkışları Fiyatı Nasıl Etkiler?</h2>
+			<p>
+				Spot ETF'lerde yatırımcılar pay aldığında, ihraççı fon (BlackRock, Fidelity vb.) yetkili katılımcılar (Authorized Participants) aracılığıyla spot piyasadan gerçek Bitcoin veya Ethereum satın almak ve saklama cüzdanlarına (Coinbase Custody vb.) eklemek zorundadır. Bu sebeple pozitif net girişler spot piyasada doğrudan alım baskısı yaratır.
+			</p>
+			<h3>Verinin Sınırları ve Revizyonlar</h3>
+			<p>
+				ETF verileri işlem günü sonrasında fon ihraççıları tarafından saatler içinde parçalı olarak açıklanır. Kriptonik, tam mutabakat sağlanana kadar verileri 'kısmi' olarak etiketler ve son 7 işlem gününde oluşabilecek olası resmi düzeltmeleri şeffaf revizyon günlüğüyle yansıtır.
+			</p>
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.data-page-container {
+		padding: 48px 20px 88px;
+		max-width: 1040px;
+	}
+	.page-breadcrumb {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 13px;
+		color: var(--text-faint);
+		margin-bottom: 24px;
+	}
+	.page-breadcrumb a {
+		color: var(--text-muted);
+		text-decoration: none;
+	}
+	.page-breadcrumb .current {
+		color: var(--text);
+		font-weight: 500;
+	}
+	.dp-header {
+		margin-bottom: 32px;
+	}
+	.dp-badges {
+		display: flex;
+		gap: 8px;
+		align-items: center;
+		margin-bottom: 14px;
+	}
+	.badge-live {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-size: 11px;
+		font-weight: 700;
+		color: var(--primary);
+		background: rgba(16, 185, 129, 0.1);
+		border: 1px solid rgba(16, 185, 129, 0.25);
+		padding: 3px 8px;
+		border-radius: 4px;
+	}
+	.b-dot {
+		width: 6px;
+		height: 6px;
+		background: var(--primary);
+		border-radius: 50%;
+	}
+	.badge-tag {
+		font-size: 11px;
+		color: var(--text-faint);
+		background: var(--bg-sunken);
+		border: 1px solid var(--border-subtle);
+		padding: 3px 8px;
+		border-radius: 4px;
+	}
+	.dp-title {
+		font-size: 38px;
+		font-weight: 800;
+		letter-spacing: -0.025em;
+		color: var(--text);
+		margin: 0 0 12px;
+	}
+	.dp-summary {
+		font-size: 16px;
+		line-height: 1.6;
+		color: var(--text-muted);
+		margin: 0;
+	}
+	.metric-cards-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 18px;
+		margin-bottom: 28px;
+	}
+	.m-card {
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
+		border-radius: 14px;
+		padding: 20px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.highlight-card {
+		border-color: var(--primary);
+	}
+	.m-label {
+		font-size: 12px;
+		font-weight: 600;
+		color: var(--text-faint);
+	}
+	.m-val {
+		font-size: 28px;
+		font-weight: 800;
+		color: var(--text);
+		letter-spacing: -0.02em;
+	}
+	.m-sub {
+		font-size: 11.5px;
+		color: var(--text-muted);
+	}
+	.section-card {
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
+		border-radius: 16px;
+		padding: 24px;
+		margin-bottom: 36px;
+	}
+	.sc-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 18px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid var(--border-subtle);
+	}
+	.sc-head h3 {
+		font-size: 17px;
+		font-weight: 700;
+		color: var(--text);
+		margin: 0;
+	}
+	.sc-status {
+		font-size: 11.5px;
+		color: var(--text-faint);
+	}
+	.table-shell {
+		overflow-x: auto;
+	}
+	.data-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 13.5px;
+	}
+	.data-table th {
+		text-align: left;
+		padding: 12px 14px;
+		color: var(--text-faint);
+		font-size: 11.5px;
+		border-bottom: 1px solid var(--border);
+		text-transform: uppercase;
+	}
+	.data-table td {
+		padding: 14px 14px;
+		border-bottom: 1px solid var(--border-subtle);
+		color: var(--text);
+	}
+	.editorial-guide-box {
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
+		border-radius: 16px;
+		padding: 32px;
+	}
+	.editorial-guide-box h2 {
+		font-size: 20px;
+		font-weight: 800;
+		color: var(--text);
+		margin: 0 0 12px;
+	}
+	.editorial-guide-box h3 {
+		font-size: 16px;
+		font-weight: 700;
+		color: var(--text);
+		margin: 18px 0 8px;
+	}
+	.editorial-guide-box p {
+		font-size: 14px;
+		line-height: 1.65;
+		color: var(--text-muted);
+		margin: 0 0 12px;
+	}
+	@media (max-width: 900px) {
+		.metric-cards-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+	@media (max-width: 600px) {
+		.metric-cards-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

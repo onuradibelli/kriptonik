@@ -166,6 +166,79 @@ import tr from '../i18n/tr.json';
 		</div>
 	</section>
 
+	<!-- 2.5 Kriptonik Veri Merkezi & Öne Çıkan Göstergeler (Spec v3) -->
+	<section class="data-hub-preview-section">
+		<div class="container">
+			<div class="section-heading-center">
+				<div class="section-eyebrow">CANLI VERİ & ANALİZ MERKEZİ</div>
+				<h2 class="section-headline">Türkiye ve Küresel Veri Platformu</h2>
+				<p class="section-subtext">Yerel borsa derinlikleri, USDT/TL primi, kurumsal spot ETF akışları ve şeffaf Kriptonik endeksleri.</p>
+			</div>
+
+			<div class="data-preview-grid">
+				<a href="/turkiye/usdt-tl-primi" class="data-preview-card">
+					<div class="dp-header">
+						<span class="dp-badge tr-badge">TÜRKİYE VERİSİ</span>
+						<span class="dp-stat pos font-mono">+%1.14 Prim</span>
+					</div>
+					<h3 class="dp-title">USDT/TL Tether Primi</h3>
+					<p class="dp-desc">BtcTurk, Paribu ve Binance TR serbest kurunun TCMB resmi gösterge kuruna göre anlık makas sapması.</p>
+					<span class="dp-link-text">Tarihsel Grafik & Borsa Dağılımı →</span>
+				</a>
+
+				<a href="/etf" class="data-preview-card">
+					<div class="dp-header">
+						<span class="dp-badge etf-badge">SPOT ETF</span>
+						<span class="dp-stat pos font-mono">+$428.5M Net</span>
+					</div>
+					<h3 class="dp-title">ABD Spot Bitcoin ETF</h3>
+					<p class="dp-desc">BlackRock (IBIT), Fidelity (FBTC) dahil 11 fonun resmi ihraççı günlük net nakit giriş ve çıkışları.</p>
+					<span class="dp-link-text">Fon Kırılımı & Kümülatif AUM →</span>
+				</a>
+
+				<a href="/turev" class="data-preview-card">
+					<div class="dp-header">
+						<span class="dp-badge deriv-badge">TÜREV</span>
+						<span class="dp-stat font-mono">$38.4B OI</span>
+					</div>
+					<h3 class="dp-title">Fonlama Oranları & OI</h3>
+					<p class="dp-desc">Bybit, OKX ve Binance sürekli swap (perpetual) fonlama oranları, açık pozisyon ve Kriptonik Fonlama Isısı.</p>
+					<span class="dp-link-text">Canlı Isı Haritası →</span>
+				</a>
+
+				<a href="/kac-tl" class="data-preview-card highlight-kac-tl">
+					<div class="dp-header">
+						<span class="dp-badge calc-badge">CANLI ÇEVİRİCİ</span>
+						<span class="dp-stat font-mono">55+ Arama Rotası</span>
+					</div>
+					<h3 class="dp-title">Kaç TL? Fiyat Arama Motoru</h3>
+					<p class="dp-desc">1 Dolar, 100 Dolar, 1 BTC, 1000 USDT kaç TL? Canlı serbest piyasa ve borsa kurlarıyla anında hesaplama.</p>
+					<span class="dp-link-text">Çevirici & Arama Rotaları →</span>
+				</a>
+
+				<a href="/endeksler" class="data-preview-card">
+					<div class="dp-header">
+						<span class="dp-badge idx-badge">ÖZGÜN ENDEKSLER</span>
+						<span class="dp-stat font-mono">6 Referans Seri</span>
+					</div>
+					<h3 class="dp-title">Kriptonik Endeksleri</h3>
+					<p class="dp-desc">Metodolojisi ve formülü kamuya açık TTP, TLS, EAM, FI, KAS ve SNB referans piyasa göstergeleri.</p>
+					<span class="dp-link-text">Metodolojiyi İncele & CSV İndir →</span>
+				</a>
+
+				<a href="/veri" class="data-preview-card">
+					<div class="dp-header">
+						<span class="dp-badge open-badge">AÇIK VERİ PORTALI</span>
+						<span class="dp-stat font-mono">CC BY 4.0</span>
+					</div>
+					<h3 class="dp-title">Açık Veri & İndirme</h3>
+					<p class="dp-desc">Araştırmacılar, analistler ve gazeteciler için tüm özgün serileri CSV ve JSON olarak ücretsiz indirin.</p>
+					<span class="dp-link-text">Veri Setlerini İndir →</span>
+				</a>
+			</div>
+		</div>
+	</section>
+
 	<!-- 3. "Şimdi ne yapmak istiyorsun?" Bento Grid Section -->
 	<section class="action-bento-section">
 		<div class="container">
@@ -605,6 +678,108 @@ import tr from '../i18n/tr.json';
 </script>
 
 <style>
+	/* Data Hub Preview Section */
+	.data-hub-preview-section {
+		padding: 72px 0;
+		background: var(--bg-sunken);
+		border-top: 1px solid var(--border);
+		border-bottom: 1px solid var(--border);
+	}
+
+	.data-preview-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 20px;
+	}
+
+	.data-preview-card {
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: 14px;
+		padding: 24px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		text-decoration: none;
+		transition: all 180ms ease;
+	}
+
+	.data-preview-card:hover {
+		border-color: rgba(16, 185, 129, 0.4);
+		transform: translateY(-2px);
+		box-shadow: var(--shadow-md);
+	}
+
+	.data-preview-card.highlight-kac-tl {
+		border-color: rgba(16, 185, 129, 0.35);
+		background: linear-gradient(180deg, var(--surface) 0%, rgba(16, 185, 129, 0.04) 100%);
+	}
+
+	.dp-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 14px;
+	}
+
+	.dp-badge {
+		padding: 3px 8px;
+		border-radius: 6px;
+		font-size: 11px;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+	}
+
+	.tr-badge { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
+	.etf-badge { background: rgba(59, 130, 246, 0.15); color: #3B82F6; }
+	.deriv-badge { background: rgba(168, 85, 247, 0.15); color: #A855F7; }
+	.calc-badge { background: var(--primary-soft); color: var(--primary); }
+	.idx-badge { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
+	.open-badge { background: var(--surface-2); color: var(--text-muted); }
+
+	.dp-stat {
+		font-size: 13px;
+		font-weight: 700;
+		color: var(--text);
+	}
+
+	.dp-stat.pos {
+		color: var(--color-profit);
+	}
+
+	.dp-title {
+		font-size: 18px;
+		font-weight: 700;
+		color: var(--text);
+		margin: 0 0 8px;
+	}
+
+	.dp-desc {
+		font-size: 13px;
+		line-height: 1.6;
+		color: var(--text-secondary);
+		margin: 0 0 16px;
+		flex: 1;
+	}
+
+	.dp-link-text {
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--primary);
+	}
+
+	@media (max-width: 990px) {
+		.data-preview-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (max-width: 640px) {
+		.data-preview-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
 	/* Hero Section */
 	.hero-section {
 		padding: 72px 0 40px;

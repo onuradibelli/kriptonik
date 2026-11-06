@@ -21,9 +21,92 @@ const currentPath = Astro.url.pathname;
 
 		<!-- Desktop Navigation -->
 		<nav class="nav-links">
-			<a href="/" class={currentPath === '/' ? 'nav-item active' : 'nav-item'}>Ana Sayfa</a>
-			<a href="/kac-tl" class={currentPath.startsWith('/kac-tl') ? 'nav-item active' : 'nav-item'}>Kaç TL?</a>
+			<a href="/piyasa" class={currentPath.startsWith('/piyasa') ? 'nav-item active' : 'nav-item'}>Piyasa</a>
+
+			<!-- Türkiye Verisi Dropdown -->
+			<div class="nav-dropdown-wrapper">
+				<a href="/turkiye" class={currentPath.startsWith('/turkiye') ? 'nav-item active' : 'nav-item'}>
+					<span>Türkiye</span>
+					<span class="nav-tr-badge">TR</span>
+					<svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+				</a>
+				<div class="mega-menu mini-menu">
+					<div class="mega-list">
+						<a href="/turkiye/usdt-tl-primi">
+							<strong>USDT/TL Tether Primi</strong>
+							<span>Borsa kuru vs TCMB resmi dolar kuru sapması</span>
+						</a>
+						<a href="/turkiye/borsa-fiyat-farki">
+							<strong>Arbitraj & Borsa Fiyat Farkı</strong>
+							<span>BTC, ETH ve USDT borsalar arası makas</span>
+						</a>
+						<a href="/turkiye/likidite-ve-derinlik">
+							<strong>TL Likidite & Kayma (Slippage)</strong>
+							<span>10k, 100k ve 1M TL emir derinlik testi</span>
+						</a>
+						<a href="/turkiye/borsalar">
+							<strong>Türk Borsaları Hacim & Pazar Payı</strong>
+							<span>24 saatlik gerçek TL işlem hacimleri</span>
+						</a>
+						<a href="/turkiye/borsa-ucretleri">
+							<strong>Borsa Komisyon & Limit Tablosu</strong>
+							<span>Doğrulanmış TL ve kripto çekim ücretleri</span>
+						</a>
+						<a href="/turkiye/tl-bazinda-getiri">
+							<strong>TL Bazında Reel Getiri</strong>
+							<span>Enflasyon ve dövizden arındırılmış kazanç</span>
+						</a>
+						<a href="/turkiye" class="all-tools-link">
+							Türkiye Veri Merkezini İncele →
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<a href="/etf" class={currentPath.startsWith('/etf') ? 'nav-item active' : 'nav-item'}>ETF Akışları</a>
+
+			<!-- Veri & Endeksler Dropdown -->
+			<div class="nav-dropdown-wrapper">
+				<a href="/endeksler" class={currentPath.startsWith('/endeksler') || currentPath.startsWith('/turev') || currentPath.startsWith('/stablecoin') || currentPath.startsWith('/defi') || currentPath.startsWith('/zincir-ustu') ? 'nav-item active' : 'nav-item'}>
+					<span>Veri & Endeks</span>
+					<svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+				</a>
+				<div class="mega-menu mini-menu">
+					<div class="mega-list">
+						<a href="/endeksler">
+							<strong>Kriptonik Endeksleri</strong>
+							<span>TTP, TLS, EAM, FI, KAS ve SNB şeffaf seriler</span>
+						</a>
+						<a href="/turev">
+							<strong>Türev & Fonlama Oranları</strong>
+							<span>OI, Açık Pozisyon ve Fonlama Isısı</span>
+						</a>
+						<a href="/stablecoin">
+							<strong>Stablecoin Piyasası</strong>
+							<span>Toplam arz, depeg sapması ve mint/burn akışları</span>
+						</a>
+						<a href="/defi">
+							<strong>DeFi Metrikleri</strong>
+							<span>TVL, DEX hacimleri ve protokol gelirleri</span>
+						</a>
+						<a href="/zincir-ustu">
+							<strong>Zincir Üstü (On-Chain)</strong>
+							<span>Mempool kuyruğu, BTC hashrate ve Gas takip</span>
+						</a>
+						<a href="/veri" class="all-tools-link">
+							Açık Veri Portalı (CSV/JSON İndir) →
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<!-- Kaç TL? Highlight Link -->
+			<a href="/kac-tl" class={currentPath.startsWith('/kac-tl') ? 'nav-item kac-tl-link active' : 'nav-item kac-tl-link'}>
+				<span>Kaç TL?</span>
+				<span class="live-dot-mini"></span>
+			</a>
 			
+			<!-- Araçlar Mega Menu -->
 			<div class="nav-dropdown-wrapper">
 				<a href="/araclar" class={currentPath.startsWith('/araclar') ? 'nav-item active' : 'nav-item'}>
 					<span>Araçlar</span>
@@ -81,7 +164,6 @@ const currentPath = Astro.url.pathname;
 				</div>
 			</div>
 
-			<a href="/piyasa" class={currentPath.startsWith('/piyasa') ? 'nav-item active' : 'nav-item'}>Piyasa</a>
 			<a href="/sozluk" class={currentPath.startsWith('/sozluk') ? 'nav-item active' : 'nav-item'}>Sözlük</a>
 			<a href="/rehber" class={currentPath.startsWith('/rehber') ? 'nav-item active' : 'nav-item'}>Rehberler</a>
 		</nav>
@@ -116,12 +198,19 @@ const currentPath = Astro.url.pathname;
 			🔍 Hızlı Arama Yap (Ctrl+K)
 		</button>
 		<a href="/" class="mobile-nav-item">Ana Sayfa</a>
-		<a href="/kac-tl" class="mobile-nav-item">Kaç TL? Çevirici</a>
-		<a href="/araclar" class="mobile-nav-item">Tüm Araçlar</a>
-		<a href="/yardim" class="mobile-nav-item">Acil Yardım</a>
 		<a href="/piyasa" class="mobile-nav-item">Canlı Piyasa</a>
-		<a href="/sozluk" class="mobile-nav-item">Kripto Sözlüğü</a>
-		<a href="/rehber" class="mobile-nav-item">Rehberler</a>
+		<a href="/turkiye" class="mobile-nav-item">🇹🇷 Türkiye Veri Merkezi</a>
+		<a href="/kac-tl" class="mobile-nav-item">⚡ Kaç TL? Canlı Hesaplayıcı</a>
+		<a href="/etf" class="mobile-nav-item">📊 Spot Bitcoin ETF Akışları</a>
+		<a href="/endeksler" class="mobile-nav-item">📈 Kriptonik Endeksleri</a>
+		<a href="/turev" class="mobile-nav-item">📉 Vadeli Fonlama & OI</a>
+		<a href="/stablecoin" class="mobile-nav-item">💵 Stablecoin & Peg Sapması</a>
+		<a href="/defi" class="mobile-nav-item">🏦 DeFi TVL & Gelirler</a>
+		<a href="/zincir-ustu" class="mobile-nav-item">⛓️ Zincir Üstü (Gas/Mempool)</a>
+		<a href="/veri" class="mobile-nav-item">💾 Açık Veri Portalı (CSV)</a>
+		<a href="/araclar" class="mobile-nav-item">🛠️ Tüm Araçlar & Çözücüler</a>
+		<a href="/sozluk" class="mobile-nav-item">📖 Kripto Sözlüğü</a>
+		<a href="/rehber" class="mobile-nav-item">📚 Rehberler</a>
 	</div>
 </header>
 
@@ -314,6 +403,78 @@ const currentPath = Astro.url.pathname;
 		font-weight: 700;
 		color: var(--primary) !important;
 		margin-top: 8px;
+	}
+
+	/* Mini Menu variant for Data & Türkiye dropdowns */
+	.mega-menu.mini-menu {
+		width: 380px;
+		left: -60px;
+		padding: 16px;
+	}
+
+	.mega-list {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.mega-list a {
+		padding: 8px 12px;
+		border-radius: 8px;
+		text-decoration: none;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		transition: background 150ms ease;
+	}
+
+	.mega-list a:hover {
+		background: var(--bg-sunken);
+	}
+
+	.mega-list a strong {
+		font-size: 13px;
+		color: var(--text);
+		font-weight: 600;
+	}
+
+	.mega-list a span {
+		font-size: 11px;
+		color: var(--text-muted);
+	}
+
+	.nav-tr-badge {
+		padding: 1px 5px;
+		background: rgba(239, 68, 68, 0.15);
+		color: #EF4444;
+		border: 1px solid rgba(239, 68, 68, 0.25);
+		border-radius: 4px;
+		font-size: 10px;
+		font-weight: 800;
+		font-family: var(--font-mono);
+		margin-left: 2px;
+	}
+
+	.kac-tl-link {
+		position: relative;
+		font-weight: 700;
+		color: var(--primary);
+	}
+
+	.live-dot-mini {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--primary);
+		box-shadow: 0 0 6px var(--primary);
+		display: inline-block;
+		margin-left: 3px;
+		animation: pulse-dot 1.8s infinite;
+	}
+
+	@keyframes pulse-dot {
+		0%, 100% { opacity: 1; transform: scale(1); }
+		50% { opacity: 0.35; transform: scale(0.8); }
 	}
 
 	/* Header Right */

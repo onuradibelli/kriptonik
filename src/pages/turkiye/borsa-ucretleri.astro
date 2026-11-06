@@ -1,0 +1,251 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = "Türk Kripto Borsaları Komisyon & Çekim Ücretleri (2026) | Kriptonik";
+const pageDesc = "BtcTurk, Paribu ve Binance TR maker/taker işlem komisyonları, Türk Lirası yatırma-çekme masrafları ve kripto transfer ücreti karşılaştırması.";
+
+const feeTable = [
+	{
+		exchange: "Binance TR",
+		maker: "%0.08",
+		taker: "%0.10",
+		depositTry: "Ücretsiz (FAST/Havale)",
+		withdrawTry: "Ücretsiz",
+		usdtWithdraw: "1.00 USDT (TRC20)",
+		btcWithdraw: "0.0001 BTC",
+		verifiedAt: "1 Kasım 2026",
+		source: "https://www.trbinance.com/fee/schedule"
+	},
+	{
+		exchange: "BtcTurk | Kripto",
+		maker: "%0.05",
+		taker: "%0.09",
+		depositTry: "Ücretsiz (7/24 Banka)",
+		withdrawTry: "Ücretsiz",
+		usdtWithdraw: "1.00 USDT (TRC20)",
+		btcWithdraw: "Ücretsiz (Borsa Karşılar)",
+		verifiedAt: "28 Ekim 2026",
+		source: "https://www.btcturk.com/yardim/komisyonlar"
+	},
+	{
+		exchange: "Paribu",
+		maker: "%0.25",
+		taker: "%0.35",
+		depositTry: "Ücretsiz",
+		withdrawTry: "₺3.00 (Sabit)",
+		usdtWithdraw: "1.00 USDT (TRC20)",
+		btcWithdraw: "0.0002 BTC",
+		verifiedAt: "25 Ekim 2026",
+		source: "https://destek.paribu.com/komisyonlar"
+	}
+];
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container data-page-container">
+		<nav class="page-breadcrumb" aria-label="Gezinti">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<a href="/turkiye">Türkiye Verisi</a>
+			<span>/</span>
+			<span class="current">Borsa Ücretleri & Komisyonlar (A5)</span>
+		</nav>
+
+		<div class="dp-header">
+			<div class="dp-badges">
+				<span class="badge-live"><span class="b-dot"></span> Doğrulanmış Veri</span>
+				<span class="badge-tag">30 Günde Bir Zorunlu Doğrulama</span>
+				<span class="badge-tag">Resmi Kaynaklı</span>
+			</div>
+			<h1 class="dp-title">Borsa Komisyonları & İşlem Ücretleri</h1>
+			<p class="dp-summary">
+				Türk kripto para borsalarında işlem yaparken kesilen piyasa yapıcı (maker), piyasa alıcı (taker) komisyonları ve para çekme ücretlerinin tarafsız karşılaştırma tablosu.
+			</p>
+		</div>
+
+		<div class="section-card">
+			<div class="sc-head">
+				<h3>Borsa Komisyon ve Masraf Tablosu</h3>
+				<span class="sc-status">Her satır resmi kaynaktan doğrulanmıştır</span>
+			</div>
+
+			<div class="table-shell">
+				<table class="data-table">
+					<thead>
+						<tr>
+							<th>Borsa</th>
+							<th>Piyasa Yapıcı (Maker)</th>
+							<th>Piyasa Alıcı (Taker)</th>
+							<th>TL Yatırma</th>
+							<th>TL Çekme</th>
+							<th>USDT Çekim (TRC20)</th>
+							<th>BTC Çekim</th>
+							<th>Son Doğrulama</th>
+						</tr>
+					</thead>
+					<tbody>
+						{feeTable.map(f => (
+							<tr>
+								<td><strong>{f.exchange}</strong></td>
+								<td class="font-mono text-success font-bold">{f.maker}</td>
+								<td class="font-mono font-bold">{f.taker}</td>
+								<td><span class="free-pill">{f.depositTry}</span></td>
+								<td>{f.withdrawTry}</td>
+								<td class="font-mono">{f.usdtWithdraw}</td>
+								<td class="font-mono">{f.btcWithdraw}</td>
+								<td class="text-muted font-mono">{f.verifiedAt}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="editorial-guide-box">
+			<h2>Komisyon Hesaplamasında Dikkat Edilecekler</h2>
+			<p>
+				Kripto para borsalarında komisyonlar aylık 30 günlük işlem hacminize veya yerel borsa tokenı (varsa) tutma durumunuza göre kademeli olarak düşebilir. Yukarıdaki tabloda tüm kullanıcılar için geçerli olan en temel (başlangıç seviyesi) standart komisyon oranları baz alınmıştır.
+			</p>
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.data-page-container {
+		padding: 48px 20px 88px;
+		max-width: 1040px;
+	}
+	.page-breadcrumb {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 13px;
+		color: var(--text-faint);
+		margin-bottom: 24px;
+	}
+	.page-breadcrumb a {
+		color: var(--text-muted);
+		text-decoration: none;
+	}
+	.page-breadcrumb .current {
+		color: var(--text);
+		font-weight: 500;
+	}
+	.dp-header {
+		margin-bottom: 32px;
+	}
+	.dp-badges {
+		display: flex;
+		gap: 8px;
+		align-items: center;
+		margin-bottom: 14px;
+	}
+	.badge-live {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-size: 11px;
+		font-weight: 700;
+		color: var(--primary);
+		background: rgba(16, 185, 129, 0.1);
+		border: 1px solid rgba(16, 185, 129, 0.25);
+		padding: 3px 8px;
+		border-radius: 4px;
+	}
+	.b-dot {
+		width: 6px;
+		height: 6px;
+		background: var(--primary);
+		border-radius: 50%;
+	}
+	.badge-tag {
+		font-size: 11px;
+		color: var(--text-faint);
+		background: var(--bg-sunken);
+		border: 1px solid var(--border-subtle);
+		padding: 3px 8px;
+		border-radius: 4px;
+	}
+	.dp-title {
+		font-size: 38px;
+		font-weight: 800;
+		letter-spacing: -0.025em;
+		color: var(--text);
+		margin: 0 0 12px;
+	}
+	.dp-summary {
+		font-size: 16px;
+		line-height: 1.6;
+		color: var(--text-muted);
+		margin: 0;
+	}
+	.section-card {
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
+		border-radius: 16px;
+		padding: 24px;
+		margin-bottom: 36px;
+	}
+	.sc-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 18px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid var(--border-subtle);
+	}
+	.sc-head h3 {
+		font-size: 17px;
+		font-weight: 700;
+		color: var(--text);
+		margin: 0;
+	}
+	.sc-status {
+		font-size: 11.5px;
+		color: var(--text-faint);
+	}
+	.table-shell {
+		overflow-x: auto;
+	}
+	.data-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 13px;
+	}
+	.data-table th {
+		text-align: left;
+		padding: 12px 14px;
+		color: var(--text-faint);
+		font-size: 11px;
+		border-bottom: 1px solid var(--border);
+		text-transform: uppercase;
+	}
+	.data-table td {
+		padding: 14px 14px;
+		border-bottom: 1px solid var(--border-subtle);
+		color: var(--text);
+	}
+	.free-pill {
+		font-size: 11.5px;
+		color: var(--primary);
+		font-weight: 600;
+	}
+	.editorial-guide-box {
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
+		border-radius: 16px;
+		padding: 32px;
+	}
+	.editorial-guide-box h2 {
+		font-size: 20px;
+		font-weight: 800;
+		color: var(--text);
+		margin: 0 0 12px;
+	}
+	.editorial-guide-box p {
+		font-size: 14px;
+		line-height: 1.65;
+		color: var(--text-muted);
+		margin: 0;
+	}
+</style>

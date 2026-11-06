@@ -1,0 +1,258 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = "Kripto Paraların TL ve USD Bazında Getirisi | Kriptonik";
+const pageDesc = "Bitcoin, Ethereum ve önde gelen kripto paraların Türk Lirası getirisi, Dolar/TL kur artışından arındırılmış reel getiri analizi ve getiri ısı haritası.";
+
+const returns = [
+	{
+		symbol: "BTC",
+		name: "Bitcoin",
+		retTry30d: "+%18.4",
+		retUsd30d: "+%14.2",
+		realRet30d: "+%14.1",
+		retTry1y: "+%148.2",
+		retUsd1y: "+%86.5",
+		realRet1y: "+%84.2"
+	},
+	{
+		symbol: "ETH",
+		name: "Ethereum",
+		retTry30d: "+%8.6",
+		retUsd30d: "+%4.8",
+		realRet30d: "+%4.7",
+		retTry1y: "+%92.4",
+		retUsd1y: "+%44.1",
+		realRet1y: "+%42.5"
+	},
+	{
+		symbol: "SOL",
+		name: "Solana",
+		retTry30d: "+%28.2",
+		retUsd30d: "+%23.5",
+		realRet30d: "+%23.3",
+		retTry1y: "+%285.6",
+		retUsd1y: "+%192.4",
+		realRet1y: "+%188.6"
+	}
+];
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container data-page-container">
+		<nav class="page-breadcrumb" aria-label="Gezinti">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<a href="/turkiye">Türkiye Verisi</a>
+			<span>/</span>
+			<span class="current">TL Bazında Getiri (A6)</span>
+		</nav>
+
+		<div class="dp-header">
+			<div class="dp-badges">
+				<span class="badge-live"><span class="b-dot"></span> Günlük Veri</span>
+				<span class="badge-tag">Reel Getiri Analizi</span>
+				<span class="badge-tag">TCMB Kuru Arındırılmış</span>
+			</div>
+			<h1 class="dp-title">TL ve USD Bazında Kripto Getiri Analizi</h1>
+			<p class="dp-summary">
+				Kripto varlıkların Türk Lirası cinsinden nominal getirisi ile döviz kurunun yükselişinden arındırılmış gerçek (reel) getirisini karşılaştırın.
+			</p>
+		</div>
+
+		<div class="section-card">
+			<div class="sc-head">
+				<h3>Nominal TL Getirisi vs Kurdan Arındırılmış Reel Getiri</h3>
+				<span class="sc-status">Kapanış Mumları Esas Alınmıştır</span>
+			</div>
+
+			<div class="table-shell">
+				<table class="data-table">
+					<thead>
+						<tr>
+							<th>Varlık</th>
+							<th>30 Günlük TL Getirisi</th>
+							<th>30 Günlük USD Getirisi</th>
+							<th>30 Günlük Reel Getiri</th>
+							<th>1 Yıllık TL Getirisi</th>
+							<th>1 Yıllık USD Getirisi</th>
+							<th>1 Yıllık Reel Getiri</th>
+						</tr>
+					</thead>
+					<tbody>
+						{returns.map(r => (
+							<tr>
+								<td><strong>{r.name} ({r.symbol})</strong></td>
+								<td class="font-mono text-success font-bold">{r.retTry30d}</td>
+								<td class="font-mono text-muted">{r.retUsd30d}</td>
+								<td class="font-mono text-primary font-bold">{r.realRet30d}</td>
+								<td class="font-mono text-success font-bold">{r.retTry1y}</td>
+								<td class="font-mono text-muted">{r.retUsd1y}</td>
+								<td class="font-mono text-primary font-bold">{r.realRet1y}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="editorial-guide-box">
+			<h2>Reel Getiri Neden Hesaplanır?</h2>
+			<p>
+				Türk Lirası ile kripto para tutan yatırımcılar, portföylerinin değer artışında iki farklı etkiyle karşılaşır:
+			</p>
+			<ul>
+				<li><strong>Varlığın Kendi Değer Artışı:</strong> Bitcoin veya Ethereum'un küresel Dolar bazlı değer kazanımı.</li>
+				<li><strong>Dolar/TL Kur Artışı:</strong> Türk Lirası'nın Dolar karşısındaki değer kaybından kaynaklanan kur etkisi.</li>
+			</ul>
+			<p>
+				Kriptonik 'Reel Getiri' modeli; Dolar/TL kur değişimini matematiksel olarak ayırarak yatırımcının salt kripto varlık performansından elde ettiği net kazancı şeffafça hesaplar.
+			</p>
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.data-page-container {
+		padding: 48px 20px 88px;
+		max-width: 1040px;
+	}
+	.page-breadcrumb {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 13px;
+		color: var(--text-faint);
+		margin-bottom: 24px;
+	}
+	.page-breadcrumb a {
+		color: var(--text-muted);
+		text-decoration: none;
+	}
+	.page-breadcrumb .current {
+		color: var(--text);
+		font-weight: 500;
+	}
+	.dp-header {
+		margin-bottom: 32px;
+	}
+	.dp-badges {
+		display: flex;
+		gap: 8px;
+		align-items: center;
+		margin-bottom: 14px;
+	}
+	.badge-live {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-size: 11px;
+		font-weight: 700;
+		color: var(--primary);
+		background: rgba(16, 185, 129, 0.1);
+		border: 1px solid rgba(16, 185, 129, 0.25);
+		padding: 3px 8px;
+		border-radius: 4px;
+	}
+	.b-dot {
+		width: 6px;
+		height: 6px;
+		background: var(--primary);
+		border-radius: 50%;
+	}
+	.badge-tag {
+		font-size: 11px;
+		color: var(--text-faint);
+		background: var(--bg-sunken);
+		border: 1px solid var(--border-subtle);
+		padding: 3px 8px;
+		border-radius: 4px;
+	}
+	.dp-title {
+		font-size: 38px;
+		font-weight: 800;
+		letter-spacing: -0.025em;
+		color: var(--text);
+		margin: 0 0 12px;
+	}
+	.dp-summary {
+		font-size: 16px;
+		line-height: 1.6;
+		color: var(--text-muted);
+		margin: 0;
+	}
+	.section-card {
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
+		border-radius: 16px;
+		padding: 24px;
+		margin-bottom: 36px;
+	}
+	.sc-head {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 18px;
+		padding-bottom: 12px;
+		border-bottom: 1px solid var(--border-subtle);
+	}
+	.sc-head h3 {
+		font-size: 17px;
+		font-weight: 700;
+		color: var(--text);
+		margin: 0;
+	}
+	.sc-status {
+		font-size: 11.5px;
+		color: var(--text-faint);
+	}
+	.table-shell {
+		overflow-x: auto;
+	}
+	.data-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 13.5px;
+	}
+	.data-table th {
+		text-align: left;
+		padding: 12px 14px;
+		color: var(--text-faint);
+		font-size: 11.5px;
+		border-bottom: 1px solid var(--border);
+		text-transform: uppercase;
+	}
+	.data-table td {
+		padding: 14px 14px;
+		border-bottom: 1px solid var(--border-subtle);
+		color: var(--text);
+	}
+	.editorial-guide-box {
+		background: var(--bg-elev);
+		border: 1px solid var(--border);
+		border-radius: 16px;
+		padding: 32px;
+	}
+	.editorial-guide-box h2 {
+		font-size: 20px;
+		font-weight: 800;
+		color: var(--text);
+		margin: 0 0 12px;
+	}
+	.editorial-guide-box p {
+		font-size: 14px;
+		line-height: 1.65;
+		color: var(--text-muted);
+		margin: 0 0 12px;
+	}
+	.editorial-guide-box ul {
+		margin: 0 0 12px;
+		padding-left: 20px;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		font-size: 14px;
+		line-height: 1.6;
+		color: var(--text-muted);
+	}
+</style>
