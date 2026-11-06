@@ -1,0 +1,130 @@
+---
+interface Props {
+	href?: string;
+	type?: 'button' | 'submit' | 'reset';
+	variant?: 'signal' | 'secondary' | 'outline' | 'ghost' | 'danger';
+	size?: 'sm' | 'md' | 'lg';
+	class?: string;
+	id?: string;
+	[key: string]: any;
+}
+
+const {
+	href,
+	type = 'button',
+	variant = 'secondary',
+	size = 'md',
+	class: className = '',
+	id,
+	...rest
+} = Astro.props;
+
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+	href={href}
+	type={!href ? type : undefined}
+	id={id}
+	class={`ui-btn btn-${variant} btn-${size} ${className}`}
+	{...rest}
+>
+	<slot />
+</Tag>
+
+<style>
+	.ui-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		font-family: var(--font-body);
+		font-weight: 600;
+		border-radius: var(--radius-sm);
+		text-decoration: none;
+		cursor: pointer;
+		transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease, transform 120ms ease;
+		white-space: nowrap;
+		user-select: none;
+		border: 1px solid transparent;
+		line-height: 1;
+	}
+
+	.ui-btn:active {
+		transform: translateY(1px);
+	}
+
+	/* Sizes */
+	.btn-sm {
+		padding: 6px 10px;
+		font-size: 12.5px;
+	}
+
+	.btn-md {
+		padding: 9px 16px;
+		font-size: 14px;
+	}
+
+	.btn-lg {
+		padding: 13px 22px;
+		font-size: 15.5px;
+		border-radius: var(--radius-md);
+	}
+
+	/* Variants */
+	.btn-signal {
+		background: var(--signal);
+		color: var(--signal-ink);
+		border-color: var(--signal);
+		font-weight: 700;
+	}
+
+	.btn-signal:hover {
+		background: var(--signal-hover);
+		border-color: var(--signal-hover);
+	}
+
+	.btn-secondary {
+		background: var(--surface-2);
+		color: var(--text);
+		border-color: var(--line);
+	}
+
+	.btn-secondary:hover {
+		background: var(--surface);
+		border-color: var(--border-strong);
+	}
+
+	.btn-outline {
+		background: transparent;
+		color: var(--text);
+		border-color: var(--line);
+	}
+
+	.btn-outline:hover {
+		border-color: var(--border-strong);
+		background: var(--surface-2);
+	}
+
+	.btn-ghost {
+		background: transparent;
+		color: var(--text-dim);
+		border-color: transparent;
+	}
+
+	.btn-ghost:hover {
+		color: var(--text);
+		background: var(--surface-2);
+	}
+
+	.btn-danger {
+		background: var(--danger-soft);
+		color: var(--danger);
+		border-color: rgba(255, 77, 94, 0.3);
+	}
+
+	.btn-danger:hover {
+		background: var(--danger);
+		color: #fff;
+	}
+</style>

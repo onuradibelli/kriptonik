@@ -1,597 +1,504 @@
 ---
+// src/components/Header.astro - Cockpit Header (Strict tokens, zero emojis)
 import ThemeToggle from './ThemeToggle.astro';
 import CommandPalette from './CommandPalette.astro';
+import Icon from './ui/Icon.astro';
 
 const currentPath = Astro.url.pathname;
+const isHome = currentPath === '/';
 ---
 
-<header class="site-header">
-	<div class="container header-container">
+<header class="cockpit-header">
+	<div class="cockpit-header-inner">
 		<!-- Brand Logo -->
-		<a href="/" class="brand-logo" aria-label="Kriptonik Ana Sayfa">
-			<div class="logo-icon-wrap">
-				<svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-					<path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" opacity="0.9" />
-					<path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-					<path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" />
+		<a href="/" class="brand-logo" aria-label="kriptonik ana sayfa">
+			<div class="brand-mark" aria-hidden="true">
+				<!-- Cockpit telemetry crosshair icon -->
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<circle cx="12" cy="12" r="9"/>
+					<path d="M12 3v4M12 17v4M3 12h4M17 12h4"/>
+					<circle cx="12" cy="12" r="2" fill="currentColor"/>
 				</svg>
 			</div>
-			<span class="logo-name">Kriptonik</span>
+			<div class="brand-title">
+				<span class="brand-name">kriptonik</span>
+				<span class="brand-tag">saha kılavuzu</span>
+			</div>
 		</a>
 
 		<!-- Desktop Navigation -->
-		<nav class="nav-links">
-			<a href="/piyasa" class={currentPath.startsWith('/piyasa') ? 'nav-item active' : 'nav-item'}>Piyasa</a>
-
-			<!-- Türkiye Verisi Dropdown -->
-			<div class="nav-dropdown-wrapper">
-				<a href="/turkiye" class={currentPath.startsWith('/turkiye') ? 'nav-item active' : 'nav-item'}>
-					<span>Türkiye</span>
-					<span class="nav-tr-badge">TR</span>
-					<svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-				</a>
-				<div class="mega-menu mini-menu">
-					<div class="mega-list">
-						<a href="/turkiye/usdt-tl-primi">
-							<strong>USDT/TL Tether Primi</strong>
-							<span>Borsa kuru vs TCMB resmi dolar kuru sapması</span>
-						</a>
-						<a href="/turkiye/borsa-fiyat-farki">
-							<strong>Arbitraj & Borsa Fiyat Farkı</strong>
-							<span>BTC, ETH ve USDT borsalar arası makas</span>
-						</a>
-						<a href="/turkiye/likidite-ve-derinlik">
-							<strong>TL Likidite & Kayma (Slippage)</strong>
-							<span>10k, 100k ve 1M TL emir derinlik testi</span>
-						</a>
-						<a href="/turkiye/borsalar">
-							<strong>Türk Borsaları Hacim & Pazar Payı</strong>
-							<span>24 saatlik gerçek TL işlem hacimleri</span>
-						</a>
-						<a href="/turkiye/borsa-ucretleri">
-							<strong>Borsa Komisyon & Limit Tablosu</strong>
-							<span>Doğrulanmış TL ve kripto çekim ücretleri</span>
-						</a>
-						<a href="/turkiye/tl-bazinda-getiri">
-							<strong>TL Bazında Reel Getiri</strong>
-							<span>Enflasyon ve dövizden arındırılmış kazanç</span>
-						</a>
-						<a href="/turkiye" class="all-tools-link">
-							Türkiye Veri Merkezini İncele →
-						</a>
-					</div>
-				</div>
-			</div>
-
-			<a href="/etf" class={currentPath.startsWith('/etf') ? 'nav-item active' : 'nav-item'}>ETF Akışları</a>
-
-			<!-- Veri & Endeksler Dropdown -->
-			<div class="nav-dropdown-wrapper">
-				<a href="/endeksler" class={currentPath.startsWith('/endeksler') || currentPath.startsWith('/turev') || currentPath.startsWith('/stablecoin') || currentPath.startsWith('/defi') || currentPath.startsWith('/zincir-ustu') ? 'nav-item active' : 'nav-item'}>
-					<span>Veri & Endeks</span>
-					<svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-				</a>
-				<div class="mega-menu mini-menu">
-					<div class="mega-list">
-						<a href="/endeksler">
-							<strong>Kriptonik Endeksleri</strong>
-							<span>TTP, TLS, EAM, FI, KAS ve SNB şeffaf seriler</span>
-						</a>
-						<a href="/turev">
-							<strong>Türev & Fonlama Oranları</strong>
-							<span>OI, Açık Pozisyon ve Fonlama Isısı</span>
-						</a>
-						<a href="/stablecoin">
-							<strong>Stablecoin Piyasası</strong>
-							<span>Toplam arz, depeg sapması ve mint/burn akışları</span>
-						</a>
-						<a href="/defi">
-							<strong>DeFi Metrikleri</strong>
-							<span>TVL, DEX hacimleri ve protokol gelirleri</span>
-						</a>
-						<a href="/zincir-ustu">
-							<strong>Zincir Üstü (On-Chain)</strong>
-							<span>Mempool kuyruğu, BTC hashrate ve Gas takip</span>
-						</a>
-						<a href="/veri" class="all-tools-link">
-							Açık Veri Portalı (CSV/JSON İndir) →
-						</a>
-					</div>
-				</div>
-			</div>
-
-			<!-- Kaç TL? Highlight Link -->
-			<a href="/kac-tl" class={currentPath.startsWith('/kac-tl') ? 'nav-item kac-tl-link active' : 'nav-item kac-tl-link'}>
-				<span>Kaç TL?</span>
-				<span class="live-dot-mini"></span>
+		<nav class="cockpit-nav" aria-label="Ana Gezinti">
+			<a href="/araclar" class={currentPath.startsWith('/araclar') ? 'nav-link active' : 'nav-link'}>
+				Araçlar
 			</a>
-			
-			<!-- Araçlar Mega Menu -->
-			<div class="nav-dropdown-wrapper">
-				<a href="/araclar" class={currentPath.startsWith('/araclar') ? 'nav-item active' : 'nav-item'}>
-					<span>Araçlar</span>
-					<svg class="chevron-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-				</a>
-				<div class="mega-menu">
-					<div class="mega-grid">
-						<div class="mega-col">
-							<span class="mega-heading">Acil Sorun Çözücüler</span>
-							<a href="/araclar/yanlis-aga-gonderdim">
-								<strong>Yanlış Ağa Gönderdim</strong>
-								<span>BEP20, ERC20, TRC20 kurtarma</span>
-							</a>
-							<a href="/araclar/takilan-islem">
-								<strong>Takılan İşlem Teşhisi</strong>
-								<span>RBF, CPFP ve Nonce hızlandırma</span>
-							</a>
-							<a href="/yardim">
-								<strong>Acil Yardım Merkezi</strong>
-								<span>Tüm senaryolar için rehber</span>
-							</a>
-						</div>
-
-						<div class="mega-col">
-							<span class="mega-heading">Hesaplama & Kıyas</span>
-							<a href="/araclar/maliyet-karsilastirici">
-								<strong>Borsa Maliyet Kıyaslayıcı</strong>
-								<span>Komisyon ve spread dahil net tutar</span>
-							</a>
-							<a href="/araclar/dca-simulator">
-								<strong>DCA Simülatörü</strong>
-								<span>Geçmiş düzenli alım kâr testi</span>
-							</a>
-							<a href="/araclar/kripto-donusturucu">
-								<strong>Kripto Dönüştürücü</strong>
-								<span>250+ coin canlı piyasa fiyatları</span>
-							</a>
-						</div>
-
-						<div class="mega-col">
-							<span class="mega-heading">Güvenlik & İzleme</span>
-							<a href="/araclar/cuzdan-guvenlik-kontrolu">
-								<strong>Cüzdan Güvenlik Check-up</strong>
-								<span>24 maddelik interaktif denetim</span>
-							</a>
-							<a href="/araclar/gas-ucret-takip">
-								<strong>Gas & Ağ Ücreti Takip</strong>
-								<span>En ucuz işlem saatleri analizi</span>
-							</a>
-							<a href="/araclar" class="all-tools-link">
-								Tüm Araçları İncele →
-							</a>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<a href="/sozluk" class={currentPath.startsWith('/sozluk') ? 'nav-item active' : 'nav-item'}>Sözlük</a>
-			<a href="/rehber" class={currentPath.startsWith('/rehber') ? 'nav-item active' : 'nav-item'}>Rehberler</a>
+			<a href="/rehber" class={currentPath.startsWith('/rehber') ? 'nav-link active' : 'nav-link'}>
+				Rehberler
+			</a>
+			<a href="/sozluk" class={currentPath.startsWith('/sozluk') ? 'nav-link active' : 'nav-link'}>
+				Sözlük
+			</a>
+			<a href="/piyasa" class={currentPath.startsWith('/piyasa') ? 'nav-link active' : 'nav-link'}>
+				Piyasa
+			</a>
+			<a href="/turkiye" class={currentPath.startsWith('/turkiye') ? 'nav-link active' : 'nav-link'}>
+				Türkiye
+			</a>
+			<a href="/kac-tl" class={currentPath.startsWith('/kac-tl') ? 'nav-link active' : 'nav-link'}>
+				Kaç TL?
+			</a>
 		</nav>
 
-		<!-- Header Right Controls -->
-		<div class="header-right">
-			<!-- Command Search Trigger Pill -->
-			<button type="button" class="search-trigger-btn" data-open-cmd aria-label="Hızlı Arama (Ctrl+K)">
-				<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<circle cx="11" cy="11" r="8"></circle>
-					<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-				</svg>
-				<span class="search-label">Ara...</span>
-				<kbd class="search-kbd">⌘K</kbd>
+		<!-- Right Controls -->
+		<div class="header-actions">
+			<!-- Quick Search Trigger -->
+			<button type="button" class="search-pill-btn" data-open-cmd aria-label="Arama Yap (Ctrl+K)">
+				<Icon name="search" size={14} />
+				<span class="search-text">Ara...</span>
+				<kbd class="search-shortcut">⌘K</kbd>
 			</button>
 
-			<!-- 3-State Theme Toggle -->
+			<!-- Theme Toggle (Grafit / Kâğıt) -->
 			<ThemeToggle />
 
-			<!-- Mobile Menu Button -->
-			<button class="mobile-toggle" id="mobile-toggle" aria-label="Menüyü Aç">
-				<span></span>
-				<span></span>
-				<span></span>
+			<!-- Signal Action Button -->
+			<a href={isHome ? '#sorunum-var' : '/araclar/yanlis-aga-gonderdim'} class="emergency-action-btn">
+				<Icon name="alert-triangle" size={14} />
+				<span>Sorunum Var</span>
+			</a>
+
+			<!-- Mobile Drawer Toggle -->
+			<button type="button" class="mobile-menu-trigger" id="mobile-menu-toggle" aria-label="Menüyü aç/kapat" aria-expanded="false">
+				<span class="menu-bar"></span>
+				<span class="menu-bar"></span>
 			</button>
 		</div>
 	</div>
 
-	<!-- Mobile Nav Drawer -->
-	<div class="mobile-nav" id="mobile-nav">
-		<button type="button" class="mobile-search-btn" data-open-cmd>
-			🔍 Hızlı Arama Yap (Ctrl+K)
-		</button>
-		<a href="/" class="mobile-nav-item">Ana Sayfa</a>
-		<a href="/piyasa" class="mobile-nav-item">Canlı Piyasa</a>
-		<a href="/turkiye" class="mobile-nav-item">🇹🇷 Türkiye Veri Merkezi</a>
-		<a href="/kac-tl" class="mobile-nav-item">⚡ Kaç TL? Canlı Hesaplayıcı</a>
-		<a href="/etf" class="mobile-nav-item">📊 Spot Bitcoin ETF Akışları</a>
-		<a href="/endeksler" class="mobile-nav-item">📈 Kriptonik Endeksleri</a>
-		<a href="/turev" class="mobile-nav-item">📉 Vadeli Fonlama & OI</a>
-		<a href="/stablecoin" class="mobile-nav-item">💵 Stablecoin & Peg Sapması</a>
-		<a href="/defi" class="mobile-nav-item">🏦 DeFi TVL & Gelirler</a>
-		<a href="/zincir-ustu" class="mobile-nav-item">⛓️ Zincir Üstü (Gas/Mempool)</a>
-		<a href="/veri" class="mobile-nav-item">💾 Açık Veri Portalı (CSV)</a>
-		<a href="/araclar" class="mobile-nav-item">🛠️ Tüm Araçlar & Çözücüler</a>
-		<a href="/sozluk" class="mobile-nav-item">📖 Kripto Sözlüğü</a>
-		<a href="/rehber" class="mobile-nav-item">📚 Rehberler</a>
+	<!-- Mobile Navigation Drawer -->
+	<div class="mobile-drawer" id="mobile-drawer" aria-hidden="true">
+		<div class="drawer-search">
+			<button type="button" class="drawer-search-btn" data-open-cmd>
+				<Icon name="search" size={16} />
+				<span>Araç, sorun veya terim ara... (⌘K)</span>
+			</button>
+		</div>
+
+		<nav class="drawer-nav">
+			<a href="/araclar" class="drawer-link">
+				<div class="drawer-link-content">
+					<strong>Araçlar</strong>
+					<span>Hata çözücü, maliyet ve adres denetimi</span>
+				</div>
+				<Icon name="chevron-right" size={16} />
+			</a>
+			<a href="/rehber" class="drawer-link">
+				<div class="drawer-link-content">
+					<strong>Rehberler</strong>
+					<span>Adım adım doğrulanmış çözüm adımları</span>
+				</div>
+				<Icon name="chevron-right" size={16} />
+			</a>
+			<a href="/sozluk" class="drawer-link">
+				<div class="drawer-link-content">
+					<strong>Kripto Sözlüğü</strong>
+					<span>Mempool, Gwei, Slippage ve teknik terimler</span>
+				</div>
+				<Icon name="chevron-right" size={16} />
+			</a>
+			<a href="/piyasa" class="drawer-link">
+				<div class="drawer-link-content">
+					<strong>Piyasa & Veri</strong>
+					<span>Canlı fiyatlar, ETF akışları ve endeksler</span>
+				</div>
+				<Icon name="chevron-right" size={16} />
+			</a>
+			<a href="/turkiye" class="drawer-link">
+				<div class="drawer-link-content">
+					<strong>Türkiye Veri Merkezi</strong>
+					<span>USDT primi, yerel borsalar ve derinlik</span>
+				</div>
+				<Icon name="chevron-right" size={16} />
+			</a>
+			<a href="/kac-tl" class="drawer-link">
+				<div class="drawer-link-content">
+					<strong>Kaç TL?</strong>
+					<span>Canlı döviz ve kripto anlık çevirici</span>
+				</div>
+				<Icon name="chevron-right" size={16} />
+			</a>
+		</nav>
+
+		<div class="drawer-footer">
+			<a href="/araclar/yanlis-aga-gonderdim" class="drawer-emergency-btn">
+				<Icon name="alert-triangle" size={16} />
+				<span>Sorun Teşhisini Başlat</span>
+			</a>
+		</div>
 	</div>
 </header>
 
 <CommandPalette />
 
+<!-- Sticky Mobile Thumb Action Bar -->
+<div class="mobile-thumb-bar" aria-label="Hızlı Erişim">
+	<a href="/#sorunum-var" class="mobile-thumb-btn">
+		<Icon name="alert-triangle" size={16} />
+		<span>Sorunum Var — Teşhis Et</span>
+	</a>
+</div>
+
 <script>
-	function setupHeader() {
-		const toggle = document.getElementById('mobile-toggle');
-		const nav = document.getElementById('mobile-nav');
-		toggle?.addEventListener('click', () => {
-			nav?.classList.toggle('open');
-			toggle.classList.toggle('active');
-		});
+	function setupCockpitHeader() {
+		const toggleBtn = document.getElementById('mobile-menu-toggle');
+		const drawer = document.getElementById('mobile-drawer');
+
+		if (toggleBtn && drawer) {
+			toggleBtn.onclick = () => {
+				const isOpen = drawer.classList.toggle('open');
+				toggleBtn.classList.toggle('active', isOpen);
+				toggleBtn.setAttribute('aria-expanded', String(isOpen));
+				drawer.setAttribute('aria-hidden', String(!isOpen));
+				document.body.style.overflow = isOpen ? 'hidden' : '';
+			};
+
+			drawer.querySelectorAll('a').forEach(a => {
+				a.addEventListener('click', () => {
+					drawer.classList.remove('open');
+					toggleBtn.classList.remove('active');
+					toggleBtn.setAttribute('aria-expanded', 'false');
+					drawer.setAttribute('aria-hidden', 'true');
+					document.body.style.overflow = '';
+				});
+			});
+		}
 	}
 
-	setupHeader();
-	document.addEventListener('astro:after-swap', setupHeader);
+	setupCockpitHeader();
+	document.addEventListener('astro:after-swap', setupCockpitHeader);
 </script>
 
 <style>
-	.site-header {
+	.cockpit-header {
 		position: sticky;
 		top: 0;
-		z-index: 100;
-		background: var(--bg-glass);
-		backdrop-filter: blur(20px) saturate(180%);
-		-webkit-backdrop-filter: blur(20px) saturate(180%);
-		border-bottom: 1px solid var(--border);
-		transition: background 180ms ease, border-color 180ms ease;
+		z-index: 90;
+		background: var(--bg);
+		border-bottom: 1px solid var(--line);
+		transition: background var(--duration-fast) var(--ease-standard);
 	}
 
-	.header-container {
-		height: 68px;
+	.cockpit-header-inner {
+		max-width: var(--max-w);
+		margin: 0 auto;
+		height: 56px;
+		padding: 0 24px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 24px;
+		gap: 20px;
 	}
 
-	/* Logo */
+	/* Brand */
 	.brand-logo {
 		display: flex;
 		align-items: center;
 		gap: 10px;
 		text-decoration: none;
 		color: var(--text);
-		font-weight: 800;
-		font-size: 19px;
-		letter-spacing: -0.03em;
-		transition: opacity 150ms ease;
+		flex-shrink: 0;
 	}
 
-	.brand-logo:hover {
-		opacity: 0.9;
-	}
-
-	.logo-icon-wrap {
-		width: 34px;
-		height: 34px;
-		border-radius: 10px;
-		background: var(--primary-soft);
-		border: 1px solid rgba(16, 185, 129, 0.2);
-		color: var(--primary);
+	.brand-mark {
+		width: 32px;
+		height: 32px;
+		border-radius: var(--radius-sm);
+		background: var(--surface);
+		border: 1px solid var(--line);
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		color: var(--signal);
 	}
 
-	.logo-name {
-		font-family: 'Space Grotesk', sans-serif;
-		font-weight: 800;
-	}
-
-	/* Nav items */
-	.nav-links {
-		display: flex;
-		align-items: center;
-		gap: 4px;
-	}
-
-	.nav-item {
-		padding: 8px 14px;
-		font-size: 14px;
-		font-weight: 600;
-		color: var(--text-muted);
-		border-radius: 8px;
-		text-decoration: none;
-		transition: all 150ms ease;
-		display: flex;
-		align-items: center;
-		gap: 4px;
-	}
-
-	.nav-item:hover {
-		color: var(--text);
-		background: var(--bg-sunken);
-	}
-
-	.nav-item.active {
-		color: var(--text);
-		background: var(--bg-sunken);
-	}
-
-	.chevron-icon {
-		transition: transform 180ms ease;
-	}
-
-	.nav-dropdown-wrapper:hover .chevron-icon {
-		transform: rotate(180deg);
-	}
-
-	/* Mega Menu */
-	.nav-dropdown-wrapper {
-		position: relative;
-	}
-
-	.mega-menu {
-		position: absolute;
-		top: calc(100% + 8px);
-		left: -120px;
-		width: 720px;
-		background: var(--bg-elev);
-		border: 1px solid var(--border);
-		border-radius: 16px;
-		padding: 24px;
-		box-shadow: var(--shadow-lg);
-		opacity: 0;
-		visibility: hidden;
-		transform: translateY(8px);
-		transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
-		pointer-events: none;
-		z-index: 1000;
-	}
-
-	.nav-dropdown-wrapper:hover .mega-menu {
-		opacity: 1;
-		visibility: visible;
-		transform: translateY(0);
-		pointer-events: auto;
-	}
-
-	.mega-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 20px;
-	}
-
-	.mega-col {
+	.brand-title {
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
+		line-height: 1.1;
 	}
 
-	.mega-heading {
-		font-size: 11px;
-		font-weight: 800;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-		color: var(--text-faint);
-		margin-bottom: 4px;
-	}
-
-	.mega-col a {
-		padding: 8px 10px;
-		border-radius: 8px;
-		text-decoration: none;
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
-		transition: background 150ms ease;
-	}
-
-	.mega-col a:hover {
-		background: var(--bg-sunken);
-	}
-
-	.mega-col a strong {
-		font-size: 13px;
-		color: var(--text);
-		font-weight: 600;
-	}
-
-	.mega-col a span {
-		font-size: 11px;
-		color: var(--text-muted);
-	}
-
-	.all-tools-link {
-		font-size: 12px;
+	.brand-name {
+		font-family: var(--font-display);
+		font-size: 17px;
 		font-weight: 700;
-		color: var(--primary) !important;
-		margin-top: 8px;
-	}
-
-	/* Mini Menu variant for Data & Türkiye dropdowns */
-	.mega-menu.mini-menu {
-		width: 380px;
-		left: -60px;
-		padding: 16px;
-	}
-
-	.mega-list {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-
-	.mega-list a {
-		padding: 8px 12px;
-		border-radius: 8px;
-		text-decoration: none;
-		display: flex;
-		flex-direction: column;
-		gap: 2px;
-		transition: background 150ms ease;
-	}
-
-	.mega-list a:hover {
-		background: var(--bg-sunken);
-	}
-
-	.mega-list a strong {
-		font-size: 13px;
+		letter-spacing: -0.02em;
 		color: var(--text);
-		font-weight: 600;
 	}
 
-	.mega-list a span {
-		font-size: 11px;
-		color: var(--text-muted);
-	}
-
-	.nav-tr-badge {
-		padding: 1px 5px;
-		background: rgba(239, 68, 68, 0.15);
-		color: #EF4444;
-		border: 1px solid rgba(239, 68, 68, 0.25);
-		border-radius: 4px;
-		font-size: 10px;
-		font-weight: 800;
+	.brand-tag {
 		font-family: var(--font-mono);
-		margin-left: 2px;
+		font-size: 9px;
+		font-weight: 500;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+		color: var(--text-subtle);
 	}
 
-	.kac-tl-link {
-		position: relative;
-		font-weight: 700;
-		color: var(--primary);
-	}
-
-	.live-dot-mini {
-		width: 6px;
-		height: 6px;
-		border-radius: 50%;
-		background: var(--primary);
-		box-shadow: 0 0 6px var(--primary);
-		display: inline-block;
-		margin-left: 3px;
-		animation: pulse-dot 1.8s infinite;
-	}
-
-	@keyframes pulse-dot {
-		0%, 100% { opacity: 1; transform: scale(1); }
-		50% { opacity: 0.35; transform: scale(0.8); }
-	}
-
-	/* Header Right */
-	.header-right {
+	/* Nav */
+	.cockpit-nav {
 		display: flex;
 		align-items: center;
-		gap: 12px;
+		gap: 4px;
 	}
 
-	.search-trigger-btn {
+	.nav-link {
+		padding: 6px 12px;
+		font-size: 13px;
+		font-weight: 500;
+		color: var(--text-subtle);
+		text-decoration: none;
+		border-radius: var(--radius-sm);
+		transition: all var(--duration-fast) var(--ease-standard);
+	}
+
+	.nav-link:hover {
+		color: var(--text);
+		background: var(--surface);
+	}
+
+	.nav-link.active {
+		color: var(--signal);
+		background: var(--surface);
+		font-weight: 600;
+	}
+
+	/* Actions */
+	.header-actions {
 		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.search-pill-btn {
+		display: inline-flex;
 		align-items: center;
 		gap: 8px;
-		background: var(--bg-sunken);
-		border: 1px solid var(--border);
-		padding: 6px 12px;
-		border-radius: 9999px;
-		color: var(--text-muted);
+		height: 36px;
+		padding: 0 12px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-sm);
+		color: var(--text-subtle);
 		font-size: 13px;
 		cursor: pointer;
-		transition: all 150ms ease;
+		transition: all var(--duration-fast) var(--ease-standard);
 	}
 
-	.search-trigger-btn:hover {
-		border-color: var(--border-hover);
+	.search-pill-btn:hover {
+		background: var(--surface-hover);
 		color: var(--text);
+		border-color: var(--line-strong);
 	}
 
-	.search-kbd {
-		background: var(--bg-elev);
-		border: 1px solid var(--border);
-		padding: 1px 6px;
-		border-radius: 4px;
+	.search-shortcut {
+		background: var(--bg);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-sm);
+		padding: 1px 5px;
+		font-family: var(--font-mono);
 		font-size: 10px;
-		font-family: inherit;
-		color: var(--text-faint);
+		color: var(--text-subtle);
+	}
+
+	.emergency-action-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		height: 36px;
+		padding: 0 14px;
+		background: var(--signal);
+		color: #14110F;
+		font-size: 13px;
+		font-weight: 600;
+		text-decoration: none;
+		border-radius: var(--radius-sm);
+		box-shadow: 0 1px 3px rgba(255, 106, 61, 0.25);
+		transition: all var(--duration-fast) var(--ease-standard);
+		white-space: nowrap;
+	}
+
+	.emergency-action-btn:hover {
+		background: var(--signal-hover);
+		transform: translateY(-1px);
 	}
 
 	/* Mobile Toggle */
-	.mobile-toggle {
+	.mobile-menu-trigger {
 		display: none;
 		width: 36px;
 		height: 36px;
-		background: var(--bg-sunken);
-		border: 1px solid var(--border);
-		border-radius: 8px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-sm);
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		gap: 5px;
 		cursor: pointer;
+		padding: 0;
 	}
 
-	.mobile-toggle span {
-		width: 18px;
-		height: 2px;
+	.menu-bar {
+		width: 16px;
+		height: 1.5px;
 		background: var(--text);
-		border-radius: 2px;
-		transition: all 180ms ease;
+		transition: transform var(--duration-fast) var(--ease-standard);
 	}
 
-	.mobile-toggle.active span:nth-child(1) {
-		transform: translateY(7px) rotate(45deg);
-	}
-	.mobile-toggle.active span:nth-child(2) {
-		opacity: 0;
-	}
-	.mobile-toggle.active span:nth-child(3) {
-		transform: translateY(-7px) rotate(-45deg);
+	.mobile-menu-trigger.active .menu-bar:first-child {
+		transform: translateY(3.25px) rotate(45deg);
 	}
 
-	.mobile-nav {
-		display: none;
-		position: absolute;
-		top: 68px;
+	.mobile-menu-trigger.active .menu-bar:last-child {
+		transform: translateY(-3.25px) rotate(-45deg);
+	}
+
+	/* Mobile Drawer */
+	.mobile-drawer {
+		position: fixed;
+		top: 56px;
 		left: 0;
 		right: 0;
-		background: var(--bg-elev);
-		border-bottom: 1px solid var(--border);
-		padding: 20px 24px;
+		bottom: 0;
+		background: var(--bg);
+		border-top: 1px solid var(--line);
+		padding: 16px;
+		display: none;
 		flex-direction: column;
-		gap: 12px;
-		box-shadow: var(--shadow-lg);
+		gap: 16px;
+		overflow-y: auto;
+		z-index: 89;
 	}
 
-	.mobile-nav.open {
+	.mobile-drawer.open {
 		display: flex;
 	}
 
-	.mobile-search-btn {
+	.drawer-search-btn {
 		width: 100%;
-		padding: 12px;
-		border-radius: 8px;
-		background: var(--bg-sunken);
-		border: 1px solid var(--border);
-		color: var(--text);
-		font-weight: 600;
-		font-size: 14px;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 12px 14px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-sm);
+		color: var(--text-subtle);
+		font-size: 13px;
 		text-align: left;
 		cursor: pointer;
 	}
 
-	.mobile-nav-item {
-		padding: 10px 0;
-		font-size: 15px;
-		font-weight: 600;
+	.drawer-nav {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.drawer-link {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 12px 14px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-sm);
 		color: var(--text);
-		border-bottom: 1px solid var(--border);
 		text-decoration: none;
 	}
 
-	@media (max-width: 960px) {
-		.nav-links, .search-trigger-btn {
+	.drawer-link-content {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	.drawer-link-content strong {
+		font-size: 14px;
+		font-weight: 600;
+	}
+
+	.drawer-link-content span {
+		font-size: 12px;
+		color: var(--text-muted);
+	}
+
+	.drawer-footer {
+		margin-top: auto;
+		padding-top: 12px;
+	}
+
+	.drawer-emergency-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		width: 100%;
+		padding: 14px;
+		background: var(--signal);
+		color: #14110F;
+		font-size: 14px;
+		font-weight: 600;
+		border-radius: var(--radius-sm);
+		text-decoration: none;
+	}
+
+	/* Sticky Thumb Bar on Mobile */
+	.mobile-thumb-bar {
+		display: none;
+		position: fixed;
+		bottom: 12px;
+		left: 16px;
+		right: 16px;
+		z-index: 85;
+	}
+
+	.mobile-thumb-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		width: 100%;
+		height: 48px;
+		background: var(--signal);
+		color: #14110F;
+		font-size: 14px;
+		font-weight: 700;
+		text-decoration: none;
+		border-radius: var(--radius-md);
+		box-shadow: 0 4px 16px rgba(255, 106, 61, 0.4);
+	}
+
+	@media (max-width: 900px) {
+		.cockpit-nav {
 			display: none;
 		}
-		.mobile-toggle {
+		.mobile-menu-trigger {
 			display: flex;
+		}
+		.search-text,
+		.search-shortcut {
+			display: none;
+		}
+		.search-pill-btn {
+			padding: 0 8px;
+			width: 36px;
+			justify-content: center;
+		}
+		.emergency-action-btn {
+			display: none;
+		}
+		.mobile-thumb-bar {
+			display: block;
 		}
 	}
 </style>

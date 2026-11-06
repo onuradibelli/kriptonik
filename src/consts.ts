@@ -1,5 +1,3 @@
-// Place any global data in this file.
-// You can import this data from anywhere in your site by using the `import` keyword.
-
-export const SITE_TITLE = "Kriptonik | Hesapsız ve Anında Kripto Araçları";
-export const SITE_DESCRIPTION = "Kripto'da takıldığın an, çözüm burada. Yanlış ağ, takılan işlem, maliyet kıyası ve güvenlik araçları.";
+// src/consts.ts - Global Site Constants
+export const SITE_TITLE = "Kriptonik — Kripto Saha Kılavuzu";
+export const SITE_DESCRIPTION = "Kripto işlemlerinde hata payını azaltan bağımsız saha kılavuzu. Yanlış ağ teşhisi, takılan işlem çözümleri, transfer maliyetleri ve adres denetimi.";

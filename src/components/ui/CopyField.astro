@@ -1,0 +1,97 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+	value: string;
+	label?: string;
+	class?: string;
+}
+
+const { value, label, class: className = '' } = Astro.props;
+---
+
+<div class={`ui-copy-field ${className}`}>
+	{label && <span class="copy-label">{label}</span>}
+	<div class="copy-box">
+		<input type="text" readonly value={value} class="copy-input font-mono" />
+		<button type="button" class="copy-btn" aria-label="Panoya Kopyala" data-copy={value}>
+			<Icon name="copy" size={15} />
+			<span class="copy-btn-text">Kopyala</span>
+		</button>
+	</div>
+</div>
+
+<script>
+	document.addEventListener('click', (e) => {
+		const target = (e.target as HTMLElement).closest('[data-copy]') as HTMLElement | null;
+		if (!target) return;
+
+		const text = target.getAttribute('data-copy');
+		if (!text) return;
+
+		navigator.clipboard.writeText(text).then(() => {
+			const label = target.querySelector('.copy-btn-text');
+			if (label) {
+				const orig = label.textContent;
+				label.textContent = 'Kopyalandı!';
+				setTimeout(() => { label.textContent = orig; }, 2000);
+			}
+		});
+	});
+</script>
+
+<style>
+	.ui-copy-field {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.copy-label {
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--text-dim);
+	}
+
+	.copy-box {
+		display: flex;
+		align-items: center;
+		background: var(--surface-2);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-sm);
+		overflow: hidden;
+	}
+
+	.copy-input {
+		flex: 1;
+		background: transparent;
+		border: none;
+		padding: 8px 12px;
+		color: var(--text);
+		font-size: 13px;
+		outline: none;
+		min-width: 0;
+	}
+
+	.copy-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 8px 12px;
+		background: var(--surface);
+		border: none;
+		border-left: 1px solid var(--line);
+		color: var(--text-dim);
+		font-size: 12px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 120ms ease;
+	}
+
+	.copy-btn:hover {
+		color: var(--text);
+		background: var(--line);
+	}
+</style>

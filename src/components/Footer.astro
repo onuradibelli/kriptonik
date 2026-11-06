@@ -1,299 +1,251 @@
 ---
+// src/components/Footer.astro - Cockpit Footer (Strict 3-column layout, zero tech stack vanity badges)
+import Icon from './ui/Icon.astro';
 ---
 
-<footer class="site-footer">
-	<div class="container footer-container">
-		<div class="footer-top-grid">
-			<!-- Col 1: Brand & Promise -->
+<footer class="cockpit-footer">
+	<div class="footer-inner">
+		<div class="footer-grid">
+			<!-- Col 1: Brand & Mission -->
 			<div class="footer-col brand-col">
-				<div class="footer-brand">
-					<div class="f-logo-icon">
-						<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-							<path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" opacity="0.9" />
-							<path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+				<a href="/" class="f-brand">
+					<div class="f-brand-mark" aria-hidden="true">
+						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="12" cy="12" r="9"/>
+							<path d="M12 3v4M12 17v4M3 12h4M17 12h4"/>
+							<circle cx="12" cy="12" r="2" fill="currentColor"/>
 						</svg>
 					</div>
-					<span class="f-logo-text">Kriptonik</span>
-				</div>
-				<p class="footer-desc">
-					Türkiye'nin şeffaf ve doğrulanabilir kripto veri platformu: Canlı piyasa, borsa derinlikleri, ETF akışları ve özgün Kriptonik endeksleri.
+					<span class="f-brand-name">kriptonik</span>
+				</a>
+				<p class="f-tagline">
+					Kripto işlemlerinde hata payını azaltan, bağımsız ve açık kaynaklı saha kılavuzu.
 				</p>
-				<div class="system-status-indicator">
-					<span class="status-dot"></span>
-					<a href="/durum" class="status-link">Tüm Servisler Operasyonel (Durum)</a>
+				<div class="f-integrity-note">
+					<Icon name="shield-check" size={14} class="f-icon" />
+					<span>Kriptonik seed phrase veya private key asla talep etmez.</span>
 				</div>
 			</div>
 
-			<!-- Col 2: Türkiye & ETF -->
+			<!-- Col 2: Tools & Solvers -->
 			<div class="footer-col">
-				<h4 class="col-title">Türkiye & ETF Verisi</h4>
-				<ul class="footer-links">
-					<li><a href="/turkiye">Türkiye Veri Merkezi Hub</a></li>
-					<li><a href="/turkiye/usdt-tl-primi">USDT/TL Tether Primi</a></li>
-					<li><a href="/turkiye/borsa-fiyat-farki">Arbitraj & Borsa Makası</a></li>
-					<li><a href="/turkiye/likidite-ve-derinlik">TL Likidite & Derinlik</a></li>
-					<li><a href="/turkiye/borsalar">Borsalar Pazar Payı</a></li>
-					<li><a href="/turkiye/borsa-ucretleri">Borsa Komisyon & Limitler</a></li>
-					<li><a href="/etf">ABD Spot Bitcoin ETF Akışları</a></li>
+				<h4 class="f-heading">Araçlar & Çözücüler</h4>
+				<ul class="f-links">
+					<li><a href="/araclar/yanlis-aga-gonderdim">Yanlış Ağa Gönderdim Teşhisi</a></li>
+					<li><a href="/araclar/takilan-islem">Takılan İşlem Teşhisi (Pending)</a></li>
+					<li><a href="/araclar/adres-ag-eslestirici">Adres & Ağ Doğrulama</a></li>
+					<li><a href="/araclar/maliyet-karsilastirici">Gerçek Transfer Maliyeti</a></li>
+					<li><a href="/araclar/cuzdan-guvenlik-kontrolu">Cüzdan Güvenlik Denetimi</a></li>
+					<li><a href="/kac-tl">Kaç TL? Canlı Çevirici</a></li>
+					<li><a href="/araclar">Tüm Araç Listesi →</a></li>
 				</ul>
 			</div>
 
-			<!-- Col 3: Türev, DeFi & Endeksler -->
+			<!-- Col 3: Content & Transparency -->
 			<div class="footer-col">
-				<h4 class="col-title">Türev, DeFi & Endeks</h4>
-				<ul class="footer-links">
-					<li><a href="/endeksler">Kriptonik Özgün Endeksleri</a></li>
-					<li><a href="/turev">Vadeli Fonlama Isısı & OI</a></li>
-					<li><a href="/stablecoin">Stablecoin Arz & Depeg</a></li>
-					<li><a href="/defi">DeFi TVL & Gelir Tablosu</a></li>
-					<li><a href="/zincir-ustu">Zincir Üstü (Mempool & Gas)</a></li>
-					<li><a href="/veri">Açık Veri Portalı (CSV/JSON)</a></li>
-				</ul>
-			</div>
-
-			<!-- Col 4: Kaç TL? & Hesaplama -->
-			<div class="footer-col">
-				<h4 class="col-title">Kaç TL? Canlı Çevirici</h4>
-				<ul class="footer-links">
-					<li><a href="/kac-tl">Tüm Çevirici Hub</a></li>
-					<li><a href="/kac-tl/1-dolar-kac-tl">1 Dolar Kaç TL?</a></li>
-					<li><a href="/kac-tl/100-dolar-kac-tl">100 Dolar Kaç TL?</a></li>
-					<li><a href="/kac-tl/1-bitcoin-kac-tl">1 Bitcoin Kaç TL?</a></li>
-					<li><a href="/kac-tl/1-ethereum-kac-tl">1 Ethereum Kaç TL?</a></li>
-					<li><a href="/araclar/maliyet-karsilastirici">Borsa Maliyet Kıyaslayıcı</a></li>
-					<li><a href="/araclar/dca-simulator">DCA Simülatörü</a></li>
-				</ul>
-			</div>
-
-			<!-- Col 5: Acil Araçlar & Bilgi -->
-			<div class="footer-col">
-				<h4 class="col-title">Araçlar & Şeffaflık</h4>
-				<ul class="footer-links">
-					<li><a href="/araclar/yanlis-aga-gonderdim">Yanlış Ağa Gönderdim</a></li>
-					<li><a href="/araclar/takilan-islem">Takılan İşlem Teşhisi</a></li>
-					<li><a href="/sozluk">Kripto Terimleri Sözlüğü</a></li>
-					<li><a href="/rehber">Güvenlik Rehberleri</a></li>
+				<h4 class="f-heading">İçerik & Şeffaflık</h4>
+				<ul class="f-links">
+					<li><a href="/rehber">Güvenlik ve Çözüm Rehberleri</a></li>
+					<li><a href="/sozluk">Teknik Kripto Sözlüğü</a></li>
+					<li><a href="/piyasa">Canlı Piyasa ve Endeksler</a></li>
+					<li><a href="/turkiye">Türkiye Kripto Veri Merkezi</a></li>
 					<li><a href="/metodoloji">Hesaplama Metodolojisi</a></li>
-					<li><a href="/gizlilik">Gizlilik Taahhüdü (KVKK)</a></li>
+					<li><a href="/affiliate-aciklamasi">Şeffaf Gelir Politikası</a></li>
+					<li><a href="/gizlilik">Gizlilik Taahhüdü</a></li>
 					<li><a href="/risk-uyarisi">Risk Uyarısı</a></li>
 				</ul>
 			</div>
 		</div>
 
-		<!-- Legal Disclaimer Box -->
-		<div class="footer-disclaimer-box">
-			<span class="disclaimer-title">YASAL UYARI VE GİZLİLİK TAAHHÜDÜ</span>
-			<p>
-				Kriptonik (kriptonik.com) yalnızca tarafsız bilgi, teşhis simülasyonu ve teknik hesaplama araçları sunar. Sitede yer alan hiçbir içerik veya araç çıktısı <strong>yatırım tavsiyesi</strong> niteliğinde değildir. Girdiğiniz adresler ve işlem kodları sunucularımızda kaydedilmez ve kimliğinizle ilişkilendirilmez. Kriptonik özel anahtar veya tohum kelimeleri asla talep etmez.
+		<!-- Legal Notice Box -->
+		<div class="footer-legal-bar">
+			<p class="f-legal-text">
+				<strong>Önemli Hatırlatma:</strong> Kriptonik'te sunulan veriler, hesaplama formülleri ve hata tespit adımları eğitim ve teşhis amaçlıdır; yatırım tavsiyesi veya varlık kurtarma garantisi teşkil etmez. Blokzincir transferleri geri döndürülemez niteliktedir. Sana "kayıp paranı kurtarırım" diyenlere karşı dikkatli ol. Ayrıntılı yasal sınırlar için <a href="/risk-uyarisi">Risk Uyarısı</a> ve <a href="/kullanim-sartlari">Kullanım Şartları</a> sayfalarını oku.
 			</p>
-		</div>
-
-		<!-- Bottom Copyright Row -->
-		<div class="footer-bottom-row">
-			<div class="copyright-text">
-				© 2026 Kriptonik (kriptonik.com). Tüm hakları saklıdır.
-			</div>
-			<div class="tech-stack-tag">
-				<span>Global Edge Mimari • Astro & Cloudflare</span>
+			<div class="f-bottom-meta">
+				<span>© {new Date().getFullYear()} kriptonik. Bağımsız saha kılavuzu.</span>
+				<div class="f-sub-links">
+					<a href="/hakkimizda">Hakkımızda</a>
+					<span class="sep">•</span>
+					<a href="/gizlilik">Gizlilik</a>
+					<span class="sep">•</span>
+					<a href="/risk-uyarisi">Risk Metni</a>
+				</div>
 			</div>
 		</div>
 	</div>
 </footer>
 
 <style>
-	.site-footer {
-		background: var(--bg-sunken);
-		border-top: 1px solid var(--border);
-		padding: 64px 0 32px;
-		margin-top: auto;
-		transition: background 180ms ease, border-color 180ms ease;
+	.cockpit-footer {
+		background: var(--surface);
+		border-top: 1px solid var(--line);
+		padding: 48px 0 24px;
+		margin-top: 64px;
+		color: var(--text-muted);
+		font-size: 13px;
 	}
 
-	.footer-container {
-		display: flex;
-		flex-direction: column;
-		gap: 40px;
+	.footer-inner {
+		max-width: var(--max-w);
+		margin: 0 auto;
+		padding: 0 24px;
 	}
 
-	.footer-top-grid {
+	.footer-grid {
 		display: grid;
-		grid-template-columns: 1.4fr repeat(4, 1fr);
-		gap: 32px;
-	}
-
-	@media (max-width: 1100px) {
-		.footer-top-grid {
-			grid-template-columns: repeat(3, 1fr);
-		}
-		.brand-col {
-			grid-column: 1 / -1;
-		}
-	}
-
-	@media (max-width: 680px) {
-		.footer-top-grid {
-			grid-template-columns: 1fr;
-			gap: 28px;
-		}
+		grid-template-columns: 1.4fr 1fr 1fr;
+		gap: 40px;
+		margin-bottom: 40px;
 	}
 
 	.brand-col {
 		display: flex;
 		flex-direction: column;
-		gap: 16px;
-	}
-
-	.footer-brand {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-	}
-
-	.f-logo-icon {
-		width: 30px;
-		height: 30px;
-		border-radius: 8px;
-		background: var(--primary-soft);
-		border: 1px solid rgba(16, 185, 129, 0.2);
-		color: var(--primary);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.f-logo-text {
-		font-family: 'Space Grotesk', sans-serif;
-		font-weight: 800;
-		font-size: 18px;
-		color: var(--text);
-		letter-spacing: -0.02em;
-	}
-
-	.footer-desc {
-		font-size: 13px;
-		color: var(--text-muted);
-		line-height: 1.6;
-		max-width: 320px;
-		margin: 0;
-	}
-
-	.system-status-indicator {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		font-size: 12px;
-		color: var(--text-muted);
-		background: var(--bg-elev);
-		border: 1px solid var(--border);
-		padding: 6px 12px;
-		border-radius: 9999px;
-		width: fit-content;
-	}
-
-	.status-dot {
-		width: 7px;
-		height: 7px;
-		border-radius: 50%;
-		background: var(--success);
-		box-shadow: 0 0 6px var(--success);
-	}
-
-	.status-link {
-		color: var(--text-muted);
-		text-decoration: none;
-		font-weight: 500;
-	}
-
-	.status-link:hover {
-		color: var(--text);
-	}
-
-	.footer-col {
-		display: flex;
-		flex-direction: column;
 		gap: 14px;
 	}
 
-	.col-title {
-		font-size: 13px;
-		font-weight: 700;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
+	.f-brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		text-decoration: none;
 		color: var(--text);
-		margin: 0;
 	}
 
-	.footer-links {
+	.f-brand-mark {
+		width: 28px;
+		height: 28px;
+		border-radius: var(--radius-sm);
+		background: var(--bg);
+		border: 1px solid var(--line);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--signal);
+	}
+
+	.f-brand-name {
+		font-family: var(--font-display);
+		font-size: 18px;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		color: var(--text);
+	}
+
+	.f-tagline {
+		color: var(--text-subtle);
+		line-height: 1.5;
+		max-width: 340px;
+		font-size: 13px;
+	}
+
+	.f-integrity-note {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 12px;
+		background: var(--bg);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-sm);
+		color: var(--text-subtle);
+		font-size: 12px;
+		font-family: var(--font-mono);
+		max-width: max-content;
+	}
+
+	.f-icon {
+		color: var(--ok);
+		flex-shrink: 0;
+	}
+
+	.f-heading {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--text);
+		margin: 0 0 14px 0;
+	}
+
+	.f-links {
 		list-style: none;
 		padding: 0;
 		margin: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
+		gap: 8px;
 	}
 
-	.footer-links a {
-		font-size: 13px;
-		color: var(--text-muted);
+	.f-links a {
+		color: var(--text-subtle);
 		text-decoration: none;
-		transition: color 150ms ease;
+		transition: color var(--duration-fast) var(--ease-standard);
+		font-size: 13px;
 	}
 
-	.footer-links a:hover {
-		color: var(--primary);
+	.f-links a:hover {
+		color: var(--signal);
 	}
 
-	.footer-disclaimer-box {
-		background: var(--bg-elev);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		padding: 18px 24px;
+	.footer-legal-bar {
+		border-top: 1px solid var(--line);
+		padding-top: 24px;
 		display: flex;
 		flex-direction: column;
-		gap: 6px;
+		gap: 16px;
 	}
 
-	.disclaimer-title {
+	.f-legal-text {
+		color: var(--text-subtle);
 		font-size: 11px;
-		font-weight: 800;
-		letter-spacing: 0.06em;
-		color: var(--text-faint);
-	}
-
-	.footer-disclaimer-box p {
-		font-size: 12px;
-		color: var(--text-muted);
 		line-height: 1.6;
 		margin: 0;
 	}
 
-	.footer-disclaimer-box strong {
+	.f-legal-text a {
 		color: var(--text);
+		text-decoration: underline;
+		text-underline-offset: 2px;
 	}
 
-	.footer-bottom-row {
+	.f-bottom-meta {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
-		padding-top: 16px;
-		border-top: 1px solid var(--border);
-		font-size: 12px;
-		color: var(--text-faint);
+		justify-content: space-between;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		color: var(--text-subtle);
 		flex-wrap: wrap;
 		gap: 12px;
 	}
 
-	@media (max-width: 900px) {
-		.footer-top-grid {
-			grid-template-columns: 1fr 1fr;
-		}
+	.f-sub-links {
+		display: flex;
+		align-items: center;
+		gap: 8px;
 	}
 
-	@media (max-width: 580px) {
-		.footer-top-grid {
+	.f-sub-links a {
+		color: var(--text-subtle);
+		text-decoration: none;
+	}
+
+	.f-sub-links a:hover {
+		color: var(--text);
+	}
+
+	.sep {
+		opacity: 0.4;
+	}
+
+	@media (max-width: 900px) {
+		.footer-grid {
 			grid-template-columns: 1fr;
+			gap: 32px;
 		}
-		.footer-bottom-row {
+		.f-bottom-meta {
 			flex-direction: column;
 			align-items: flex-start;
 		}

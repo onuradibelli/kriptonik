@@ -1,0 +1,392 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/ui/Icon.astro';
+import Button from '../components/ui/Button.astro';
+import Card from '../components/ui/Card.astro';
+import StatusPill from '../components/ui/StatusPill.astro';
+import Callout from '../components/ui/Callout.astro';
+import CopyField from '../components/ui/CopyField.astro';
+---
+
+<Layout title="Kriptonik — Saha Kılavuzu Stil Rehberi (Faz 1)" description="Tasarım sistemi tokenları, Bricolage + IBM Plex tipografi, SVG ikon seti ve kokpit bileşenleri.">
+	<div class="styleguide-page">
+		<div class="container">
+			
+			<!-- Header -->
+			<div class="sg-header">
+				<div class="cockpit-tag signal">FAZ 1 · TASARIM SİSTEMİ</div>
+				<h1>Saha Kılavuzu & Kokpit Tasarım Sistemi</h1>
+				<p class="lead">
+					Lacivert/neon camsı estetik tamamen terk edildi. Sıcak grafit ve kâğıt tonları, Bricolage Grotesque başlıkları, 
+					IBM Plex Sans gövde metni ve sıfır emoji kuralıyla 1.5px SVG çizgi ikon seti.
+				</p>
+			</div>
+
+			<!-- 1. Color Palette Tokens -->
+			<section class="sg-section">
+				<div class="sg-section-head">
+					<span class="step-num">01</span>
+					<h2>Renk Sistemi & Tokenlar (Grafit & Kâğıt)</h2>
+				</div>
+
+				<div class="palette-grid">
+					<div class="color-swatch" style="background: var(--bg); border-color: var(--line);">
+						<div class="swatch-meta">
+							<strong>--bg</strong>
+							<span>Zemin</span>
+						</div>
+					</div>
+					<div class="color-swatch" style="background: var(--surface); border-color: var(--line);">
+						<div class="swatch-meta">
+							<strong>--surface</strong>
+							<span>Kart Yüzeyi</span>
+						</div>
+					</div>
+					<div class="color-swatch" style="background: var(--surface-2); border-color: var(--line);">
+						<div class="swatch-meta">
+							<strong>--surface-2</strong>
+							<span>Hover & Yükselti</span>
+						</div>
+					</div>
+					<div class="color-swatch" style="background: var(--line); border-color: var(--line);">
+						<div class="swatch-meta" style="color: var(--text);">
+							<strong>--line</strong>
+							<span>1px Kenarlık</span>
+						</div>
+					</div>
+					<div class="color-swatch" style="background: var(--signal); color: var(--signal-ink);">
+						<div class="swatch-meta">
+							<strong>--signal</strong>
+							<span>Ana Vurgu (Aksiyon)</span>
+						</div>
+					</div>
+					<div class="color-swatch" style="background: var(--ok); color: #0C2B18;">
+						<div class="swatch-meta">
+							<strong>--ok</strong>
+							<span>Güvenli / Başarılı</span>
+						</div>
+					</div>
+					<div class="color-swatch" style="background: var(--warn); color: #2B1D00;">
+						<div class="swatch-meta">
+							<strong>--warn</strong>
+							<span>Dikkat / Uyarı</span>
+						</div>
+					</div>
+					<div class="color-swatch" style="background: var(--danger); color: #FFFFFF;">
+						<div class="swatch-meta">
+							<strong>--danger</strong>
+							<span>Tehlike / Kayıp Riski</span>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- 2. Typography Specimen -->
+			<section class="sg-section">
+				<div class="sg-section-head">
+					<span class="step-num">02</span>
+					<h2>Tipografi & Karakter Testi</h2>
+				</div>
+
+				<div class="type-specimen-grid">
+					<Card class="type-card">
+						<span class="spec-label">Başlıklar: Bricolage Grotesque (600–800)</span>
+						<h1 style="margin: 8px 0;">Kripto'da takıldığın an, çözüm burada.</h1>
+						<h2>Hızlı Teşhis ve Saha Kılavuzu Kokpiti</h2>
+						<h3>Adım Adım Geri Alma ve Kurtarma Kılavuzu</h3>
+					</Card>
+
+					<Card class="type-card">
+						<span class="spec-label">Gövde: IBM Plex Sans (Türkçe Karakter Desteği Tam)</span>
+						<p class="turkish-test">
+							<strong>Türkçe Test Cümlesi:</strong> Çöğüroğlu şemsiyesi ılık ışıkta pırıldıyor. 
+							Ş, Ğ, I, İ, Ö, Ç, Ü karakterleri hatasız ve yerel gliflerle işlenir.
+						</p>
+						<p>
+							Panikle gelen kullanıcının karşılaştığı sakin, net ve güven veren bir saha el kitabı. 
+							Gereksiz parıltı veya borsa karmaşası yerine havacılık kontrol listesi sadeliği.
+						</p>
+					</Card>
+
+					<Card class="type-card">
+						<span class="spec-label">Sayılar & Hash: JetBrains Mono (Tabular Nums)</span>
+						<div class="mono-specimen font-mono">
+							<div>BTC / USD: $76,160.00 (▲ +%2.14)</div>
+							<div>USD / TRY: ₺50.0500 · USDT / TRY: ₺50.1200</div>
+							<div>TXID: 0x4a2b9f81d3c05e7a912c4b8e019f2a7d4e3b1c6a</div>
+						</div>
+					</Card>
+				</div>
+			</section>
+
+			<!-- 3. SVG Icon Set (No Emojis) -->
+			<section class="sg-section">
+				<div class="sg-section-head">
+					<span class="step-num">03</span>
+					<h2>Teknik SVG İkon Seti (1.5px Stroke · Sıfır Emoji)</h2>
+				</div>
+
+				<div class="icons-grid">
+					<div class="icon-item"><Icon name="route" size={24} /><span>route (Yanlış Ağ)</span></div>
+					<div class="icon-item"><Icon name="timer" size={24} /><span>timer (Takılan İşlem)</span></div>
+					<div class="icon-item"><Icon name="scan-search" size={24} /><span>scan-search (Adres)</span></div>
+					<div class="icon-item"><Icon name="scale" size={24} /><span>scale (Maliyet)</span></div>
+					<div class="icon-item"><Icon name="trending-up" size={24} /><span>trending-up (DCA)</span></div>
+					<div class="icon-item"><Icon name="shield-check" size={24} /><span>shield-check</span></div>
+					<div class="icon-item"><Icon name="alert-triangle" size={24} /><span>alert-triangle</span></div>
+					<div class="icon-item"><Icon name="check-circle" size={24} /><span>check-circle</span></div>
+					<div class="icon-item"><Icon name="copy" size={24} /><span>copy</span></div>
+					<div class="icon-item"><Icon name="lock" size={24} /><span>lock (Güvenlik)</span></div>
+					<div class="icon-item"><Icon name="terminal" size={24} /><span>terminal</span></div>
+					<div class="icon-item"><Icon name="zap" size={24} /><span>zap (Hızlı)</span></div>
+				</div>
+			</section>
+
+			<!-- 4. UI Components Specimen -->
+			<section class="sg-section">
+				<div class="sg-section-head">
+					<span class="step-num">04</span>
+					<h2>Temel UI Bileşenleri (Kokpit Standartları)</h2>
+				</div>
+
+				<!-- Buttons -->
+				<div class="comp-group">
+					<span class="comp-label">Buton Varyantları</span>
+					<div class="btn-cluster">
+						<Button variant="signal" size="lg">
+							<span>Sorunum Var</span>
+							<Icon name="arrow-right" size={16} />
+						</Button>
+						<Button variant="secondary" size="md">
+							<Icon name="route" size={15} />
+							<span>Aracı Başlat</span>
+						</Button>
+						<Button variant="outline" size="md">Kılavuza Git</Button>
+						<Button variant="ghost" size="md">Detayları Gizle</Button>
+						<Button variant="danger" size="sm">Riskli İşlem</Button>
+					</div>
+				</div>
+
+				<!-- Status Pills -->
+				<div class="comp-group">
+					<span class="comp-label">Durum ve Veri Akışı Rozetleri</span>
+					<div class="pill-cluster">
+						<StatusPill type="live" />
+						<StatusPill type="beta" />
+						<StatusPill type="soon" />
+						<StatusPill type="client" />
+						<StatusPill type="server" />
+					</div>
+				</div>
+
+				<!-- Callouts -->
+				<div class="comp-group">
+					<span class="comp-label">Uyarı ve Bilgi Bantları (Callouts)</span>
+					<Callout variant="danger" title="SABİT DOLANDIRICILIK UYARISI">
+						Sana "kayıp kriptonu kurtarırım" diyen herkes dolandırıcıdır. Kriptonik hiçbir zaman ücret, private key veya seed phrase istemez.
+					</Callout>
+
+					<Callout variant="warn" title="İŞLEM ONAY UYARISI">
+						Ağdaki işlem yoğunluğu sebebiyle son bloklarda gaz maliyeti %40 arttı. Transferin onaylanması 15-30 dakika sürebilir.
+					</Callout>
+
+					<Callout variant="ok" title="GÜVENLİ FORMAT DOĞRULANDI">
+						Girilen adres BNB Smart Chain (BEP-20) ve Ethereum (ERC-20) ağlarıyla tam uyumlu bir EVM adresidir.
+					</Callout>
+				</div>
+
+				<!-- CopyField -->
+				<div class="comp-group">
+					<span class="comp-label">Teknik Kopyalama Alanı (CopyField)</span>
+					<div style="max-width: 540px;">
+						<CopyField label="Referans İşlem Kodu (TXID)" value="0x8f3c7a21d5b4e019c8f2a7d4e3b1c6a5d2e4f0a9b8c7d6e5" />
+					</div>
+				</div>
+			</section>
+
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.styleguide-page {
+		padding: 48px 0 96px;
+	}
+
+	.sg-header {
+		margin-bottom: 48px;
+		border-bottom: 1px solid var(--line);
+		padding-bottom: 32px;
+	}
+
+	.sg-header h1 {
+		margin: 12px 0;
+	}
+
+	.sg-section {
+		margin-bottom: 64px;
+	}
+
+	.sg-section-head {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 24px;
+	}
+
+	.step-num {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		font-weight: 700;
+		color: var(--signal);
+		padding: 2px 8px;
+		border: 1px solid var(--line);
+		border-radius: var(--radius-xs);
+		background: var(--surface);
+	}
+
+	.sg-section-head h2 {
+		margin: 0;
+		font-size: 22px;
+	}
+
+	/* Palette Grid */
+	.palette-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 14px;
+	}
+
+	.color-swatch {
+		height: 110px;
+		border-radius: var(--radius-sm);
+		border: 1px solid var(--line);
+		padding: 12px;
+		display: flex;
+		align-items: flex-end;
+		position: relative;
+	}
+
+	.swatch-meta {
+		display: flex;
+		flex-direction: column;
+		font-size: 12px;
+	}
+
+	.swatch-meta strong {
+		font-family: var(--font-mono);
+		font-size: 13px;
+	}
+
+	.swatch-meta span {
+		font-size: 11px;
+		opacity: 0.8;
+	}
+
+	/* Type Specimen */
+	.type-specimen-grid {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.type-card {
+		padding: 24px;
+	}
+
+	.spec-label {
+		display: block;
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 700;
+		color: var(--signal);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: 8px;
+	}
+
+	.turkish-test {
+		font-size: 16px;
+		line-height: 1.6;
+		margin-bottom: 8px;
+		color: var(--text);
+	}
+
+	.mono-specimen {
+		font-size: 13.5px;
+		line-height: 1.8;
+		color: var(--text);
+		background: var(--surface-2);
+		padding: 14px;
+		border-radius: var(--radius-xs);
+		border: 1px solid var(--line);
+	}
+
+	/* Icons Grid */
+	.icons-grid {
+		display: grid;
+		grid-template-columns: repeat(6, 1fr);
+		gap: 12px;
+	}
+
+	.icon-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-sm);
+		padding: 18px 10px;
+		text-align: center;
+		color: var(--text);
+	}
+
+	.icon-item span {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		color: var(--text-dim);
+	}
+
+	/* Comp Group */
+	.comp-group {
+		margin-bottom: 28px;
+	}
+
+	.comp-label {
+		display: block;
+		font-family: var(--font-mono);
+		font-size: 11.5px;
+		font-weight: 700;
+		color: var(--text-dim);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		margin-bottom: 12px;
+	}
+
+	.btn-cluster, .pill-cluster {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		flex-wrap: wrap;
+	}
+
+	@media (max-width: 900px) {
+		.palette-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		.icons-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	@media (max-width: 580px) {
+		.palette-grid {
+			grid-template-columns: 1fr;
+		}
+		.icons-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+</style>

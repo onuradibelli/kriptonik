@@ -1,18 +1,24 @@
 ---
+// src/pages/araclar/index.astro - Cockpit Saha Araçları Dizini
 import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/ui/Icon.astro';
+import StatusPill from '../../components/ui/StatusPill.astro';
 
-const pageTitle = "Kripto Araçları Dizini (18 Problem Çözücü & Hesaplayıcı) | Kriptonik";
-const pageDesc = "Üyelik istemeyen, verilerinizi kaydetmeyen ve sade Türkçe ile çalışan kripto problem çözücü ve teşhis araçları.";
+const pageTitle = "Kripto Saha Araçları Dizini | Kriptonik";
+const pageDesc = "Üyelik istemeyen, verilerini kaydetmeyen ve adım adım Türkçe çalışan kripto problem çözücü ve teşhis araçları.";
 
-const tools = [
+// Active, fully working tools
+const activeTools = [
 	{
 		id: "yanlis-ag",
-		title: "Yanlış Ağa Gönderdim Sihirbazı",
+		title: "Yanlış Ağa Gönderdim Teşhisi",
 		category: "urgent",
 		categoryName: "Acil Sorun",
 		slug: "/araclar/yanlis-aga-gonderdim",
-		desc: "Para yanlış ağa transfer edildiğinde kurtarılabilirlik durumunu anında öğrenin, adım adım çözüm ve hazır borsa destek metnini alın.",
-		icon: "alert"
+		desc: "Farklı ağa gönderilen token'ların kurtarılabilirlik teşhisi, cüzdan adımları ve borsa destek mesaj şablonu.",
+		icon: "alert-triangle",
+		status: "live" as const,
+		dataFlow: "client" as const
 	},
 	{
 		id: "takilan-islem",
@@ -20,8 +26,10 @@ const tools = [
 		category: "urgent",
 		categoryName: "Acil Sorun",
 		slug: "/araclar/takilan-islem",
-		desc: "İşleminiz saatlerdir onaylanmıyor mu? Mempool durumunu analiz edin, RBF, CPFP veya Nonce sıfırlama ile işlemi hızlandırın.",
-		icon: "clock"
+		desc: "Mempool kuyruğundaki bekleyen işlemleri sorgula, RBF ve Nonce hızlandırma çözümlerini gör.",
+		icon: "activity",
+		status: "live" as const,
+		dataFlow: "server" as const
 	},
 	{
 		id: "islem-cevirmen",
@@ -29,35 +37,32 @@ const tools = [
 		category: "urgent",
 		categoryName: "Acil Sorun",
 		slug: "/araclar/islem-cevirmeni",
-		desc: "Karmaşık transfer hash kodlarını ve akıllı kontrat çağrılarını sade Türkçe ile açıklar: kimden kime, ne kadar, ne yaptı?",
-		icon: "file-text"
+		desc: "Karmaşık transfer hash kodlarını ve akıllı sözleşme çağrılarını sade Türkçe ile açıklar.",
+		icon: "file-text",
+		status: "beta" as const,
+		dataFlow: "server" as const
 	},
 	{
 		id: "adres-ag",
-		title: "Adres Ağ Eşleştirici & Doğrulayıcı",
+		title: "Adres ve Ağ Format Denetimi",
 		category: "security",
 		categoryName: "Güvenlik",
 		slug: "/araclar/adres-ag-eslestirici",
-		desc: "Cüzdan adresinin formatından hangi blokzincir ağlarını desteklediğini doğrulayın, çapraz ağ kaybı riskini sıfırlayın.",
-		icon: "shield"
-	},
-	{
-		id: "guvenlik-kontrol",
-		title: "Güvenlik Kontrolü (Adres / URL / Token)",
-		category: "security",
-		categoryName: "Güvenlik",
-		slug: "/araclar/guvenlik-kontrolu",
-		desc: "Şüpheli web siteleri, cüzdan adresleri ve rug-pull token kontratları için bilinen kara liste ve risk sinyalleri taraması.",
-		icon: "shield-alert"
+		desc: "Gönderim öncesi EVM, Tron, Bitcoin, Solana adres checksum ve ağ uyumluluk kontrolü.",
+		icon: "shield-check",
+		status: "live" as const,
+		dataFlow: "client" as const
 	},
 	{
 		id: "cuzdan-guvenlik",
-		title: "Cüzdan Güvenlik Check-up'ı",
+		title: "Cüzdan Güvenlik Denetimi",
 		category: "security",
 		categoryName: "Güvenlik",
 		slug: "/araclar/cuzdan-guvenlik-kontrolu",
-		desc: "Tarayıcı üzerinde çalışan interaktif denetim listesiyle cüzdanınızın güvenlik açıklarını ve risk skorunu belirleyin.",
-		icon: "lock"
+		desc: "Allowance akıllı sözleşme izinleri, seed saklama alışkanlıkları ve phishing açıklarını tara.",
+		icon: "lock",
+		status: "live" as const,
+		dataFlow: "client" as const
 	},
 	{
 		id: "maliyet-kiyas",
@@ -65,17 +70,21 @@ const tools = [
 		category: "calc",
 		categoryName: "Hesaplayıcı",
 		slug: "/araclar/maliyet-karsilastirici",
-		desc: "TL ile kripto alırken veya satarken borsa komisyonu, spread ve ağ çekim ücreti dahil gerçek net maliyeti hesaplayın.",
-		icon: "scale"
+		desc: "Komisyon, kur makası ve ağ çekim ücretini toplayarak en düşük maliyetli borsa rotasını belirle.",
+		icon: "layers",
+		status: "live" as const,
+		dataFlow: "client" as const
 	},
 	{
 		id: "dca-sim",
-		title: "DCA Geri Test Simülatörü",
+		title: "DCA Simülatörü",
 		category: "calc",
 		categoryName: "Hesaplayıcı",
 		slug: "/araclar/dca-simulator",
-		desc: "Geçmişten bugüne düzenli Bitcoin veya Ethereum alsaydınız bugünkü portföy büyüklüğünüz, maliyetiniz ve kârınız ne olurdu?",
-		icon: "trending-up"
+		desc: "Belirli aralıklarla yapılan düzenli kripto alımlarının geçmiş kâr/zarar ve maliyet performansını test et.",
+		icon: "refresh",
+		status: "live" as const,
+		dataFlow: "client" as const
 	},
 	{
 		id: "kar-zarar",
@@ -84,7 +93,9 @@ const tools = [
 		categoryName: "Hesaplayıcı",
 		slug: "/araclar/kar-zarar-hesaplama",
 		desc: "Kademeli alımlar için ağırlıklı ortalama maliyet, kâr/zarar yüzdesi ve hedef satış fiyatı projeksiyonu.",
-		icon: "calculator"
+		icon: "calculator",
+		status: "live" as const,
+		dataFlow: "client" as const
 	},
 	{
 		id: "kaldirac",
@@ -93,440 +104,556 @@ const tools = [
 		categoryName: "Hesaplayıcı",
 		slug: "/araclar/kaldirac-likidasyon",
 		desc: "İzole vadeli işlem pozisyonları için tahmini likidasyon fiyatı, teminat yeterliliği ve risk simülasyonu.",
-		icon: "activity"
+		icon: "activity",
+		status: "live" as const,
+		dataFlow: "client" as const
 	},
 	{
-		id: "staking",
-		title: "Staking Getiri Hesaplayıcı",
-		category: "calc",
-		categoryName: "Hesaplayıcı",
-		slug: "/araclar/staking-getiri",
-		desc: "ETH, SOL, ATOM ve popüler proof-of-stake varlıkları için bileşik faiz ve net reel getiri hesaplayıcı.",
-		icon: "percent"
-	},
-	{
-		id: "madencilik",
-		title: "Madencilik Kârlılık Hesabı",
-		category: "calc",
-		categoryName: "Hesaplayıcı",
-		slug: "/araclar/madencilik-karlilik",
-		desc: "Hashrate, elektrik maliyeti (kWh) ve donanım tüketimi üzerinden net madencilik kârlılığını hesaplayın.",
-		icon: "cpu"
-	},
-	{
-		id: "csv-portfoy",
-		title: "CSV Portföy Analizi (İstemci Taraflı)",
-		category: "calc",
-		categoryName: "Hesaplayıcı",
-		slug: "/araclar/csv-portfoy-analizi",
-		desc: "Borsa işlem geçmişi CSV dosyanızı tarayıcınızda yerel olarak ayrıştırın; toplam hacim ve kâr/zarar özetinizi görün.",
-		icon: "table"
-	},
-	{
-		id: "donusturucu",
-		title: "Kripto Para Dönüştürücü",
+		id: "kripto-donusturucu",
+		title: "Kripto & Döviz Dönüştürücü",
 		category: "calc",
 		categoryName: "Hesaplayıcı",
 		slug: "/araclar/kripto-donusturucu",
-		desc: "Canlı piyasa kurları üzerinden 50+ kripto para ve Türk Lirası / Dolar / Euro arasında anlık dönüştürme.",
-		icon: "repeat"
+		desc: "250+ kripto para ve Türk Lirası arasında anlık piyasa fiyatlarıyla çift yönlü çeviri yap.",
+		icon: "refresh",
+		status: "live" as const,
+		dataFlow: "server" as const
 	},
 	{
-		id: "birim-cevirici",
-		title: "Birim Çevirici (Wei / Gwei / Sat)",
-		category: "calc",
-		categoryName: "Hesaplayıcı",
-		slug: "/araclar/birim-cevirici",
-		desc: "Ethereum (Wei, Gwei, Ether) ve Bitcoin (Satoshi, BTC) alt birimleri arasında hatasız ondalık çevirisi.",
-		icon: "hash"
-	},
-	{
-		id: "gas-ucret",
+		id: "gas-ucret-takip",
 		title: "Gas & Ağ Ücreti Takipçisi",
 		category: "market",
-		categoryName: "Piyasa & Takip",
+		categoryName: "Piyasa",
 		slug: "/araclar/gas-ucret-takip",
-		desc: "Ethereum, Bitcoin, Tron ve L2 ağlarındaki canlı transfer ücretleri ve haftalık en ucuz saatler ısı haritası.",
-		icon: "zap"
+		desc: "Ethereum, Arbitrum, Polygon ve BNB Chain için anlık gwei ve transfer maliyeti izleme.",
+		icon: "activity",
+		status: "live" as const,
+		dataFlow: "server" as const
 	},
 	{
-		id: "depeg-monitor",
+		id: "depeg-monitoru",
 		title: "Stablecoin Depeg Monitörü",
 		category: "market",
-		categoryName: "Piyasa & Takip",
+		categoryName: "Piyasa",
 		slug: "/araclar/depeg-monitoru",
-		desc: "USDT, USDC, DAI ve popüler sabit coinlerin 1$ çıpasından sapma oranlarını ve risk seviyelerini izleyin.",
-		icon: "anchor"
+		desc: "USDT, USDC, DAI ve diğer stablecoin'lerin 1.00$ paritesinden sapmalarını anlık takip et.",
+		icon: "alert-triangle",
+		status: "live" as const,
+		dataFlow: "server" as const
+	}
+];
+
+// Inactive / Coming soon tools (kept honest, separate)
+const upcomingTools = [
+	{
+		title: "Madencilik Kârlılık Hesabı",
+		desc: "Elektrik maliyeti, hashrate ve zorluk derecesine göre ASIC/GPU kârlılık simülatörü.",
+		slug: "/araclar/madencilik-karlilik",
+		icon: "cpu"
 	},
 	{
-		id: "fng-index",
-		title: "Korku ve Açgözlülük Endeksi",
-		category: "market",
-		categoryName: "Piyasa & Takip",
-		slug: "/araclar/korku-acgozluluk-endeksi",
-		desc: "Kripto piyasasının anlık duyarlılık endeksi, tarihsel ortalamalar ve geçmiş döngü karşılaştırmaları.",
-		icon: "bar-chart"
+		title: "CSV Portföy & Vergi Analizi",
+		desc: "Borsa işlem geçmişi CSV dosyalarını yerel olarak ayrıştırarak FIFO kâr/zarar dökümü çıkarma.",
+		slug: "/araclar/csv-portfoy-analizi",
+		icon: "file-text"
 	},
 	{
-		id: "halving",
-		title: "Bitcoin Halving Sayacı",
-		category: "market",
-		categoryName: "Piyasa & Takip",
+		title: "Birim Çevirici (Satoshi, Gwei, Wei)",
+		desc: "Blokzincir hassas matematik birimleri arasında sıfır yuvarlama hatasıyla çevrim.",
+		slug: "/araclar/birim-cevirici",
+		icon: "layers"
+	},
+	{
+		title: "Bitcoin Halving Geri Sayımı",
+		desc: "Blok yüksekliği ve ortalama blok süresine dayalı teknik halving takvimi.",
 		slug: "/araclar/bitcoin-halving",
-		desc: "Sonraki Bitcoin blok yarılanması için blok yüksekliği bazlı hassas geri sayım ve blok ödülü geçmişi.",
-		icon: "calendar"
+		icon: "clock"
 	}
 ];
 ---
 
 <Layout title={pageTitle} description={pageDesc}>
-	<div class="container directory-page">
-		<div class="dir-header">
+	<div class="cockpit-tools-page">
+		<!-- Page Header -->
+		<header class="tools-directory-head">
 			<div class="dir-badge">
-				<span class="badge-dot"></span>
-				<span>18 TAM FONKSİYONEL ARAÇ • SIFIR KAYIT</span>
+				<Icon name="shield-check" size={13} />
+				<span>SIFIR KAYIT • AÇIK KAYNAK • 12 CANLI MODÜL</span>
 			</div>
-			<h1 class="dir-title">Kripto Araçları Dizini</h1>
+			<h1 class="dir-title">Saha Araçları Dizini</h1>
 			<p class="dir-desc">
-				Üyelik istemeyen, verilerinizi sunucuya kaydetmeyen ve sade Türkçe ile çalışan kripto problem çözücü ve teşhis araç seti.
+				Kripto işlemlerinde hata payını azaltan bağımsız araçlar. İhtiyacına uygun modülü filtrele veya doğrudan aramaya başla.
 			</p>
-		</div>
+		</header>
 
-		<!-- Live Filter & Search Bar -->
-		<div class="filter-panel">
-			<div class="search-wrap">
-				<svg class="s-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-				<input type="text" id="tool-search" class="search-input" placeholder="Araç adı veya problem ara (Örn: yanlış ağ, gas, dca, maliyet, güvenlik...)" />
+		<!-- Filter Chips & Search Bar -->
+		<div class="directory-toolbar">
+			<div class="filter-chips" role="tablist" aria-label="Araç Kategorileri">
+				<button type="button" class="chip active" data-filter="all">Tümü ({activeTools.length})</button>
+				<button type="button" class="chip" data-filter="urgent">Acil Sorunlar</button>
+				<button type="button" class="chip" data-filter="security">Güvenlik & Denetim</button>
+				<button type="button" class="chip" data-filter="calc">Hesaplayıcılar</button>
+				<button type="button" class="chip" data-filter="market">Piyasa & İzleme</button>
 			</div>
 
-			<div class="category-tabs">
-				<button class="cat-tab active" data-cat="all">Tümü (18)</button>
-				<button class="cat-tab" data-cat="urgent">Acil Sorunlar</button>
-				<button class="cat-tab" data-cat="calc">Hesaplayıcılar</button>
-				<button class="cat-tab" data-cat="security">Güvenlik</button>
-				<button class="cat-tab" data-cat="market">Piyasa & Takip</button>
+			<div class="filter-search-wrap">
+				<Icon name="search" size={15} class="search-ico" />
+				<input
+					type="text"
+					id="tools-filter-input"
+					placeholder="Araç adı veya sorun ara..."
+					autocomplete="off"
+				/>
 			</div>
 		</div>
 
-		<!-- Tools Grid -->
-		<div class="tools-grid" id="tools-container">
-			{tools.map(tool => (
-				<a href={tool.slug} class="tool-card" data-category={tool.category} data-title={tool.title.toLowerCase()} data-desc={tool.desc.toLowerCase()}>
-					<div class="tool-card-top">
-						<div class="tool-icon-box">
-							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								{tool.category === 'urgent' && <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>}
-								{tool.category === 'calc' && <rect x="4" y="2" width="16" height="20" rx="2"/>}
-								{tool.category === 'security' && <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>}
-								{tool.category === 'market' && <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>}
-							</svg>
+		<!-- Active Tools Grid -->
+		<section class="active-tools-section" aria-label="Canlı Saha Araçları">
+			<div class="tools-grid" id="tools-grid">
+				{activeTools.map(tool => (
+					<a href={tool.slug} class="tool-card" data-category={tool.category} data-name={tool.title.toLowerCase()} data-desc={tool.desc.toLowerCase()}>
+						<div class="card-head">
+							<div class="tool-icon-box">
+								<Icon name={tool.icon} size={18} />
+							</div>
+							<div class="card-pills">
+								<StatusPill status={tool.status} label={tool.status === 'live' ? 'Canlı' : 'Beta'} />
+								<StatusPill dataFlow={tool.dataFlow} />
+							</div>
 						</div>
-						<div class="tool-badges">
-							<span class="category-tag">{tool.categoryName}</span>
-							<span class="live-status-pill">Canlı</span>
+						<div class="card-content">
+							<strong class="tool-card-title">{tool.title}</strong>
+							<p class="tool-card-desc">{tool.desc}</p>
+						</div>
+						<div class="card-footer">
+							<span class="open-label">Aracı Başlat</span>
+							<Icon name="chevron-right" size={14} />
+						</div>
+					</a>
+				))}
+			</div>
+			<div id="no-tools-found" class="no-results-box" style="display: none;">
+				<Icon name="help" size={24} />
+				<p>Aramana uygun bir araç bulunamadı.</p>
+				<button type="button" class="reset-filter-btn" id="reset-filter-btn">Tüm Araçları Göster</button>
+			</div>
+		</section>
+
+		<!-- Upcoming Tools Section (Transparent & Honest) -->
+		<section class="upcoming-tools-section" aria-label="Geliştirme Aşamasındaki Araçlar">
+			<div class="upcoming-head">
+				<div>
+					<span class="upcoming-tag">YAKINDA</span>
+					<h2 class="upcoming-title">Geliştirilmekte Olan Modüller</h2>
+					<p class="upcoming-desc">Henüz canlı veriye bağlanmamış veya doğrulama testleri devam eden araçlar.</p>
+				</div>
+			</div>
+
+			<div class="upcoming-grid">
+				{upcomingTools.map(tool => (
+					<div class="upcoming-card">
+						<div class="card-head">
+							<div class="tool-icon-box muted">
+								<Icon name={tool.icon} size={18} />
+							</div>
+							<StatusPill type="soon" label="Yakında" />
+						</div>
+						<div class="card-content">
+							<strong class="tool-card-title">{tool.title}</strong>
+							<p class="tool-card-desc">{tool.desc}</p>
+						</div>
+						<div class="upcoming-footer">
+							<span class="dev-note">Test Sürecinde</span>
 						</div>
 					</div>
-
-					<div class="tool-card-body">
-						<h3 class="tool-title">{tool.title}</h3>
-						<p class="tool-desc">{tool.desc}</p>
-					</div>
-
-					<div class="tool-card-footer">
-						<span class="open-action">Aracı Başlat</span>
-						<span class="open-arrow">→</span>
-					</div>
-				</a>
-			))}
-		</div>
+				))}
+			</div>
+		</section>
 	</div>
 </Layout>
 
 <script>
-	const searchInput = document.getElementById('tool-search') as HTMLInputElement;
-	const catTabs = document.querySelectorAll('.cat-tab');
-	const toolCards = document.querySelectorAll('.tool-card');
+	function setupToolsDirectory() {
+		const chips = document.querySelectorAll<HTMLButtonElement>('.chip');
+		const input = document.getElementById('tools-filter-input') as HTMLInputElement | null;
+		const cards = document.querySelectorAll<HTMLAnchorElement>('#tools-grid .tool-card');
+		const noResults = document.getElementById('no-tools-found');
+		const resetBtn = document.getElementById('reset-filter-btn');
 
-	let activeCategory = 'all';
+		let activeCat = 'all';
 
-	function filterTools() {
-		const query = searchInput?.value.toLowerCase().trim() || '';
+		function filterTools() {
+			const query = (input?.value || '').trim().toLowerCase();
+			let visibleCount = 0;
 
-		toolCards.forEach(card => {
-			const cardEl = card as HTMLElement;
-			const cardCat = cardEl.getAttribute('data-category');
-			const title = cardEl.getAttribute('data-title') || '';
-			const desc = cardEl.getAttribute('data-desc') || '';
+			cards.forEach(card => {
+				const cat = card.getAttribute('data-category');
+				const name = card.getAttribute('data-name') || '';
+				const desc = card.getAttribute('data-desc') || '';
 
-			const matchesCategory = activeCategory === 'all' || cardCat === activeCategory;
-			const matchesQuery = query === '' || title.includes(query) || desc.includes(query);
+				const matchesCat = activeCat === 'all' || cat === activeCat;
+				const matchesQuery = !query || name.includes(query) || desc.includes(query);
 
-			if (matchesCategory && matchesQuery) {
-				cardEl.style.display = 'flex';
-			} else {
-				cardEl.style.display = 'none';
+				if (matchesCat && matchesQuery) {
+					card.style.display = 'flex';
+					visibleCount++;
+				} else {
+					card.style.display = 'none';
+				}
+			});
+
+			if (noResults) {
+				noResults.style.display = visibleCount === 0 ? 'flex' : 'none';
 			}
+		}
+
+		chips.forEach(chip => {
+			chip.addEventListener('click', () => {
+				chips.forEach(c => c.classList.remove('active'));
+				chip.classList.add('active');
+				activeCat = chip.getAttribute('data-filter') || 'all';
+				filterTools();
+			});
+		});
+
+		input?.addEventListener('input', filterTools);
+
+		resetBtn?.addEventListener('click', () => {
+			if (input) input.value = '';
+			chips.forEach(c => c.classList.remove('active'));
+			chips[0]?.classList.add('active');
+			activeCat = 'all';
+			filterTools();
 		});
 	}
 
-	searchInput?.addEventListener('input', filterTools);
-
-	catTabs.forEach(tab => {
-		tab.addEventListener('click', () => {
-			catTabs.forEach(t => t.classList.remove('active'));
-			tab.classList.add('active');
-			activeCategory = tab.getAttribute('data-cat') || 'all';
-			filterTools();
-		});
-	});
+	setupToolsDirectory();
+	document.addEventListener('astro:after-swap', setupToolsDirectory);
 </script>
 
 <style>
-	.directory-page {
-		padding: 56px 20px 88px;
+	.cockpit-tools-page {
+		max-width: var(--max-w);
+		margin: 0 auto;
+		padding: 32px 24px 60px;
+		display: flex;
+		flex-direction: column;
+		gap: 36px;
 	}
 
-	.dir-header {
-		text-align: center;
-		max-width: 720px;
-		margin: 0 auto 40px;
+	.tools-directory-head {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
 	}
 
 	.dir-badge {
 		display: inline-flex;
 		align-items: center;
-		gap: 8px;
-		background: rgba(16, 185, 129, 0.08);
-		border: 1px solid rgba(16, 185, 129, 0.25);
-		color: var(--primary);
-		padding: 5px 14px;
-		border-radius: 9999px;
+		gap: 6px;
+		padding: 4px 10px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-sm);
+		font-family: var(--font-mono);
 		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.06em;
-		margin-bottom: 20px;
-	}
-
-	.badge-dot {
-		width: 6px;
-		height: 6px;
-		background: var(--primary);
-		border-radius: 50%;
+		font-weight: 600;
+		color: var(--signal);
+		width: max-content;
 	}
 
 	.dir-title {
-		font-size: 40px;
-		font-weight: 800;
-		letter-spacing: -0.03em;
+		font-family: var(--font-display);
+		font-size: clamp(26px, 4vw, 36px);
+		font-weight: 700;
 		color: var(--text);
-		margin: 0 0 14px;
-	}
-
-	.dir-desc {
-		font-size: 16px;
-		color: var(--text-muted);
-		line-height: 1.6;
 		margin: 0;
 	}
 
-	/* Filter Panel */
-	.filter-panel {
-		background: var(--bg-elev);
-		border: 1px solid var(--border);
-		border-radius: 16px;
-		padding: 20px;
-		margin-bottom: 36px;
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
+	.dir-desc {
+		font-size: 15px;
+		line-height: 1.5;
+		color: var(--text-muted);
+		margin: 0;
+		max-width: 680px;
 	}
 
-	.search-wrap {
-		position: relative;
+	/* Toolbar */
+	.directory-toolbar {
 		display: flex;
 		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		flex-wrap: wrap;
 	}
 
-	.s-icon {
+	.filter-chips {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		flex-wrap: wrap;
+	}
+
+	.chip {
+		height: 34px;
+		padding: 0 14px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-sm);
+		color: var(--text-subtle);
+		font-family: var(--font-mono);
+		font-size: 12px;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all var(--duration-fast) var(--ease-standard);
+	}
+
+	.chip:hover {
+		background: var(--surface-hover);
+		color: var(--text);
+	}
+
+	.chip.active {
+		background: var(--signal);
+		color: #14110F;
+		border-color: var(--signal);
+		font-weight: 700;
+	}
+
+	.filter-search-wrap {
+		position: relative;
+		min-width: 260px;
+		flex: 1;
+		max-width: 360px;
+	}
+
+	.search-ico {
 		position: absolute;
-		left: 16px;
-		color: var(--text-faint);
+		left: 12px;
+		top: 50%;
+		transform: translateY(-50%);
+		color: var(--text-subtle);
 		pointer-events: none;
 	}
 
-	.search-input {
+	.filter-search-wrap input {
 		width: 100%;
-		background: var(--bg-sunken);
-		border: 1px solid var(--border);
+		height: 34px;
+		padding: 0 12px 0 36px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-sm);
 		color: var(--text);
-		padding: 14px 18px 14px 46px;
-		border-radius: 10px;
-		font-size: 14.5px;
-		outline: none;
-		transition: border-color var(--transition-base), box-shadow var(--transition-base);
-	}
-
-	.search-input:focus {
-		border-color: var(--primary);
-		box-shadow: 0 0 0 3px var(--primary-glow);
-	}
-
-	.category-tabs {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-	}
-
-	.cat-tab {
-		background: var(--bg-sunken);
-		border: 1px solid var(--border);
-		color: var(--text-muted);
-		padding: 7px 16px;
-		border-radius: 9999px;
+		font-family: var(--font-sans);
 		font-size: 13px;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all var(--transition-fast);
+		outline: none;
+		transition: border-color var(--duration-fast) var(--ease-standard);
 	}
 
-	.cat-tab:hover {
-		color: var(--text);
-		border-color: var(--border-strong);
-	}
-
-	.cat-tab.active {
-		background: rgba(16, 185, 129, 0.12);
-		border-color: var(--primary);
-		color: var(--primary);
-		font-weight: 600;
+	.filter-search-wrap input:focus {
+		border-color: var(--signal);
 	}
 
 	/* Tools Grid */
 	.tools-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-		gap: 20px;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 16px;
 	}
 
 	.tool-card {
-		background: var(--bg-elev);
-		border: 1px solid var(--border);
-		border-radius: 14px;
-		padding: 22px;
-		text-decoration: none;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-md);
+		padding: 20px;
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
-		gap: 16px;
-		transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
+		gap: 14px;
+		text-decoration: none;
+		color: var(--text);
+		transition: all var(--duration-fast) var(--ease-standard);
 	}
 
 	.tool-card:hover {
+		background: var(--surface-hover);
+		border-color: var(--line-strong);
 		transform: translateY(-2px);
-		border-color: var(--border-strong);
-		box-shadow: var(--shadow-card-hover), 0 0 24px rgba(16, 185, 129, 0.04);
+		box-shadow: var(--shadow-sm);
 	}
 
-	.tool-card-top {
+	.card-head {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
+		justify-content: space-between;
+		gap: 10px;
 	}
 
 	.tool-icon-box {
-		width: 38px;
-		height: 38px;
-		border-radius: 9px;
-		background: var(--bg-sunken);
-		border: 1px solid var(--border);
+		width: 34px;
+		height: 34px;
+		border-radius: var(--radius-sm);
+		background: var(--bg);
+		border: 1px solid var(--line);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--primary);
+		color: var(--signal);
 	}
 
-	.tool-badges {
+	.tool-icon-box.muted {
+		color: var(--text-subtle);
+	}
+
+	.card-pills {
 		display: flex;
 		align-items: center;
 		gap: 6px;
+		flex-wrap: wrap;
 	}
 
-	.category-tag {
-		font-size: 11px;
-		font-weight: 600;
-		color: var(--text-faint);
-		background: var(--bg-sunken);
-		border: 1px solid var(--border-subtle);
-		padding: 3px 8px;
-		border-radius: 4px;
-	}
-
-	.live-status-pill {
-		font-family: var(--font-mono);
-		font-size: 10px;
-		font-weight: 700;
-		color: var(--primary);
-		background: rgba(16, 185, 129, 0.12);
-		border: 1px solid rgba(16, 185, 129, 0.25);
-		padding: 2px 7px;
-		border-radius: 4px;
-	}
-
-	.tool-card-body {
+	.card-content {
 		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
 	}
 
-	.tool-title {
-		font-size: 16px;
+	.tool-card-title {
+		font-size: 15px;
 		font-weight: 700;
 		color: var(--text);
-		margin: 0 0 8px;
-		letter-spacing: -0.01em;
-		transition: color var(--transition-fast);
 	}
 
-	.tool-card:hover .tool-title {
-		color: var(--primary);
-	}
-
-	.tool-desc {
+	.tool-card-desc {
 		font-size: 13px;
-		line-height: 1.55;
+		line-height: 1.45;
 		color: var(--text-muted);
 		margin: 0;
 	}
 
-	.tool-card-footer {
-		padding-top: 14px;
-		border-top: 1px solid var(--border-subtle);
+	.card-footer {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
-	}
-
-	.open-action {
-		font-size: 12.5px;
+		justify-content: space-between;
+		padding-top: 12px;
+		border-top: 1px solid var(--line);
+		font-family: var(--font-mono);
+		font-size: 11px;
 		font-weight: 600;
-		color: var(--primary);
+		color: var(--signal);
 	}
 
-	.open-arrow {
+	.no-results-box {
+		padding: 48px 24px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-md);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 12px;
+		color: var(--text-subtle);
+	}
+
+	.reset-filter-btn {
+		height: 32px;
+		padding: 0 14px;
+		background: var(--bg);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-sm);
+		color: var(--signal);
+		font-family: var(--font-mono);
+		font-size: 12px;
+		font-weight: 600;
+		cursor: pointer;
+	}
+
+	/* Upcoming Section */
+	.upcoming-tools-section {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		padding-top: 24px;
+		border-top: 1px solid var(--line);
+	}
+
+	.upcoming-tag {
+		font-family: var(--font-mono);
+		font-size: 10px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		color: var(--text-subtle);
+		display: block;
+		margin-bottom: 4px;
+	}
+
+	.upcoming-title {
+		font-family: var(--font-display);
+		font-size: 20px;
+		font-weight: 700;
+		color: var(--text);
+		margin: 0 0 4px 0;
+	}
+
+	.upcoming-desc {
 		font-size: 13px;
-		color: var(--text-faint);
-		transition: transform var(--transition-fast), color var(--transition-fast);
+		color: var(--text-muted);
+		margin: 0;
 	}
 
-	.tool-card:hover .open-arrow {
-		transform: translateX(3px);
-		color: var(--primary);
+	.upcoming-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 16px;
+	}
+
+	.upcoming-card {
+		background: var(--surface);
+		border: 1px dashed var(--line);
+		border-radius: var(--radius-md);
+		padding: 18px;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		opacity: 0.8;
+	}
+
+	.upcoming-footer {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		padding-top: 10px;
+		border-top: 1px solid var(--line);
+	}
+
+	.dev-note {
+		font-family: var(--font-mono);
+		font-size: 10px;
+		color: var(--text-subtle);
+	}
+
+	@media (max-width: 1024px) {
+		.tools-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		.upcoming-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	@media (max-width: 640px) {
-		.dir-title {
-			font-size: 30px;
-		}
 		.tools-grid {
 			grid-template-columns: 1fr;
+		}
+		.upcoming-grid {
+			grid-template-columns: 1fr;
+		}
+		.directory-toolbar {
+			flex-direction: column;
+			align-items: stretch;
+		}
+		.filter-search-wrap {
+			max-width: 100%;
 		}
 	}
 </style>

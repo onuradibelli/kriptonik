@@ -1,0 +1,51 @@
+---
+interface Props {
+	as?: string;
+	variant?: 'default' | 'surface-2' | 'signal';
+	class?: string;
+	id?: string;
+	[key: string]: any;
+}
+
+const {
+	as: Tag = 'div',
+	variant = 'default',
+	class: className = '',
+	id,
+	...rest
+} = Astro.props;
+---
+
+<Tag
+	id={id}
+	class={`ui-card card-${variant} ${className}`}
+	{...rest}
+>
+	<slot />
+</Tag>
+
+<style>
+	.ui-card {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-md);
+		padding: var(--space-6);
+		position: relative;
+		transition: border-color 150ms ease, background-color 150ms ease;
+	}
+
+	.card-default {
+		background: var(--surface);
+		border-color: var(--line);
+	}
+
+	.card-surface-2 {
+		background: var(--surface-2);
+		border-color: var(--line);
+	}
+
+	.card-signal {
+		background: var(--surface);
+		border-color: var(--signal);
+	}
+</style>

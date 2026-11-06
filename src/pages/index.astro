@@ -1,1682 +1,1422 @@
 ---
+// src/pages/index.astro - Kriptonik Saha Kılavuzu Ana Sayfası
 import Layout from '../layouts/Layout.astro';
-import tr from '../i18n/tr.json';
+import Icon from '../components/ui/Icon.astro';
+import Card from '../components/ui/Card.astro';
+import StatusPill from '../components/ui/StatusPill.astro';
+import Callout from '../components/ui/Callout.astro';
+
+// FAQ Schema data
+const faqItems = [
+	{
+		q: "Yanlış ağa giden parayı Kriptonik kurtarabilir mi?",
+		a: "Kriptonik paranı doğrudan geri çekemez; çünkü blokzincir üzerinde merkezi bir geri alma mekanizması yoktur. Ancak Kriptonik, transferinin kurtarılabilir olup olmadığını (aynı adrese erişim, özel anahtar türetme veya borsa teknik kurtarma prosedürü) adım adım teşhis eder ve borsa destek ekiplerine iletebileceğin teknik talep taslağını hazırlar."
+	},
+	{
+		q: "Kriptonik'te yaptığım işlemler veya adreslerim kaydediliyor mu?",
+		a: "Hayır. Yanlış ağ sihirbazı, adres doğrulama, cüzdan güvenlik kontrolü ve maliyet simülasyonları %100 senin tarayıcında istemci tarafında çalışır. Sunucularımıza hiçbir cüzdan adresi, TX hash veya kişisel veri kaydedilmez. Sunucuya giden tek işlemler canlı piyasa oranlarıdır."
+	},
+	{
+		q: "Sana 'kayıp paranı hemen kurtarırım' diyenlere neden güvenmemelisin?",
+		a: "Blokzincir işlemlerinde 'geri alma yetkisine sahip' üçüncü bir kurtarma firması veya şahıs yoktur. Sosyal medyada veya Telegram'da 'fon kurtarma uzmanı' olduğunu iddia edenler, çaresiz kullanıcıları ikinci kez dolandırmayı hedefler. Kurtarma sadece alıcı cüzdanın özel anahtarına sahipsen veya alıcı borsa kuralları dahilinde mümkündür."
+	},
+	{
+		q: "İşlemim neden saatlerdir onaylanmıyor (pending)?",
+		a: "Genellikle işlem anında ağın aniden sıkışması ve belirlediğin gas ücretinin (Gwei) madencilerin kabul ettiği taban seviyenin altında kalmasından kaynaklanır. RBF (Replace-by-Fee) veya aynı Nonce numarasıyla daha yüksek gas ücretli iptal işlemi göndererek işlemi hızlandırabilirsin."
+	},
+	{
+		q: "Kriptonik tamamen ücretsiz mi?",
+		a: "Evet. Tüm saha araçları ve rehberler açık kaynaklı ve ücretsizdir. Sitemizde pop-up reklamlar yer almaz. Olası gelirler şeffaf bir şekilde etiketlenen borsa referans anlaşmalarından karşılanır ve sıralamalar hiçbir zaman ücrete göre değişmez."
+	}
+];
+
+const faqSchema = {
+	"@context": "https://schema.org",
+	"@type": "FAQPage",
+	"mainEntity": faqItems.map(item => ({
+		"@type": "Question",
+		"name": item.q,
+		"acceptedAnswer": {
+			"@type": "Answer",
+			"text": item.a
+		}
+	}))
+};
+
+const webSiteSchema = {
+	"@context": "https://schema.org",
+	"@type": "WebSite",
+	"name": "Kriptonik",
+	"url": "https://kriptonik.com",
+	"description": "Kripto işlemlerinde hata payını azaltan, bağımsız ve açık kaynaklı saha kılavuzu.",
+	"potentialAction": {
+		"@type": "SearchAction",
+		"target": "https://kriptonik.com/araclar?q={search_term_string}",
+		"query-input": "required name=search_term_string"
+	}
+};
 ---
 
-<Layout title={`${tr.brand.name} | ${tr.brand.slogan}`} description={tr.brand.subtext}>
-	<!-- 1. Hero Section -->
-	<section class="hero-section">
-		<div class="container hero-container">
-			<div class="hero-badge">
-				<span class="live-pulse-dot"></span>
-				<span class="badge-text">SIFIR KAYIT • ANINDA TEŞHİS & ÇÖZÜM</span>
+<Layout
+	title="Kriptonik — Kripto Saha Kılavuzu | Hata Teşhis ve Güvenlik Araçları"
+	description="Yanlış ağa gönderilen transferler, bekleyen onaylar ve adres denetimi için bağımsız saha kılavuzu. Private key asla istenmez, tarayıcı öncelikli teşhis."
+>
+	<script type="application/ld+json" set:html={JSON.stringify(webSiteSchema)} />
+	<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+	<!-- Telemetry Live Ticker Bar (Single line) -->
+	<div class="telemetry-bar" id="telemetry-bar" aria-label="Canlı Piyasa ve Ağ Göstergeleri">
+		<div class="telemetry-inner">
+			<div class="telemetry-track">
+				<div class="telemetry-item">
+					<span class="telemetry-label">BTC:</span>
+					<span class="telemetry-val" id="ticker-btc">$76,160</span>
+					<span class="telemetry-change up" id="ticker-btc-chg">+2.1%</span>
+				</div>
+				<div class="telemetry-sep">/</div>
+				<div class="telemetry-item">
+					<span class="telemetry-label">ETH:</span>
+					<span class="telemetry-val" id="ticker-eth">$2,243</span>
+					<span class="telemetry-change up" id="ticker-eth-chg">+1.5%</span>
+				</div>
+				<div class="telemetry-sep">/</div>
+				<div class="telemetry-item">
+					<span class="telemetry-label">USDT/TRY:</span>
+					<span class="telemetry-val highlight" id="ticker-usdt">50.12 ₺</span>
+				</div>
+				<div class="telemetry-sep">/</div>
+				<div class="telemetry-item">
+					<span class="telemetry-label">ETH Gas:</span>
+					<span class="telemetry-val" id="ticker-gas">14 Gwei</span>
+					<span class="telemetry-tag">Sakin</span>
+				</div>
+				<div class="telemetry-sep">/</div>
+				<div class="telemetry-item">
+					<span class="telemetry-label">Korku & Açgözlülük:</span>
+					<span class="telemetry-val" id="ticker-fng">74</span>
+					<span class="telemetry-tag">Açgözlülük</span>
+				</div>
+			</div>
+			<div class="telemetry-meta">
+				<span class="status-indicator-dot live"></span>
+				<span id="telemetry-timestamp">Canlı Telemetry • 1 dk önce</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="home-container">
+		<!-- HERO: "Ne oldu?" Wizard -->
+		<section class="hero-wizard" id="sorunum-var">
+			<div class="hero-badge-wrap">
+				<span class="hero-chip">
+					<Icon name="shield-check" size={13} />
+					<span>BAĞIMSIZ SAHA KILAVUZU • SIFIR ÜYELİK</span>
+				</span>
 			</div>
 
-			<h1 class="hero-title">
+			<h1 class="hero-headline">
 				Kripto'da takıldığın an,<br />
-				<span class="gradient-text">çözüm burada.</span>
+				<span class="hero-signal">çözüm burada.</span>
 			</h1>
 
-			<p class="hero-desc">
-				Yanlış ağa gönderilen transferler, saatlerdir bekleyen onaylar, en ucuz takas rotaları ve anlık risk teşhisi. Üyelik gerektirmez, verilerinizi asla kaydetmez.
+			<p class="hero-lead">
+				Hangi ağdasın, ne oldu? 4 dokunuşla durumu teşhis et ve güvenli adımlarla ilerle.
 			</p>
 
-			<!-- Hero Problem Resolver Search Box -->
-			<div class="hero-command-bar">
-				<div class="search-input-shell">
-					<svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<circle cx="11" cy="11" r="8"></circle>
-						<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-					</svg>
-					<input 
-						type="text" 
-						id="hero-problem-input" 
-						class="command-input" 
-						placeholder="Sorununuzu yazın... Örn: USDT yanlış ağa gitti, pending kaldı, en ucuz transfer..." 
+			<!-- 4 Troubleshooter Options (Large, touch-friendly cockpit rows) -->
+			<div class="wizard-triage-grid" role="region" aria-label="Acil Sorun Teşhisi">
+				<a href="/araclar/yanlis-aga-gonderdim" class="triage-card" data-issue="wrong-network">
+					<div class="triage-icon-wrap">
+						<Icon name="alert-triangle" size={22} />
+					</div>
+					<div class="triage-body">
+						<span class="triage-step">01 // AĞ UYUMSUZLUĞU</span>
+						<strong class="triage-title">Parayı yanlış ağa gönderdim</strong>
+						<span class="triage-desc">BEP-20, ERC-20 veya TRC-20 aktarımı; borsa veya özel cüzdan kurtarılabilirlik testi.</span>
+					</div>
+					<div class="triage-action">
+						<span class="action-label">Teşhis Et</span>
+						<Icon name="arrow-right" size={18} />
+					</div>
+				</a>
+
+				<a href="/araclar/takilan-islem" class="triage-card" data-issue="stuck-tx">
+					<div class="triage-icon-wrap">
+						<Icon name="activity" size={22} />
+					</div>
+					<div class="triage-body">
+						<span class="triage-step">02 // ONAY BEKLEME</span>
+						<strong class="triage-title">İşlemim saatlerdir onaylanmıyor</strong>
+						<span class="triage-desc">Pending kalan transferler, düşük gas tespiti, Nonce kilitlenmesi ve iptal rotaları.</span>
+					</div>
+					<div class="triage-action">
+						<span class="action-label">Mempool İncele</span>
+						<Icon name="arrow-right" size={18} />
+					</div>
+				</a>
+
+				<a href="/araclar/adres-ag-eslestirici" class="triage-card" data-issue="address-check">
+					<div class="triage-icon-wrap">
+						<Icon name="shield-check" size={22} />
+					</div>
+					<div class="triage-body">
+						<span class="triage-step">03 // GÖNDERİM ÖNCESİ</span>
+						<strong class="triage-title">Göndermeden önce adresi kontrol etmek istiyorum</strong>
+						<span class="triage-desc">EVM, Tron, Bitcoin, Solana adres formatı, checksum ve çapraz ağ risk doğrulaması.</span>
+					</div>
+					<div class="triage-action">
+						<span class="action-label">Formatı Denetle</span>
+						<Icon name="arrow-right" size={18} />
+					</div>
+				</a>
+
+				<a href="/araclar/maliyet-karsilastirici" class="triage-card" data-issue="cost-calc">
+					<div class="triage-icon-wrap">
+						<Icon name="layers" size={22} />
+					</div>
+					<div class="triage-body">
+						<span class="triage-step">04 // MALİYET KIYASI</span>
+						<strong class="triage-title">En ucuz transfer yolunu bulmak istiyorum</strong>
+						<span class="triage-desc">Komisyon + kur spreadi + ağ çekim ücreti dahil net maliyet hesabı ve borsa kıyası.</span>
+					</div>
+					<div class="triage-action">
+						<span class="action-label">Rotayı Kıyasla</span>
+						<Icon name="arrow-right" size={18} />
+					</div>
+				</a>
+			</div>
+
+			<!-- Instant Search & Other link -->
+			<div class="hero-tools-nav">
+				<div class="hero-search-box">
+					<Icon name="search" size={16} class="search-ico" />
+					<input
+						type="text"
+						id="hero-instant-search"
+						placeholder="Farklı bir durum mu var? Sorun, araç veya terim ara..."
 						autocomplete="off"
 					/>
-					<div class="search-hint">
-						<kbd class="kbd-badge">ESC</kbd>
-					</div>
+					<div class="search-dropdown" id="hero-search-results" style="display: none;"></div>
 				</div>
-
-				<!-- Quick Problem Suggestions Dropdown -->
-				<div class="search-suggestions" id="search-suggestions">
-					<div class="sugg-header">ÖNERİLEN ÇÖZÜM ARAÇLARI</div>
-					<a href="/araclar/yanlis-aga-gonderdim" class="sugg-item">
-						<div class="sugg-icon-box">
-							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
-						</div>
-						<div class="sugg-info">
-							<strong>Yanlış Ağa Gönderdim</strong>
-							<span>BEP-20, ERC-20 veya TRC-20 kurtarma kılavuzu ve kurtarılabilirlik teşhisi</span>
-						</div>
-						<span class="sugg-arrow">→</span>
-					</a>
-					<a href="/araclar/takilan-islem" class="sugg-item">
-						<div class="sugg-icon-box">
-							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-						</div>
-						<div class="sugg-info">
-							<strong>İşlemim Onaylanmıyor (Pending)</strong>
-							<span>Mempool kuyruğu analizi, RBF ve Nonce hızlandırma</span>
-						</div>
-						<span class="sugg-arrow">→</span>
-					</a>
-					<a href="/araclar/adres-ag-eslestirici" class="sugg-item">
-						<div class="sugg-icon-box">
-							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-						</div>
-						<div class="sugg-info">
-							<strong>Adres Ağ Eşleştirici & Format Kontrolü</strong>
-							<span>Cüzdan adresinin hangi ağları desteklediğini doğrulama</span>
-						</div>
-						<span class="sugg-arrow">→</span>
-					</a>
-					<a href="/araclar/maliyet-karsilastirici" class="sugg-item">
-						<div class="sugg-icon-box">
-							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-						</div>
-						<div class="sugg-info">
-							<strong>Gerçek Maliyet Karşılaştırıcı</strong>
-							<span>Komisyon, spread ve ağ çekim ücreti dahil net transfer rotaları</span>
-						</div>
-						<span class="sugg-arrow">→</span>
-					</a>
-					<a href="/araclar/guvenlik-kontrolu" class="sugg-item">
-						<div class="sugg-icon-box">
-							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-						</div>
-						<div class="sugg-info">
-							<strong>Cüzdan & URL Güvenlik Kontrolü</strong>
-							<span>Phishing, rug-pull ve sahte token risk taraması</span>
-						</div>
-						<span class="sugg-arrow">→</span>
-					</a>
-				</div>
-
-				<!-- Quick Action Pills -->
-				<div class="quick-pill-strip">
-					<span class="pill-label">Hızlı Araçlar:</span>
-					<a href="/kac-tl" class="quick-pill">
-						<span class="pill-dot"></span> Kaç TL? (Dolar & Kripto)
-					</a>
-					<a href="/araclar/yanlis-aga-gonderdim" class="quick-pill">
-						<span class="pill-dot"></span> Yanlış Ağ
-					</a>
-					<a href="/araclar/takilan-islem" class="quick-pill">
-						<span class="pill-dot"></span> Takılan İşlem
-					</a>
-					<a href="/araclar/adres-ag-eslestirici" class="quick-pill">
-						<span class="pill-dot"></span> Adres Kontrolü
-					</a>
-					<a href="/araclar/maliyet-karsilastirici" class="quick-pill">
-						<span class="pill-dot"></span> En Ucuz Rota
-					</a>
-					<a href="/araclar/islem-cevirmeni" class="quick-pill">
-						<span class="pill-dot"></span> İşlem Çevirmeni
-					</a>
-					<a href="/araclar/guvenlik-kontrolu" class="quick-pill">
-						<span class="pill-dot"></span> Güvenlik Testi
-					</a>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<!-- 2. Precision Live Ticker Strip -->
-	<section class="ticker-strip">
-		<div class="container strip-flex">
-			<div class="ticker-live-status">
-				<span class="ticker-beacon"></span>
-				<span class="ticker-tag">CANLI PİYASA</span>
-			</div>
-
-			<div class="ticker-track">
-				<div class="ticker-metric">
-					<span class="metric-sym">BTC</span>
-					<span class="metric-val mono-text" id="live-btc">$76,160</span>
-				</div>
-				<div class="ticker-sep"></div>
-				<div class="ticker-metric">
-					<span class="metric-sym">ETH</span>
-					<span class="metric-val mono-text" id="live-eth">$2,243</span>
-				</div>
-				<div class="ticker-sep"></div>
-				<div class="ticker-metric">
-					<span class="metric-sym">USD/TRY</span>
-					<span class="metric-val mono-text" id="live-usd">₺50.05</span>
-				</div>
-				<div class="ticker-sep"></div>
-				<div class="ticker-metric">
-					<span class="metric-sym">USDT/TRY</span>
-					<span class="metric-val mono-text val-up" id="live-usdt">₺50.12</span>
-				</div>
-				<div class="ticker-sep"></div>
-				<div class="ticker-metric">
-					<span class="metric-sym">ETH Gas</span>
-					<span class="metric-val mono-text">14 Gwei</span>
-				</div>
-				<div class="ticker-sep"></div>
-				<div class="ticker-metric">
-					<span class="metric-sym">Korku Endeksi</span>
-					<span class="metric-val metric-badge mono-text">74 (Açgözlülük)</span>
-				</div>
-			</div>
-
-			<a href="/piyasa" class="ticker-all-link">
-				<span>Piyasa Paneli</span>
-				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-			</a>
-		</div>
-	</section>
-
-	<!-- 2.5 Kriptonik Veri Merkezi & Öne Çıkan Göstergeler (Spec v3) -->
-	<section class="data-hub-preview-section">
-		<div class="container">
-			<div class="section-heading-center">
-				<div class="section-eyebrow">CANLI VERİ & ANALİZ MERKEZİ</div>
-				<h2 class="section-headline">Türkiye ve Küresel Veri Platformu</h2>
-				<p class="section-subtext">Yerel borsa derinlikleri, USDT/TL primi, kurumsal spot ETF akışları ve şeffaf Kriptonik endeksleri.</p>
-			</div>
-
-			<div class="data-preview-grid">
-				<a href="/turkiye/usdt-tl-primi" class="data-preview-card">
-					<div class="dp-header">
-						<span class="dp-badge tr-badge">TÜRKİYE VERİSİ</span>
-						<span class="dp-stat pos font-mono">+%1.14 Prim</span>
-					</div>
-					<h3 class="dp-title">USDT/TL Tether Primi</h3>
-					<p class="dp-desc">BtcTurk, Paribu ve Binance TR serbest kurunun TCMB resmi gösterge kuruna göre anlık makas sapması.</p>
-					<span class="dp-link-text">Tarihsel Grafik & Borsa Dağılımı →</span>
-				</a>
-
-				<a href="/etf" class="data-preview-card">
-					<div class="dp-header">
-						<span class="dp-badge etf-badge">SPOT ETF</span>
-						<span class="dp-stat pos font-mono">+$428.5M Net</span>
-					</div>
-					<h3 class="dp-title">ABD Spot Bitcoin ETF</h3>
-					<p class="dp-desc">BlackRock (IBIT), Fidelity (FBTC) dahil 11 fonun resmi ihraççı günlük net nakit giriş ve çıkışları.</p>
-					<span class="dp-link-text">Fon Kırılımı & Kümülatif AUM →</span>
-				</a>
-
-				<a href="/turev" class="data-preview-card">
-					<div class="dp-header">
-						<span class="dp-badge deriv-badge">TÜREV</span>
-						<span class="dp-stat font-mono">$38.4B OI</span>
-					</div>
-					<h3 class="dp-title">Fonlama Oranları & OI</h3>
-					<p class="dp-desc">Bybit, OKX ve Binance sürekli swap (perpetual) fonlama oranları, açık pozisyon ve Kriptonik Fonlama Isısı.</p>
-					<span class="dp-link-text">Canlı Isı Haritası →</span>
-				</a>
-
-				<a href="/kac-tl" class="data-preview-card highlight-kac-tl">
-					<div class="dp-header">
-						<span class="dp-badge calc-badge">CANLI ÇEVİRİCİ</span>
-						<span class="dp-stat font-mono">55+ Arama Rotası</span>
-					</div>
-					<h3 class="dp-title">Kaç TL? Fiyat Arama Motoru</h3>
-					<p class="dp-desc">1 Dolar, 100 Dolar, 1 BTC, 1000 USDT kaç TL? Canlı serbest piyasa ve borsa kurlarıyla anında hesaplama.</p>
-					<span class="dp-link-text">Çevirici & Arama Rotaları →</span>
-				</a>
-
-				<a href="/endeksler" class="data-preview-card">
-					<div class="dp-header">
-						<span class="dp-badge idx-badge">ÖZGÜN ENDEKSLER</span>
-						<span class="dp-stat font-mono">6 Referans Seri</span>
-					</div>
-					<h3 class="dp-title">Kriptonik Endeksleri</h3>
-					<p class="dp-desc">Metodolojisi ve formülü kamuya açık TTP, TLS, EAM, FI, KAS ve SNB referans piyasa göstergeleri.</p>
-					<span class="dp-link-text">Metodolojiyi İncele & CSV İndir →</span>
-				</a>
-
-				<a href="/veri" class="data-preview-card">
-					<div class="dp-header">
-						<span class="dp-badge open-badge">AÇIK VERİ PORTALI</span>
-						<span class="dp-stat font-mono">CC BY 4.0</span>
-					</div>
-					<h3 class="dp-title">Açık Veri & İndirme</h3>
-					<p class="dp-desc">Araştırmacılar, analistler ve gazeteciler için tüm özgün serileri CSV ve JSON olarak ücretsiz indirin.</p>
-					<span class="dp-link-text">Veri Setlerini İndir →</span>
+				<a href="/araclar" class="all-tools-anchor">
+					<span>Tüm 16 aracı listele</span>
+					<Icon name="arrow-right" size={14} />
 				</a>
 			</div>
-		</div>
-	</section>
+		</section>
 
-	<!-- 3. "Şimdi ne yapmak istiyorsun?" Bento Grid Section -->
-	<section class="action-bento-section">
-		<div class="container">
-			<div class="section-heading-center">
-				<div class="section-eyebrow">ÇÖZÜM REHBERİ</div>
-				<h2 class="section-headline">Şimdi Ne Yapmak İstiyorsun?</h2>
-				<p class="section-subtext">İhtiyacınıza göre tasarlanmış üç temel araç kategorisi ile anında sonuca ulaşın.</p>
+		<!-- HONESTY BANNER ("Nasıl çalışıyoruz") -->
+		<section class="honesty-banner" aria-label="Kriptonik Çalışma Prensipleri">
+			<div class="honesty-header">
+				<span class="section-tag">GÜVEN TAAHHÜDÜ</span>
+				<h2 class="honesty-title">Nasıl Çalışıyoruz?</h2>
 			</div>
 
-			<div class="bento-grid">
-				<!-- Bento 1: Sorun Çöz -->
-				<div class="bento-card">
-					<div class="bento-header">
-						<div class="bento-icon-wrapper bento-icon-alert">
-							<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-						</div>
-						<div>
-							<div class="bento-tag">ACİL MÜDAHALE</div>
-							<h3 class="bento-title">Sorun Çöz</h3>
-							<p class="bento-desc">Para takıldı, yanlış ağa gitti veya saatlerdir onaylanmıyor</p>
-						</div>
+			<div class="honesty-grid">
+				<div class="honesty-card">
+					<div class="honesty-icon-bar">
+						<Icon name="lock" size={20} />
+						<span class="honesty-num">01</span>
 					</div>
-
-					<div class="bento-links">
-						<a href="/araclar/yanlis-aga-gonderdim" class="bento-link-item">
-							<div class="link-meta">
-								<span class="link-title">Yanlış Ağa Gönderdim</span>
-								<span class="link-desc">Kurtarılabilirlik tespiti ve borsa mesaj şablonu</span>
-							</div>
-							<span class="link-arrow">→</span>
-						</a>
-						<a href="/araclar/takilan-islem" class="bento-link-item">
-							<div class="link-meta">
-								<span class="link-title">Takılan İşlem Teşhisi</span>
-								<span class="link-desc">Mempool analizi, RBF ve Nonce ile hızlandırma</span>
-							</div>
-							<span class="link-arrow">→</span>
-						</a>
-						<a href="/araclar/adres-ag-eslestirici" class="bento-link-item">
-							<div class="link-meta">
-								<span class="link-title">Adres Doğrulayıcı & Ağ Eşleştirici</span>
-								<span class="link-desc">Format tespiti ve çapraz ağ risk uyarısı</span>
-							</div>
-							<span class="link-arrow">→</span>
-						</a>
-						<a href="/araclar/islem-cevirmeni" class="bento-link-item">
-							<div class="link-meta">
-								<span class="link-title">İşlem Çevirmeni</span>
-								<span class="link-desc">Hash kodlarını sade Türkçe işlem özetine dönüştürür</span>
-							</div>
-							<span class="link-arrow">→</span>
-						</a>
-					</div>
-				</div>
-
-				<!-- Bento 2: Hesapla -->
-				<div class="bento-card">
-					<div class="bento-header">
-						<div class="bento-icon-wrapper bento-icon-calc">
-							<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="18"></line><path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path><path d="M12 14h.01"></path><path d="M8 14h.01"></path><path d="M12 18h.01"></path><path d="M8 18h.01"></path></svg>
-						</div>
-						<div>
-							<div class="bento-tag">FİNANSAL TEŞHİS</div>
-							<h3 class="bento-title">Hesapla</h3>
-							<p class="bento-desc">Gerçek transfer maliyeti, DCA simülasyonu ve kâr/zarar</p>
-						</div>
-					</div>
-
-					<div class="bento-links">
-						<a href="/kac-tl" class="bento-link-item">
-							<div class="link-meta">
-								<span class="link-title">Canlı Kaç TL? Çevirici</span>
-								<span class="link-desc">1 Dolar, 100 Dolar, 1 BTC kaç TL? Serbest piyasa ve borsa kurları</span>
-							</div>
-							<span class="link-arrow">→</span>
-						</a>
-						<a href="/araclar/maliyet-karsilastirici" class="bento-link-item">
-							<div class="link-meta">
-								<span class="link-title">Gerçek Maliyet Karşılaştırıcı</span>
-								<span class="link-desc">Komisyon, spread ve ağ çekim ücreti dahil net rota</span>
-							</div>
-							<span class="link-arrow">→</span>
-						</a>
-						<a href="/araclar/dca-simulator" class="bento-link-item">
-							<div class="link-meta">
-								<span class="link-title">DCA Geri Test Simülatörü</span>
-								<span class="link-desc">Düzenli alım getirisi, XIRR ve kâr/zarar eğrisi</span>
-							</div>
-							<span class="link-arrow">→</span>
-						</a>
-						<a href="/araclar/kar-zarar-hesaplama" class="bento-link-item">
-							<div class="link-meta">
-								<span class="link-title">Kâr / Zarar & Maliyet</span>
-								<span class="link-desc">Kademeli alımlar için ağırlıklı ortalama ve net getiri</span>
-							</div>
-							<span class="link-arrow">→</span>
-						</a>
-						<a href="/araclar/kaldirac-likidasyon" class="bento-link-item">
-							<div class="link-meta">
-								<span class="link-title">Kaldıraç & Likidasyon Hesabı</span>
-								<span class="link-desc">İzole pozisyonlar için likidasyon ve teminat analizi</span>
-							</div>
-							<span class="link-arrow">→</span>
-						</a>
-					</div>
-				</div>
-
-				<!-- Bento 3: Takip Et -->
-				<div class="bento-card">
-					<div class="bento-header">
-						<div class="bento-icon-wrapper bento-icon-track">
-							<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
-						</div>
-						<div>
-							<div class="bento-tag">CANLI İZLEME</div>
-							<h3 class="bento-title">Takip Et</h3>
-							<p class="bento-desc">Gas fiyatları, stablecoin çıpa sağlığı ve piyasa duygusu</p>
-						</div>
-					</div>
-
-					<div class="bento-links">
-						<a href="/araclar/gas-ucret-takip" class="bento-link-item">
-							<div class="link-meta">
-								<span class="link-title">Gas & Ağ Ücreti Takipçisi</span>
-								<span class="link-desc">EVM, Bitcoin ve TRON için en ucuz transfer saatleri</span>
-							</div>
-							<span class="link-arrow">→</span>
-						</a>
-						<a href="/araclar/depeg-monitoru" class="bento-link-item">
-							<div class="link-meta">
-								<span class="link-title">Stablecoin Depeg Monitörü</span>
-								<span class="link-desc">USDT, USDC ve DAI için 1$ çıpa sapma takibi</span>
-							</div>
-							<span class="link-arrow">→</span>
-						</a>
-						<a href="/araclar/korku-acgozluluk-endeksi" class="bento-link-item">
-							<div class="link-meta">
-								<span class="link-title">Korku ve Açgözlülük Endeksi</span>
-								<span class="link-desc">Anlık duyarlılık endeksi ve tarihsel grafik</span>
-							</div>
-							<span class="link-arrow">→</span>
-						</a>
-						<a href="/araclar/bitcoin-halving" class="bento-link-item">
-							<div class="link-meta">
-								<span class="link-title">Bitcoin Halving Sayacı</span>
-								<span class="link-desc">Sonraki blok yarılanması için hassas geri sayım</span>
-							</div>
-							<span class="link-arrow">→</span>
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<!-- 4. Neden Kriptonik? (Section 0.7 Dürüstlük Kuralı & Gizlilik Taahhüdü) -->
-	<section class="trust-section">
-		<div class="container">
-			<div class="trust-card">
-				<div class="trust-content">
-					<div class="section-eyebrow">GÜVENİLİR & ŞEFFAF</div>
-					<h3 class="trust-headline">Neden Kriptonik?</h3>
-					<p class="trust-desc">
-						Kripto dünyasında bağımsızlığımızı, kullanıcı gizliliğini ve matematiksel tarafsızlığı koruyan temel ilkelerimiz:
+					<h3 class="honesty-card-title">Private Key Asla İstenmez</h3>
+					<p class="honesty-card-desc">
+						Kriptonik hiçbir zaman özel anahtar, seed phrase veya cüzdan şifresi talep etmez. Sana "kayıp paranı hemen kurtarırım" diyenlere karşı dikkatli ol; blokzincirde merkezi bir yetkili yoktur.
 					</p>
-
-					<div class="trust-principles">
-						<div class="principle-item">
-							<div class="principle-icon-wrap">
-								<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="18" y1="8" x2="23" y2="13"></line><line x1="23" y1="8" x2="18" y2="13"></line></svg>
-							</div>
-							<div>
-								<h4 class="principle-title">Üyelik veya Hesap Yok</h4>
-								<p class="principle-text">Hiçbir aracı kullanmak için kayıt olmak, e-posta adresi bırakmak veya parola belirlemek gerekmez. Doğrudan çalışır.</p>
-							</div>
-						</div>
-
-						<div class="principle-item">
-							<div class="principle-icon-wrap">
-								<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-							</div>
-							<div>
-								<h4 class="principle-title">Girdiğiniz Bilgiler Asla Kaydedilmez</h4>
-								<p class="principle-text">{tr.brand.privacy_promise}</p>
-							</div>
-						</div>
-
-						<div class="principle-item">
-							<div class="principle-icon-wrap">
-								<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-							</div>
-							<div>
-								<h4 class="principle-title">Sade Dil & Matematiksel Şeffaflık</h4>
-								<p class="principle-text">Karmaşık teknik jargonu gündelik Türkçeye çeviririz. Tüm hesaplama formülleri ve veri kaynakları şeffafça açıklanır.</p>
-							</div>
-						</div>
-					</div>
 				</div>
 
-				<div class="trust-side">
-					<div class="edge-telemetry-box">
-						<div class="telemetry-top">
-							<div class="telemetry-pulse">
-								<span class="telemetry-dot"></span>
-								<span class="telemetry-ping"></span>
-							</div>
-							<span class="telemetry-title">CLOUDFLARE EDGE ALTYAPISI</span>
-						</div>
-
-						<div class="telemetry-specs mono-text">
-							<div class="spec-row">
-								<span class="spec-k">Mimari:</span>
-								<span class="spec-v text-success">Serverless Edge (Pages + Workers)</span>
-							</div>
-							<div class="spec-row">
-								<span class="spec-k">Ortalama TTFB:</span>
-								<span class="spec-v">&lt; 35ms (Küresel 300+ Şehir)</span>
-							</div>
-							<div class="spec-row">
-								<span class="spec-k">Analitik Modeli:</span>
-								<span class="spec-v">Çerezsiz & KVKK Uyumlu</span>
-							</div>
-							<div class="spec-row">
-								<span class="spec-k">İstemci Güvenliği:</span>
-								<span class="spec-v">Katı CSP & HSTS Preload</span>
-							</div>
-							<div class="spec-row">
-								<span class="spec-k">Sunucu Kaydı:</span>
-								<span class="spec-v text-success">Sıfır Log Taahhüdü</span>
-							</div>
-						</div>
-
-						<div class="telemetry-action">
-							<a href="/durum" class="telemetry-link">Sistem & Altyapı Durumunu Gör →</a>
-						</div>
+				<div class="honesty-card">
+					<div class="honesty-icon-bar">
+						<Icon name="cpu" size={20} />
+						<span class="honesty-num">02</span>
 					</div>
+					<h3 class="honesty-card-title">Tarayıcı Öncelikli & Şeffaf Akış</h3>
+					<p class="honesty-card-desc">
+						Hata teşhis sihirbazları ve hesaplama araçları %100 tarayıcında çalışır. Sunucuya giden işlemler (canlı kurlar vb.) her sayfanın tepesinde <span class="mono-badge">Sunucuya istek atar</span> rozetiyle açıkça gösterilir.
+					</p>
+				</div>
+
+				<div class="honesty-card">
+					<div class="honesty-icon-bar">
+						<Icon name="check" size={20} />
+						<span class="honesty-num">03</span>
+					</div>
+					<h3 class="honesty-card-title">Sıfır Gizli Reklam & Dürüst Kıyas</h3>
+					<p class="honesty-card-desc">
+						Maliyet karşılaştırmalarındaki sıralamalar sponsorlukla veya komisyonla değişmez. Varsa affiliate bağlantıları zorunlu olarak etiketlenir ve gelir politikamız açıkça ilan edilir.
+					</p>
 				</div>
 			</div>
-		</div>
-	</section>
+		</section>
 
-	<!-- 5. Son Rehberler ve Sözlük Önizlemesi -->
-	<section class="content-preview-section">
-		<div class="container">
-			<div class="preview-split">
-				<!-- Sol: Son Rehberler -->
-				<div class="preview-panel">
-					<div class="panel-header">
-						<div class="panel-title-group">
-							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-							<h3>Öne Çıkan Kurtarma Rehberleri</h3>
+		<!-- WORKING TOOLS SECTION (Only active, functional tools) -->
+		<section class="tools-section" id="araclar">
+			<div class="section-top-row">
+				<div>
+					<span class="section-tag">SAHA MODÜLLERİ</span>
+					<h2 class="section-headline">Gerçekten Çalışan Saha Araçları</h2>
+					<p class="section-subtext">Hata payını azaltmak için test edilmiş, doğrulanabilir hesaplama ve teşhis modülleri.</p>
+				</div>
+				<a href="/araclar" class="view-all-link">
+					<span>Tüm Araç Dizini</span>
+					<Icon name="arrow-right" size={14} />
+				</a>
+			</div>
+
+			<div class="tools-cockpit-grid">
+				<a href="/araclar/yanlis-aga-gonderdim" class="tool-cockpit-card">
+					<div class="tool-card-head">
+						<div class="tool-icon">
+							<Icon name="alert-triangle" size={18} />
 						</div>
-						<a href="/rehber" class="panel-more">Tümünü İncele →</a>
+						<div class="tool-badges">
+							<StatusPill status="live" label="Canlı" />
+							<StatusPill dataFlow="client" />
+						</div>
 					</div>
-
-					<div class="panel-items">
-						<a href="/araclar/yanlis-aga-gonderdim" class="preview-card">
-							<div class="pc-badge">Kurtarma</div>
-							<h4 class="pc-title">Yanlış Ağa Gönderilen Kripto Para Nasıl Kurtarılır?</h4>
-							<p class="pc-desc">MetaMask ve Borsa kurtarma adımları, private key dışa aktarma riskleri ve hazır destek şablonu.</p>
-							<span class="pc-time">⏱️ 4 dk okuma</span>
-						</a>
-
-						<a href="/araclar/takilan-islem" class="preview-card">
-							<div class="pc-badge">Hızlandırma</div>
-							<h4 class="pc-title">MetaMask'ta Bekleyen (Pending) İşlem Nasıl İptal Edilir?</h4>
-							<p class="pc-desc">Aynı Nonce ile sıfır değerli transfer göndererek sıkışan blokzincir kuyruğunu temizleme rehberi.</p>
-							<span class="pc-time">⏱️ 3 dk okuma</span>
-						</a>
-
-						<a href="/araclar/maliyet-karsilastirici" class="preview-card">
-							<div class="pc-badge">Tasarruf</div>
-							<h4 class="pc-title">Borsalar Arasında En Ucuz Kripto Transfer Rotaları</h4>
-							<p class="pc-desc">TRC20, Arbitrum ve BEP20 ağ komisyonları ile Türk lirası çekim masraflarının tam kıyaslaması.</p>
-							<span class="pc-time">⏱️ 4 dk okuma</span>
-						</a>
+					<strong class="tool-name">Yanlış Ağa Gönderdim Sihirbazı</strong>
+					<p class="tool-summary">Farklı ağa gönderilen token'ların kurtarılabilirlik teşhisi ve borsa destek mesaj şablonu.</p>
+					<div class="tool-footer">
+						<span class="tool-cta">Sihirbazı Başlat</span>
+						<Icon name="chevron-right" size={14} />
 					</div>
+				</a>
+
+				<a href="/araclar/takilan-islem" class="tool-cockpit-card">
+					<div class="tool-card-head">
+						<div class="tool-icon">
+							<Icon name="activity" size={18} />
+						</div>
+						<div class="tool-badges">
+							<StatusPill status="live" label="Canlı" />
+							<StatusPill dataFlow="server" />
+						</div>
+					</div>
+					<strong class="tool-name">Takılan İşlem Teşhisi (Pending)</strong>
+					<p class="tool-summary">Mempool kuyruğundaki bekleyen işlemleri sorgula, RBF ve Nonce hızlandırma çözümlerini gör.</p>
+					<div class="tool-footer">
+						<span class="tool-cta">İşlemi Sorgula</span>
+						<Icon name="chevron-right" size={14} />
+					</div>
+				</a>
+
+				<a href="/araclar/adres-ag-eslestirici" class="tool-cockpit-card">
+					<div class="tool-card-head">
+						<div class="tool-icon">
+							<Icon name="shield-check" size={18} />
+						</div>
+						<div class="tool-badges">
+							<StatusPill status="live" label="Canlı" />
+							<StatusPill dataFlow="client" />
+						</div>
+					</div>
+					<strong class="tool-name">Adres ve Ağ Format Denetimi</strong>
+					<p class="tool-summary">Gönderim öncesi EVM, Tron, Bitcoin, Solana adres checksum ve ağ uyumluluk kontrolü.</p>
+					<div class="tool-footer">
+						<span class="tool-cta">Adresi Doğrula</span>
+						<Icon name="chevron-right" size={14} />
+					</div>
+				</a>
+
+				<a href="/araclar/maliyet-karsilastirici" class="tool-cockpit-card">
+					<div class="tool-card-head">
+						<div class="tool-icon">
+							<Icon name="layers" size={18} />
+						</div>
+						<div class="tool-badges">
+							<StatusPill status="live" label="Canlı" />
+							<StatusPill dataFlow="client" />
+						</div>
+					</div>
+					<strong class="tool-name">Gerçek Maliyet Karşılaştırıcı</strong>
+					<p class="tool-summary">Komisyon, kur makası ve ağ çekim ücretini toplayarak en düşük maliyetli borsa rotasını belirle.</p>
+					<div class="tool-footer">
+						<span class="tool-cta">Rotayı Hesapla</span>
+						<Icon name="chevron-right" size={14} />
+					</div>
+				</a>
+
+				<a href="/araclar/cuzdan-guvenlik-kontrolu" class="tool-cockpit-card">
+					<div class="tool-card-head">
+						<div class="tool-icon">
+							<Icon name="lock" size={18} />
+						</div>
+						<div class="tool-badges">
+							<StatusPill status="live" label="Canlı" />
+							<StatusPill dataFlow="client" />
+						</div>
+					</div>
+					<strong class="tool-name">Cüzdan Güvenlik Denetimi</strong>
+					<p class="tool-summary">Yetki onayları (allowance), seed saklama alışkanlıkları ve phishing açıklarını tara.</p>
+					<div class="tool-footer">
+						<span class="tool-cta">Check-up Başlat</span>
+						<Icon name="chevron-right" size={14} />
+					</div>
+				</a>
+
+				<a href="/araclar/dca-simulator" class="tool-cockpit-card">
+					<div class="tool-card-head">
+						<div class="tool-icon">
+							<Icon name="refresh" size={18} />
+						</div>
+						<div class="tool-badges">
+							<StatusPill status="live" label="Canlı" />
+							<StatusPill dataFlow="client" />
+						</div>
+					</div>
+					<strong class="tool-name">DCA Simülatörü</strong>
+					<p class="tool-summary">Belirli aralıklarla yapılan düzenli kripto alımlarının geçmiş kâr/zarar ve maliyet performansını test et.</p>
+					<div class="tool-footer">
+						<span class="tool-cta">Simülasyon Yap</span>
+						<Icon name="chevron-right" size={14} />
+					</div>
+				</a>
+			</div>
+		</section>
+
+		<!-- TWO COLUMNS: Recent Guides & Dictionary Highlights -->
+		<section class="editorial-dual-section">
+			<!-- Col 1: Verified Guides -->
+			<div class="editorial-col">
+				<div class="editorial-header">
+					<div>
+						<span class="section-tag">REHBERLER</span>
+						<h3 class="editorial-title">Saha Çözüm Kılavuzları</h3>
+					</div>
+					<a href="/rehber" class="editorial-more">Tüm Rehberler →</a>
 				</div>
 
-				<!-- Sağ: Sözlükten Terimler -->
-				<div class="preview-panel">
-					<div class="panel-header">
-						<div class="panel-title-group">
-							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-							<h3>Kripto Sözlüğünden Temel Kavramlar</h3>
+				<div class="editorial-list">
+					<a href="/rehber/usdt-yanlis-ag" class="editorial-item">
+						<div class="editorial-item-body">
+							<span class="item-meta">12 DK OKUMA • GÜNCELLENDİ</span>
+							<strong class="item-title">USDT'yi Yanlış Ağa Gönderdim: Kurtarma Yolları</strong>
+							<p class="item-desc">BEP-20'den ERC-20 veya TRC-20'ye giden tether transferlerinde izlenecek somut kurtarma prosedürleri.</p>
 						</div>
-						<a href="/sozluk" class="panel-more">100+ Terimi Gör →</a>
-					</div>
+						<Icon name="chevron-right" size={16} class="item-arrow" />
+					</a>
 
-					<div class="panel-items">
-						<a href="/sozluk" class="preview-card">
-							<div class="pc-badge pc-badge-term">EVM Mimarisi</div>
-							<h4 class="pc-title">Nonce Nedir? Neden İşlemleri Kilitler?</h4>
-							<p class="pc-desc">Blokzincir hesaplarındaki ardışık işlem sayacı ve arkadan gelen transferlerin bekleme sebebi.</p>
-							<span class="pc-arrow">Terimi Oku →</span>
-						</a>
+					<a href="/rehber/metamask-takilan-islem" class="editorial-item">
+						<div class="editorial-item-body">
+							<span class="item-meta">8 DK OKUMA • GÜNCELLENDİ</span>
+							<strong class="item-title">MetaMask'ta Takılan İşlemi İptal Etme (Aynı Nonce)</strong>
+							<p class="item-desc">Düşük gas nedeniyle mempool'da asılı kalan işlemleri özel nonce numarasıyla sıfırlama adımları.</p>
+						</div>
+						<Icon name="chevron-right" size={16} class="item-arrow" />
+					</a>
 
-						<a href="/sozluk" class="preview-card">
-							<div class="pc-badge pc-badge-term">Güvenlik</div>
-							<h4 class="pc-title">Seed Phrase (Kurtarma Kelimeleri) Güvenliği</h4>
-							<p class="pc-desc">12 veya 24 kelimelik anahtarın teknik yapısı ve asla kimseyle paylaşılmaması gereken kurallar.</p>
-							<span class="pc-arrow">Terimi Oku →</span>
-						</a>
+					<a href="/rehber/trc20-mi-bep20-mi" class="editorial-item">
+						<div class="editorial-item-body">
+							<span class="item-meta">6 DK OKUMA • GÜNCELLENDİ</span>
+							<strong class="item-title">TRC20 mi BEP20 mi? Hangisi Daha Ucuz ve Güvenli?</strong>
+							<p class="item-desc">Transfer hızı, borsa desteği ve ağ enerji maliyetleri açısından kapsamlı protokol karşılaştırması.</p>
+						</div>
+						<Icon name="chevron-right" size={16} class="item-arrow" />
+					</a>
 
-						<a href="/sozluk" class="preview-card">
-							<div class="pc-badge pc-badge-term">Protokol</div>
-							<h4 class="pc-title">RBF (Replace-by-Fee) ve CPFP Nedir?</h4>
-							<p class="pc-desc">Bitcoin mempool üzerinde düşük ücretli işlemleri daha yüksek gas vererek öne geçirme yöntemi.</p>
-							<span class="pc-arrow">Terimi Oku →</span>
-						</a>
-					</div>
+					<a href="/rehber/seed-phrase-guvenligi" class="editorial-item">
+						<div class="editorial-item-body">
+							<span class="item-meta">10 DK OKUMA • GÜNCELLENDİ</span>
+							<strong class="item-title">Seed Phrase Güvenliği: 12 Kelimeyi Nasıl Saklamalısın?</strong>
+							<p class="item-desc">Fotoğraf çekmek, buluta yüklemek ve dijital not tutmanın ölümcül riskleri; metal plaka ve soğuk saklama prensipleri.</p>
+						</div>
+						<Icon name="chevron-right" size={16} class="item-arrow" />
+					</a>
 				</div>
 			</div>
-		</div>
-	</section>
 
-	<!-- 6. SSS Accordion -->
-	<section class="faq-section">
-		<div class="container container-narrow">
-			<div class="section-heading-center">
-				<div class="section-eyebrow">ŞEFFAF CEVAPLAR</div>
+			<!-- Col 2: Dictionary Terms -->
+			<div class="editorial-col">
+				<div class="editorial-header">
+					<div>
+						<span class="section-tag">TEKNİK SÖZLÜK</span>
+						<h3 class="editorial-title">Öne Çıkan Kavramlar</h3>
+					</div>
+					<a href="/sozluk" class="editorial-more">Tüm Sözlük →</a>
+				</div>
+
+				<div class="editorial-list">
+					<a href="/sozluk" class="editorial-item">
+						<div class="editorial-item-body">
+							<div class="term-title-row">
+								<strong class="item-title">Mempool (Bellek Havuzu)</strong>
+								<span class="term-badge">Zincir Üstü</span>
+							</div>
+							<p class="item-desc">İşlemlerin blokzincire yazılmadan önce madenciler tarafından seçilmeyi beklediği geçici bekleme odası.</p>
+						</div>
+						<Icon name="chevron-right" size={16} class="item-arrow" />
+					</a>
+
+					<a href="/sozluk" class="editorial-item">
+						<div class="editorial-item-body">
+							<div class="term-title-row">
+								<strong class="item-title">Slippage (Fiyat Kayması)</strong>
+								<span class="term-badge">İşlem</span>
+							</div>
+							<p class="item-desc">Emir verildiği andaki fiyat ile emrin blokzincirde fiilen gerçekleştiği andaki fiyat arasındaki fark.</p>
+						</div>
+						<Icon name="chevron-right" size={16} class="item-arrow" />
+					</a>
+
+					<a href="/sozluk" class="editorial-item">
+						<div class="editorial-item-body">
+							<div class="term-title-row">
+								<strong class="item-title">Gwei & Gas</strong>
+								<span class="term-badge">Ethereum</span>
+							</div>
+							<p class="item-desc">Ethereum ağında akıllı sözleşme veya transfer çalıştırmak için harcanan işlem gücü maliyeti birimi.</p>
+						</div>
+						<Icon name="chevron-right" size={16} class="item-arrow" />
+					</a>
+
+					<a href="/sozluk" class="editorial-item">
+						<div class="editorial-item-body">
+							<div class="term-title-row">
+								<strong class="item-title">Nonce</strong>
+								<span class="term-badge">Protokol</span>
+							</div>
+							<p class="item-desc">Bir cüzdandan gönderilen işlem sayısını belirten sayaç. Aynı noncela daha yüksek ücretli işlem gönderilerek takılan transfer iptal edilebilir.</p>
+						</div>
+						<Icon name="chevron-right" size={16} class="item-arrow" />
+					</a>
+				</div>
+			</div>
+		</section>
+
+		<!-- FAQ ACCORDION -->
+		<section class="faq-section" aria-label="Sıkça Sorulan Sorular">
+			<div class="faq-header">
+				<span class="section-tag">SSS</span>
 				<h2 class="section-headline">Sıkça Sorulan Sorular</h2>
+				<p class="section-subtext">Kripto işlemleri, güvenlik sınırları ve platform işleyişi hakkında net yanıtlar.</p>
 			</div>
 
-			<div class="faq-list">
-				<details class="faq-box" open>
-					<summary class="faq-head">
-						<span>Kriptonik'i kullanmak ücretli mi?</span>
-						<span class="faq-chevron">
-							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-						</span>
-					</summary>
-					<div class="faq-body">
-						<p>Hayır, Kriptonik'teki tüm problem çözücüler, hesaplayıcılar, simülatörler ve sözlük içerikleri tamamen ücretsizdir. Herhangi bir üyelik veya abonelik gerekmez.</p>
-					</div>
-				</details>
-
-				<details class="faq-box">
-					<summary class="faq-head">
-						<span>Girdiğim adresler veya işlem kodları sunucularınızda saklanıyor mu?</span>
-						<span class="faq-chevron">
-							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-						</span>
-					</summary>
-					<div class="faq-body">
-						<p>{tr.brand.privacy_promise}</p>
-					</div>
-				</details>
-
-				<details class="faq-box">
-					<summary class="faq-head">
-						<span>Kriptonik cüzdanımın özel anahtarını (private key) ister mi?</span>
-						<span class="faq-chevron">
-							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-						</span>
-					</summary>
-					<div class="faq-body">
-						<p><strong>Kesinlikle hayır.</strong> Kriptonik sizden asla özel anahtarınızı (private key) veya 12-24 kelimelik kurtarma ifadenizi (seed phrase) istemez. Bunu isteyen herhangi bir site veya kişi şüphesiz dolandırıcıdır.</p>
-					</div>
-				</details>
-
-				<details class="faq-box">
-					<summary class="faq-head">
-						<span>Kriptonik yatırım tavsiyesi veriyor mu?</span>
-						<span class="faq-chevron">
-							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-						</span>
-					</summary>
-					<div class="faq-body">
-						<p>Hayır. Sitemizdeki tüm içerikler, maliyet simülasyonları, dönüştürücüler ve piyasa verileri yalnızca teknik bilgilendirme ve eğitim amaçlıdır; hiçbir şekilde yatırım tavsiyesi (YTD) teşkil etmez.</p>
-					</div>
-				</details>
+			<div class="faq-accordion">
+				{faqItems.map((item, idx) => (
+					<details class="faq-item" open={idx === 0}>
+						<summary class="faq-question">
+							<span class="q-num">0{idx + 1}</span>
+							<span class="q-text">{item.q}</span>
+							<Icon name="chevron-right" size={16} class="q-chevron" />
+						</summary>
+						<div class="faq-answer">
+							<p>{item.a}</p>
+						</div>
+					</details>
+				))}
 			</div>
-		</div>
-	</section>
+		</section>
+	</div>
 </Layout>
 
 <script>
-	// Hero search filter
-	const searchInput = document.getElementById('hero-problem-input') as HTMLInputElement;
-	const suggestions = document.getElementById('search-suggestions');
-
-	searchInput?.addEventListener('focus', () => {
-		if (suggestions) suggestions.style.display = 'block';
-	});
-
-	searchInput?.addEventListener('input', () => {
-		const val = searchInput.value.toLowerCase().trim();
-		if (!suggestions) return;
-
-		suggestions.style.display = 'block';
-		const items = suggestions.querySelectorAll('.sugg-item');
-
-		items.forEach(item => {
-			const text = (item as HTMLElement).innerText.toLowerCase();
-			if (val === '' || text.includes(val)) {
-				(item as HTMLElement).style.display = 'flex';
-			} else {
-				(item as HTMLElement).style.display = 'none';
-			}
-		});
-	});
-
-	document.addEventListener('keydown', (e) => {
-		if (e.key === 'Escape' && suggestions) {
-			suggestions.style.display = 'none';
-			searchInput?.blur();
-		}
-	});
-
-	document.addEventListener('click', (e) => {
-		if (!searchInput?.contains(e.target as Node) && !suggestions?.contains(e.target as Node)) {
-			if (suggestions) suggestions.style.display = 'none';
-		}
-	});
-
-	// Live ticker updater
-	async function updateLiveTicker() {
+	// 1. Live Telemetry Poller
+	async function updateTelemetry() {
 		try {
 			const res = await fetch('/api/v1/market/ticker');
 			if (!res.ok) return;
-			const json = await res.json() as { data: { btc: { usd: number }; eth: { usd: number }; usdt: { try: number } } };
+			const json = await res.json();
+			if (!json.ok || !json.data) return;
 
-			const btcEl = document.getElementById('live-btc');
-			const ethEl = document.getElementById('live-eth');
-			const usdEl = document.getElementById('live-usd');
-			const usdtEl = document.getElementById('live-usdt');
+			const d = json.data;
+			const btcEl = document.getElementById('ticker-btc');
+			const btcChgEl = document.getElementById('ticker-btc-chg');
+			const ethEl = document.getElementById('ticker-eth');
+			const ethChgEl = document.getElementById('ticker-eth-chg');
+			const usdtEl = document.getElementById('ticker-usdt');
+			const gasEl = document.getElementById('ticker-gas');
+			const fngEl = document.getElementById('ticker-fng');
+			const timeEl = document.getElementById('telemetry-timestamp');
 
-			if (btcEl && json.data.btc) btcEl.innerText = `$${json.data.btc.usd.toLocaleString()}`;
-			if (ethEl && json.data.eth) ethEl.innerText = `$${json.data.eth.usd.toLocaleString()}`;
-			if (usdEl && (json.data as any).usd) usdEl.innerText = `₺${(json.data as any).usd.try.toFixed(2)}`;
-			if (usdtEl && json.data.usdt) usdtEl.innerText = `₺${json.data.usdt.try.toFixed(2)}`;
+			if (btcEl && d.btc) btcEl.textContent = '$' + Number(d.btc.usd).toLocaleString('en-US');
+			if (btcChgEl && d.btc) {
+				const chg = d.btc.change24h;
+				btcChgEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(1) + '%';
+				btcChgEl.className = 'telemetry-change ' + (chg >= 0 ? 'up' : 'down');
+			}
+
+			if (ethEl && d.eth) ethEl.textContent = '$' + Number(d.eth.usd).toLocaleString('en-US');
+			if (ethChgEl && d.eth) {
+				const chg = d.eth.change24h;
+				ethChgEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(1) + '%';
+				ethChgEl.className = 'telemetry-change ' + (chg >= 0 ? 'up' : 'down');
+			}
+
+			if (usdtEl && d.usdt) usdtEl.textContent = d.usdt.try.toFixed(2) + ' ₺';
+			if (gasEl && d.gas) gasEl.textContent = d.gas.gwei + ' Gwei';
+			if (fngEl && d.fng) fngEl.textContent = String(d.fng.value);
+
+			if (timeEl) {
+				const isStale = json.meta?.stale;
+				timeEl.textContent = isStale
+					? 'Veri gecikmeli • Doğrulanmış taban'
+					: 'Canlı Telemetry • Binance & Mempool • Az önce';
+			}
 		} catch {
-			// graceful fallback
+			// Fail quietly
 		}
 	}
 
-	updateLiveTicker();
+	// 2. Client-side Instant Search Index
+	const searchIndex = [
+		{ title: "Yanlış Ağa Gönderdim", url: "/araclar/yanlis-aga-gonderdim", type: "Araç", desc: "BEP-20, ERC-20 veya TRC-20 aktarım kurtarma teşhisi" },
+		{ title: "Takılan İşlem Teşhisi (Pending)", url: "/araclar/takilan-islem", type: "Araç", desc: "Mempool kuyruğu, RBF ve Nonce hızlandırma" },
+		{ title: "Adres ve Ağ Format Denetimi", url: "/araclar/adres-ag-eslestirici", type: "Araç", desc: "EVM, Tron, Bitcoin adres checksum kontrolü" },
+		{ title: "Gerçek Maliyet Karşılaştırıcı", url: "/araclar/maliyet-karsilastirici", type: "Araç", desc: "Komisyon, spread ve ağ çekim ücreti analizi" },
+		{ title: "Cüzdan Güvenlik Denetimi", url: "/araclar/cuzdan-guvenlik-kontrolu", type: "Araç", desc: "Allowance yetkileri ve phishing risk check-up" },
+		{ title: "DCA Simülatörü", url: "/araclar/dca-simulator", type: "Araç", desc: "Düzenli alım stratejisi geçmiş kâr/zarar testi" },
+		{ title: "USDT'yi Yanlış Ağa Gönderdim Rehberi", url: "/rehber/usdt-yanlis-ag", type: "Rehber", desc: "Adım adım borsa ve cüzdan kurtarma kılavuzu" },
+		{ title: "MetaMask'ta Takılan İşlemi İptal Etme", url: "/rehber/metamask-takilan-islem", type: "Rehber", desc: "Aynı nonce ile 0 ETH göndererek işlemi sıfırlama" },
+		{ title: "Mempool Nedir?", url: "/sozluk", type: "Sözlük", desc: "Onay bekleyen blokzincir işlemlerinin bellek havuzu" },
+		{ title: "Slippage Nedir?", url: "/sozluk", type: "Sözlük", desc: "Beklenen fiyat ile gerçekleşen fiyat arasındaki kayma" },
+		{ title: "Gwei & Gas Nedir?", url: "/sozluk", type: "Sözlük", desc: "Ethereum işlem ücreti birimi ve hesaplama kuralları" }
+	];
+
+	function setupInstantSearch() {
+		const input = document.getElementById('hero-instant-search') as HTMLInputElement | null;
+		const dropdown = document.getElementById('hero-search-results');
+
+		if (!input || !dropdown) return;
+
+		input.addEventListener('input', () => {
+			const q = input.value.trim().toLowerCase();
+			if (!q) {
+				dropdown.style.display = 'none';
+				dropdown.innerHTML = '';
+				return;
+			}
+
+			const matches = searchIndex.filter(item => 
+				item.title.toLowerCase().includes(q) ||
+				item.desc.toLowerCase().includes(q) ||
+				item.type.toLowerCase().includes(q)
+			).slice(0, 5);
+
+			if (matches.length === 0) {
+				dropdown.innerHTML = `<div class="search-empty">Sonuç bulunamadı. <a href="/araclar">Tüm araçlara göz at →</a></div>`;
+				dropdown.style.display = 'block';
+				return;
+			}
+
+			dropdown.innerHTML = matches.map(m => `
+				<a href="${m.url}" class="search-result-row">
+					<div class="result-info">
+						<span class="result-badge">${m.type}</span>
+						<strong>${m.title}</strong>
+						<p>${m.desc}</p>
+					</div>
+					<span class="result-arrow">→</span>
+				</a>
+			`).join('');
+			dropdown.style.display = 'block';
+		});
+
+		document.addEventListener('click', (e) => {
+			if (!input.contains(e.target as Node) && !dropdown.contains(e.target as Node)) {
+				dropdown.style.display = 'none';
+			}
+		});
+	}
+
+	updateTelemetry();
+	setupInstantSearch();
+	document.addEventListener('astro:after-swap', () => {
+		updateTelemetry();
+		setupInstantSearch();
+	});
 </script>
 
 <style>
-	/* Data Hub Preview Section */
-	.data-hub-preview-section {
-		padding: 72px 0;
-		background: var(--bg-sunken);
-		border-top: 1px solid var(--border);
-		border-bottom: 1px solid var(--border);
+	/* Single-line Telemetry Bar */
+	.telemetry-bar {
+		background: var(--surface);
+		border-bottom: 1px solid var(--line);
+		font-family: var(--font-mono);
+		font-size: 11px;
+		color: var(--text-subtle);
+		overflow-x: auto;
+		white-space: nowrap;
+		scrollbar-width: none;
+	}
+	.telemetry-bar::-webkit-scrollbar {
+		display: none;
 	}
 
-	.data-preview-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+	.telemetry-inner {
+		max-width: var(--max-w);
+		margin: 0 auto;
+		padding: 7px 24px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 		gap: 20px;
 	}
 
-	.data-preview-card {
-		background: var(--surface);
-		border: 1px solid var(--border);
-		border-radius: 14px;
-		padding: 24px;
+	.telemetry-track {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.telemetry-item {
+		display: inline-flex;
+		align-items: center;
+		gap: 5px;
+	}
+
+	.telemetry-label {
+		color: var(--text-subtle);
+		font-weight: 500;
+	}
+
+	.telemetry-val {
+		color: var(--text);
+		font-weight: 600;
+	}
+
+	.telemetry-val.highlight {
+		color: var(--signal);
+	}
+
+	.telemetry-change {
+		font-size: 10px;
+		font-weight: 600;
+	}
+	.telemetry-change.up { color: var(--ok); }
+	.telemetry-change.down { color: var(--danger); }
+
+	.telemetry-tag {
+		background: var(--bg);
+		border: 1px solid var(--line);
+		padding: 1px 4px;
+		border-radius: var(--radius-sm);
+		font-size: 9px;
+		color: var(--text-subtle);
+	}
+
+	.telemetry-sep {
+		color: var(--line);
+	}
+
+	.telemetry-meta {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-size: 11px;
+		color: var(--text-subtle);
+		flex-shrink: 0;
+	}
+
+	.status-indicator-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--ok);
+	}
+
+	/* Main Layout Container */
+	.home-container {
+		max-width: var(--max-w);
+		margin: 0 auto;
+		padding: 40px 24px 60px;
 		display: flex;
 		flex-direction: column;
-		justify-content: space-between;
-		text-decoration: none;
-		transition: all 180ms ease;
-	}
-
-	.data-preview-card:hover {
-		border-color: rgba(16, 185, 129, 0.4);
-		transform: translateY(-2px);
-		box-shadow: var(--shadow-md);
-	}
-
-	.data-preview-card.highlight-kac-tl {
-		border-color: rgba(16, 185, 129, 0.35);
-		background: linear-gradient(180deg, var(--surface) 0%, rgba(16, 185, 129, 0.04) 100%);
-	}
-
-	.dp-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 14px;
-	}
-
-	.dp-badge {
-		padding: 3px 8px;
-		border-radius: 6px;
-		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.04em;
-	}
-
-	.tr-badge { background: rgba(239, 68, 68, 0.15); color: #EF4444; }
-	.etf-badge { background: rgba(59, 130, 246, 0.15); color: #3B82F6; }
-	.deriv-badge { background: rgba(168, 85, 247, 0.15); color: #A855F7; }
-	.calc-badge { background: var(--primary-soft); color: var(--primary); }
-	.idx-badge { background: rgba(245, 158, 11, 0.15); color: #F59E0B; }
-	.open-badge { background: var(--surface-2); color: var(--text-muted); }
-
-	.dp-stat {
-		font-size: 13px;
-		font-weight: 700;
-		color: var(--text);
-	}
-
-	.dp-stat.pos {
-		color: var(--color-profit);
-	}
-
-	.dp-title {
-		font-size: 18px;
-		font-weight: 700;
-		color: var(--text);
-		margin: 0 0 8px;
-	}
-
-	.dp-desc {
-		font-size: 13px;
-		line-height: 1.6;
-		color: var(--text-secondary);
-		margin: 0 0 16px;
-		flex: 1;
-	}
-
-	.dp-link-text {
-		font-size: 13px;
-		font-weight: 600;
-		color: var(--primary);
-	}
-
-	@media (max-width: 990px) {
-		.data-preview-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-
-	@media (max-width: 640px) {
-		.data-preview-grid {
-			grid-template-columns: 1fr;
-		}
+		gap: 64px;
 	}
 
 	/* Hero Section */
-	.hero-section {
-		padding: 72px 0 40px;
-		text-align: center;
-		position: relative;
-	}
-
-	.hero-container {
+	.hero-wizard {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		max-width: 900px;
+		text-align: center;
+		padding: 32px 0 16px;
 	}
 
-	.hero-badge {
+	.hero-badge-wrap {
+		margin-bottom: 20px;
+	}
+
+	.hero-chip {
 		display: inline-flex;
 		align-items: center;
-		gap: 8px;
-		background: rgba(16, 185, 129, 0.08);
-		border: 1px solid rgba(16, 185, 129, 0.25);
-		color: var(--primary);
-		padding: 6px 14px;
+		gap: 6px;
+		padding: 4px 12px;
+		background: var(--surface);
+		border: 1px solid var(--line);
 		border-radius: 9999px;
+		font-family: var(--font-mono);
 		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.06em;
+		font-weight: 600;
+		letter-spacing: 0.05em;
+		color: var(--signal);
+	}
+
+	.hero-headline {
+		font-family: var(--font-display);
+		font-size: clamp(32px, 5vw, 54px);
+		font-weight: 800;
+		line-height: 1.1;
+		letter-spacing: -0.03em;
+		color: var(--text);
+		margin: 0 0 16px 0;
+	}
+
+	.hero-signal {
+		color: var(--signal);
+	}
+
+	.hero-lead {
+		max-width: 600px;
+		font-size: clamp(15px, 2vw, 17px);
+		line-height: 1.5;
+		color: var(--text-muted);
+		margin: 0 0 36px 0;
+	}
+
+	/* Wizard 4 Triage Rows */
+	.wizard-triage-grid {
+		width: 100%;
+		max-width: 920px;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
 		margin-bottom: 24px;
 	}
 
-	.live-pulse-dot {
-		width: 7px;
-		height: 7px;
-		background: var(--primary);
-		border-radius: 50%;
-		box-shadow: 0 0 10px var(--primary);
-		animation: pulse-ring 2s infinite ease-in-out;
-	}
-
-	@keyframes pulse-ring {
-		0%, 100% { opacity: 1; transform: scale(1); }
-		50% { opacity: 0.4; transform: scale(0.85); }
-	}
-
-	.hero-title {
-		font-size: 56px;
-		font-weight: 800;
-		line-height: 1.12;
-		letter-spacing: -0.035em;
-		margin: 0 0 20px;
-		color: var(--text);
-	}
-
-	.hero-desc {
-		font-size: 18px;
-		line-height: 1.6;
-		color: var(--text-muted);
-		max-width: 660px;
-		margin: 0 auto 36px;
-	}
-
-	/* Command Bar */
-	.hero-command-bar {
-		width: 100%;
-		max-width: 680px;
-		position: relative;
-	}
-
-	.search-input-shell {
-		position: relative;
+	.triage-card {
 		display: flex;
 		align-items: center;
-		background: var(--bg-elev);
-		border: 1px solid var(--border-strong);
-		border-radius: 14px;
-		box-shadow: var(--shadow-md), 0 0 30px rgba(16, 185, 129, 0.04);
-		transition: border-color var(--transition-base), box-shadow var(--transition-base);
-	}
-
-	.search-input-shell:focus-within {
-		border-color: var(--primary);
-		box-shadow: 0 0 0 3px var(--primary-glow), var(--shadow-lg);
-	}
-
-	.search-icon {
-		position: absolute;
-		left: 18px;
-		color: var(--text-faint);
-		pointer-events: none;
-	}
-
-	.command-input {
-		width: 100%;
-		background: transparent;
-		border: none;
-		outline: none;
-		color: var(--text);
-		padding: 16px 64px 16px 52px;
-		font-size: 15px;
-		font-family: inherit;
-	}
-
-	.command-input::placeholder {
-		color: var(--text-faint);
-	}
-
-	.search-hint {
-		position: absolute;
-		right: 14px;
-	}
-
-	.kbd-badge {
-		font-size: 11px;
-		padding: 3px 6px;
-		border-radius: 4px;
-		background: var(--bg-sunken);
-		border: 1px solid var(--border);
-		color: var(--text-faint);
-		font-family: var(--font-mono);
-	}
-
-	/* Dropdown */
-	.search-suggestions {
-		display: none;
-		position: absolute;
-		top: calc(100% + 8px);
-		left: 0;
-		right: 0;
-		background: var(--bg-elev);
-		border: 1px solid var(--border-strong);
-		border-radius: 14px;
-		box-shadow: var(--shadow-lg);
-		z-index: 50;
-		overflow: hidden;
-		text-align: left;
-		backdrop-filter: blur(12px);
-	}
-
-	.sugg-header {
-		padding: 10px 16px 6px;
-		font-size: 10px;
-		font-weight: 700;
-		color: var(--text-faint);
-		letter-spacing: 0.08em;
-		border-bottom: 1px solid var(--border-subtle);
-	}
-
-	.sugg-item {
-		display: flex;
-		align-items: center;
-		gap: 14px;
-		padding: 12px 16px;
-		border-bottom: 1px solid var(--border-subtle);
-		text-decoration: none;
-		transition: background var(--transition-fast);
-	}
-
-	.sugg-item:hover {
-		background: var(--bg-sunken);
-	}
-
-	.sugg-item:last-child {
-		border-bottom: none;
-	}
-
-	.sugg-icon-box {
-		width: 32px;
-		height: 32px;
-		border-radius: 8px;
-		background: var(--bg-sunken);
-		border: 1px solid var(--border);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: var(--primary);
-		flex-shrink: 0;
-	}
-
-	.sugg-info {
-		flex: 1;
-	}
-
-	.sugg-info strong {
-		display: block;
-		font-size: 13.5px;
-		color: var(--text);
-		font-weight: 600;
-	}
-
-	.sugg-info span {
-		font-size: 11.5px;
-		color: var(--text-muted);
-		display: block;
-		line-height: 1.4;
-	}
-
-	.sugg-arrow {
-		color: var(--text-faint);
-		font-size: 14px;
-		transition: transform var(--transition-fast), color var(--transition-fast);
-	}
-
-	.sugg-item:hover .sugg-arrow {
-		transform: translateX(3px);
-		color: var(--primary);
-	}
-
-	/* Quick Pill Strip */
-	.quick-pill-strip {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex-wrap: wrap;
-		gap: 8px;
-		margin-top: 18px;
-	}
-
-	.pill-label {
-		font-size: 12px;
-		color: var(--text-faint);
-		font-weight: 500;
-	}
-
-	.quick-pill {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		font-size: 12px;
-		background: var(--bg-sunken);
-		border: 1px solid var(--border);
-		color: var(--text-muted);
-		padding: 6px 12px;
-		border-radius: 9999px;
-		text-decoration: none;
-		font-weight: 500;
-		transition: all var(--transition-fast);
-	}
-
-	.quick-pill .pill-dot {
-		width: 5px;
-		height: 5px;
-		border-radius: 50%;
-		background: var(--text-faint);
-		transition: background var(--transition-fast);
-	}
-
-	.quick-pill:hover {
-		background: var(--bg-elev);
-		border-color: var(--primary);
-		color: var(--primary);
-	}
-
-	.quick-pill:hover .pill-dot {
-		background: var(--primary);
-	}
-
-	/* Ticker Strip */
-	.ticker-strip {
-		background: var(--bg-sunken);
-		border-top: 1px solid var(--border);
-		border-bottom: 1px solid var(--border);
-		padding: 10px 0;
-		margin: 24px 0 64px;
-	}
-
-	.strip-flex {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 16px;
-		flex-wrap: wrap;
-	}
-
-	.ticker-live-status {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.ticker-beacon {
-		width: 7px;
-		height: 7px;
-		background: var(--primary);
-		border-radius: 50%;
-		box-shadow: 0 0 6px var(--primary);
-	}
-
-	.ticker-tag {
-		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		color: var(--primary);
-	}
-
-	.ticker-track {
-		display: flex;
-		align-items: center;
-		gap: 16px;
-		flex-wrap: wrap;
-	}
-
-	.ticker-metric {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		font-size: 12.5px;
-	}
-
-	.metric-sym {
-		color: var(--text-muted);
-		font-weight: 600;
-	}
-
-	.metric-val {
-		color: var(--text);
-		font-weight: 600;
-	}
-
-	.val-up {
-		color: var(--primary);
-	}
-
-	.metric-badge {
-		background: rgba(245, 158, 11, 0.12);
-		color: var(--warning);
-		border: 1px solid rgba(245, 158, 11, 0.25);
-		padding: 1px 6px;
-		border-radius: 4px;
-		font-size: 11px;
-	}
-
-	.ticker-sep {
-		width: 1px;
-		height: 14px;
-		background: var(--border-strong);
-	}
-
-	.ticker-all-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 4px;
-		font-size: 12px;
-		font-weight: 600;
-		color: var(--primary);
-		text-decoration: none;
-		transition: opacity var(--transition-fast);
-	}
-
-	.ticker-all-link:hover {
-		opacity: 0.8;
-	}
-
-	/* Bento Grid */
-	.action-bento-section {
-		margin-bottom: 80px;
-	}
-
-	.section-heading-center {
-		text-align: center;
-		margin-bottom: 40px;
-	}
-
-	.section-eyebrow {
-		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.1em;
-		color: var(--primary);
-		text-transform: uppercase;
-		margin-bottom: 8px;
-	}
-
-	.section-headline {
-		font-size: 34px;
-		font-weight: 800;
-		letter-spacing: -0.025em;
-		margin: 0 0 10px;
-		color: var(--text);
-	}
-
-	.section-subtext {
-		font-size: 15px;
-		color: var(--text-muted);
-		max-width: 580px;
-		margin: 0 auto;
-	}
-
-	.bento-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 24px;
-	}
-
-	.bento-card {
-		background: var(--bg-elev);
-		border: 1px solid var(--border);
-		border-radius: 16px;
-		padding: 24px;
-		display: flex;
-		flex-direction: column;
 		gap: 20px;
-		transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
+		padding: 18px 24px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-md);
+		text-decoration: none;
+		color: var(--text);
+		transition: all var(--duration-fast) var(--ease-standard);
+		text-align: left;
 	}
 
-	.bento-card:hover {
-		border-color: var(--border-strong);
-		box-shadow: var(--shadow-card-hover), 0 0 30px rgba(16, 185, 129, 0.04);
-		transform: translateY(-2px);
+	.triage-card:hover {
+		border-color: var(--line-strong);
+		background: var(--surface-hover);
+		transform: translateY(-1px);
+		box-shadow: var(--shadow-sm);
 	}
 
-	.bento-header {
-		display: flex;
-		gap: 14px;
-		align-items: flex-start;
-		border-bottom: 1px solid var(--border-subtle);
-		padding-bottom: 16px;
-	}
-
-	.bento-icon-wrapper {
+	.triage-icon-wrap {
 		width: 44px;
 		height: 44px;
-		border-radius: 10px;
+		border-radius: var(--radius-sm);
+		background: var(--bg);
+		border: 1px solid var(--line);
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		color: var(--signal);
 		flex-shrink: 0;
 	}
 
-	.bento-icon-alert {
-		background: rgba(239, 68, 68, 0.1);
-		color: #EF4444;
-		border: 1px solid rgba(239, 68, 68, 0.2);
-	}
-
-	.bento-icon-calc {
-		background: rgba(99, 102, 241, 0.1);
-		color: #6366F1;
-		border: 1px solid rgba(99, 102, 241, 0.2);
-	}
-
-	.bento-icon-track {
-		background: rgba(16, 185, 129, 0.1);
-		color: #10B981;
-		border: 1px solid rgba(16, 185, 129, 0.2);
-	}
-
-	.bento-tag {
-		font-size: 10px;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		color: var(--text-faint);
-		margin-bottom: 4px;
-	}
-
-	.bento-title {
-		font-size: 20px;
-		font-weight: 700;
-		margin: 0 0 4px;
-		color: var(--text);
-		letter-spacing: -0.01em;
-	}
-
-	.bento-desc {
-		font-size: 12.5px;
-		color: var(--text-muted);
-		margin: 0;
-		line-height: 1.4;
-	}
-
-	.bento-links {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-	}
-
-	.bento-link-item {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 11px 14px;
-		background: var(--bg-sunken);
-		border: 1px solid var(--border-subtle);
-		border-radius: 10px;
-		text-decoration: none;
-		transition: all var(--transition-fast);
-	}
-
-	.bento-link-item:hover {
-		background: var(--bg);
-		border-color: var(--primary);
-		transform: translateX(2px);
-	}
-
-	.link-meta {
+	.triage-body {
+		flex: 1;
+		min-width: 0;
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
 	}
 
-	.link-title {
-		font-size: 13.5px;
+	.triage-step {
+		font-family: var(--font-mono);
+		font-size: 10px;
 		font-weight: 600;
+		letter-spacing: 0.08em;
+		color: var(--text-subtle);
+	}
+
+	.triage-title {
+		font-size: 16px;
+		font-weight: 700;
 		color: var(--text);
-		transition: color var(--transition-fast);
 	}
 
-	.bento-link-item:hover .link-title {
-		color: var(--primary);
-	}
-
-	.link-desc {
-		font-size: 11.5px;
-		color: var(--text-muted);
-		line-height: 1.35;
-	}
-
-	.link-arrow {
-		color: var(--text-faint);
+	.triage-desc {
 		font-size: 13px;
-		transition: transform var(--transition-fast), color var(--transition-fast);
-	}
-
-	.bento-link-item:hover .link-arrow {
-		transform: translateX(3px);
-		color: var(--primary);
-	}
-
-	/* Trust Section */
-	.trust-section {
-		margin-bottom: 80px;
-	}
-
-	.trust-card {
-		background: var(--bg-elev);
-		border: 1px solid var(--border);
-		border-radius: 20px;
-		padding: 40px;
-		display: grid;
-		grid-template-columns: 1.3fr 1fr;
-		gap: 40px;
-		align-items: center;
-	}
-
-	.trust-headline {
-		font-size: 28px;
-		font-weight: 800;
-		margin: 4px 0 12px;
-		letter-spacing: -0.02em;
-	}
-
-	.trust-desc {
-		font-size: 14px;
 		color: var(--text-muted);
-		line-height: 1.6;
-		margin-bottom: 28px;
+		line-height: 1.4;
 	}
 
-	.trust-principles {
-		display: flex;
-		flex-direction: column;
-		gap: 20px;
-	}
-
-	.principle-item {
-		display: flex;
-		gap: 14px;
-		align-items: flex-start;
-	}
-
-	.principle-icon-wrap {
-		width: 36px;
-		height: 36px;
-		border-radius: 8px;
-		background: var(--bg-sunken);
-		border: 1px solid var(--border);
+	.triage-action {
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		color: var(--primary);
+		gap: 6px;
+		font-family: var(--font-mono);
+		font-size: 12px;
+		font-weight: 600;
+		color: var(--signal);
 		flex-shrink: 0;
 	}
 
-	.principle-title {
+	.triage-card:hover .triage-action {
+		color: var(--signal-hover);
+	}
+
+	/* Hero Search Box */
+	.hero-tools-nav {
+		width: 100%;
+		max-width: 920px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		flex-wrap: wrap;
+	}
+
+	.hero-search-box {
+		flex: 1;
+		min-width: 280px;
+		position: relative;
+		display: flex;
+		align-items: center;
+	}
+
+	.search-ico {
+		position: absolute;
+		left: 14px;
+		color: var(--text-subtle);
+		pointer-events: none;
+	}
+
+	.hero-search-box input {
+		width: 100%;
+		height: 42px;
+		padding: 0 16px 0 42px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-sm);
+		color: var(--text);
+		font-family: var(--font-sans);
+		font-size: 13px;
+		outline: none;
+		transition: border-color var(--duration-fast) var(--ease-standard);
+	}
+
+	.hero-search-box input:focus {
+		border-color: var(--signal);
+	}
+
+	.search-dropdown {
+		position: absolute;
+		top: calc(100% + 6px);
+		left: 0;
+		right: 0;
+		background: var(--surface);
+		border: 1px solid var(--line-strong);
+		border-radius: var(--radius-md);
+		box-shadow: var(--shadow-modal);
+		z-index: 50;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		text-align: left;
+	}
+
+	:global(.search-result-row) {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 10px 14px;
+		border-bottom: 1px solid var(--line);
+		text-decoration: none;
+		color: var(--text);
+		transition: background var(--duration-fast) var(--ease-standard);
+	}
+
+	:global(.search-result-row:last-child) {
+		border-bottom: none;
+	}
+
+	:global(.search-result-row:hover) {
+		background: var(--surface-hover);
+	}
+
+	:global(.result-info) {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	:global(.result-badge) {
+		font-family: var(--font-mono);
+		font-size: 9px;
+		font-weight: 600;
+		color: var(--signal);
+		text-transform: uppercase;
+	}
+
+	:global(.result-info strong) {
+		font-size: 13px;
+		color: var(--text);
+	}
+
+	:global(.result-info p) {
+		font-size: 11px;
+		color: var(--text-subtle);
+		margin: 0;
+	}
+
+	:global(.result-arrow) {
+		color: var(--text-subtle);
+		font-size: 14px;
+	}
+
+	:global(.search-empty) {
+		padding: 16px;
+		font-size: 13px;
+		color: var(--text-subtle);
+		text-align: center;
+	}
+
+	:global(.search-empty a) {
+		color: var(--signal);
+		text-decoration: underline;
+	}
+
+	.all-tools-anchor {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-family: var(--font-mono);
+		font-size: 12px;
+		font-weight: 500;
+		color: var(--text-subtle);
+		text-decoration: none;
+		white-space: nowrap;
+	}
+
+	.all-tools-anchor:hover {
+		color: var(--signal);
+	}
+
+	/* Honesty Banner */
+	.honesty-banner {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-lg);
+		padding: 36px 32px;
+	}
+
+	.honesty-header {
+		margin-bottom: 28px;
+	}
+
+	.section-tag {
+		font-family: var(--font-mono);
+		font-size: 10px;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--signal);
+		display: block;
+		margin-bottom: 6px;
+	}
+
+	.honesty-title {
+		font-family: var(--font-display);
+		font-size: 24px;
+		font-weight: 700;
+		color: var(--text);
+		margin: 0;
+	}
+
+	.honesty-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 24px;
+	}
+
+	.honesty-card {
+		background: var(--bg);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-md);
+		padding: 24px;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.honesty-icon-bar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		color: var(--signal);
+	}
+
+	.honesty-num {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		color: var(--text-subtle);
+	}
+
+	.honesty-card-title {
 		font-size: 15px;
 		font-weight: 700;
 		color: var(--text);
-		margin: 0 0 3px;
+		margin: 0;
 	}
 
-	.principle-text {
+	.honesty-card-desc {
 		font-size: 13px;
+		line-height: 1.5;
 		color: var(--text-muted);
 		margin: 0;
-		line-height: 1.5;
 	}
 
-	.edge-telemetry-box {
-		background: var(--bg-sunken);
-		border: 1px solid var(--border);
-		border-radius: 14px;
-		padding: 24px;
+	.mono-badge {
+		font-family: var(--font-mono);
+		font-size: 10px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		padding: 1px 4px;
+		border-radius: var(--radius-sm);
+		color: var(--info);
 	}
 
-	.telemetry-top {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		margin-bottom: 18px;
-		padding-bottom: 12px;
-		border-bottom: 1px solid var(--border-subtle);
-	}
-
-	.telemetry-pulse {
-		position: relative;
-		width: 8px;
-		height: 8px;
-	}
-
-	.telemetry-dot {
-		position: absolute;
-		inset: 0;
-		background: var(--primary);
-		border-radius: 50%;
-	}
-
-	.telemetry-ping {
-		position: absolute;
-		inset: -3px;
-		border: 1px solid var(--primary);
-		border-radius: 50%;
-		animation: pulse-ring 2s infinite ease-out;
-	}
-
-	.telemetry-title {
-		font-size: 11px;
-		font-weight: 700;
-		color: var(--primary);
-		letter-spacing: 0.08em;
-	}
-
-	.telemetry-specs {
+	/* Working Tools Section */
+	.tools-section {
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
-		font-size: 12px;
-		margin-bottom: 20px;
+		gap: 24px;
 	}
 
-	.spec-row {
+	.section-top-row {
 		display: flex;
+		align-items: flex-end;
 		justify-content: space-between;
-		padding-bottom: 8px;
-		border-bottom: 1px dashed var(--border-subtle);
+		gap: 20px;
+		flex-wrap: wrap;
 	}
 
-	.spec-k {
-		color: var(--text-faint);
-	}
-
-	.spec-v {
+	.section-headline {
+		font-family: var(--font-display);
+		font-size: 26px;
+		font-weight: 700;
 		color: var(--text);
-		font-weight: 500;
+		margin: 0 0 6px 0;
 	}
 
-	.telemetry-action {
-		text-align: right;
+	.section-subtext {
+		font-size: 14px;
+		color: var(--text-muted);
+		margin: 0;
 	}
 
-	.telemetry-link {
+	.view-all-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-family: var(--font-mono);
 		font-size: 12px;
 		font-weight: 600;
-		color: var(--primary);
+		color: var(--signal);
 		text-decoration: none;
 	}
 
-	/* Content Previews */
-	.content-preview-section {
-		margin-bottom: 80px;
+	.tools-cockpit-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 16px;
 	}
 
-	.preview-split {
+	.tool-cockpit-card {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-md);
+		padding: 20px;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		text-decoration: none;
+		color: var(--text);
+		transition: all var(--duration-fast) var(--ease-standard);
+	}
+
+	.tool-cockpit-card:hover {
+		background: var(--surface-hover);
+		border-color: var(--line-strong);
+		transform: translateY(-2px);
+		box-shadow: var(--shadow-sm);
+	}
+
+	.tool-card-head {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 10px;
+		margin-bottom: 4px;
+	}
+
+	.tool-icon {
+		width: 32px;
+		height: 32px;
+		border-radius: var(--radius-sm);
+		background: var(--bg);
+		border: 1px solid var(--line);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--signal);
+	}
+
+	.tool-badges {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		flex-wrap: wrap;
+	}
+
+	.tool-name {
+		font-size: 15px;
+		font-weight: 700;
+		color: var(--text);
+	}
+
+	.tool-summary {
+		font-size: 13px;
+		line-height: 1.45;
+		color: var(--text-muted);
+		margin: 0;
+		flex: 1;
+	}
+
+	.tool-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-top: 8px;
+		padding-top: 10px;
+		border-top: 1px solid var(--line);
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 600;
+		color: var(--signal);
+	}
+
+	/* Two Columns Section */
+	.editorial-dual-section {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 32px;
 	}
 
-	.preview-panel {
+	.editorial-col {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-lg);
+		padding: 28px;
 		display: flex;
 		flex-direction: column;
-		gap: 16px;
+		gap: 20px;
 	}
 
-	.panel-header {
+	.editorial-header {
 		display: flex;
+		align-items: flex-end;
 		justify-content: space-between;
-		align-items: center;
-		padding-bottom: 6px;
+		border-bottom: 1px solid var(--line);
+		padding-bottom: 16px;
 	}
 
-	.panel-title-group {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		color: var(--text);
-	}
-
-	.panel-title-group svg {
-		color: var(--primary);
-	}
-
-	.panel-title-group h3 {
-		font-size: 18px;
+	.editorial-title {
+		font-family: var(--font-display);
+		font-size: 20px;
 		font-weight: 700;
+		color: var(--text);
 		margin: 0;
-		letter-spacing: -0.01em;
 	}
 
-	.panel-more {
-		font-size: 12.5px;
-		font-weight: 600;
-		color: var(--primary);
+	.editorial-more {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		color: var(--signal);
 		text-decoration: none;
 	}
 
-	.panel-items {
+	.editorial-list {
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
 	}
 
-	.preview-card {
-		background: var(--bg-elev);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		padding: 16px 20px;
+	.editorial-item {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 16px;
+		padding: 14px;
+		background: var(--bg);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-md);
 		text-decoration: none;
-		transition: all var(--transition-fast);
+		color: var(--text);
+		transition: all var(--duration-fast) var(--ease-standard);
+	}
+
+	.editorial-item:hover {
+		background: var(--surface-hover);
+		border-color: var(--line-strong);
+	}
+
+	.editorial-item-body {
+		flex: 1;
+		min-width: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 6px;
+		gap: 4px;
 	}
 
-	.preview-card:hover {
-		border-color: var(--border-strong);
-		transform: translateY(-1px);
-		box-shadow: var(--shadow-sm);
+	.item-meta {
+		font-family: var(--font-mono);
+		font-size: 9px;
+		font-weight: 600;
+		color: var(--signal);
+		letter-spacing: 0.05em;
 	}
 
-	.pc-badge {
-		align-self: flex-start;
-		font-size: 10.5px;
-		font-weight: 700;
-		padding: 2px 8px;
-		border-radius: 4px;
-		background: rgba(16, 185, 129, 0.1);
-		color: var(--primary);
-		border: 1px solid rgba(16, 185, 129, 0.2);
-	}
-
-	.pc-badge-term {
-		background: rgba(99, 102, 241, 0.1);
-		color: #818CF8;
-		border-color: rgba(99, 102, 241, 0.2);
-	}
-
-	.pc-title {
-		font-size: 14.5px;
+	.item-title {
+		font-size: 14px;
 		font-weight: 700;
 		color: var(--text);
-		margin: 0;
 	}
 
-	.preview-card:hover .pc-title {
-		color: var(--primary);
-	}
-
-	.pc-desc {
-		font-size: 12.5px;
+	.item-desc {
+		font-size: 12px;
+		line-height: 1.4;
 		color: var(--text-muted);
 		margin: 0;
-		line-height: 1.45;
 	}
 
-	.pc-time, .pc-arrow {
-		font-size: 11.5px;
-		color: var(--text-faint);
-		margin-top: 4px;
-		font-weight: 500;
+	.item-arrow {
+		color: var(--text-subtle);
+		flex-shrink: 0;
+	}
+
+	.editorial-item:hover .item-arrow {
+		color: var(--signal);
+	}
+
+	.term-title-row {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.term-badge {
+		font-family: var(--font-mono);
+		font-size: 9px;
+		padding: 1px 5px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-sm);
+		color: var(--text-subtle);
 	}
 
 	/* FAQ Section */
 	.faq-section {
-		margin-bottom: 80px;
-	}
-
-	.faq-list {
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
+		gap: 24px;
 	}
 
-	.faq-box {
-		background: var(--bg-elev);
-		border: 1px solid var(--border);
-		border-radius: 12px;
-		overflow: hidden;
-		transition: border-color var(--transition-fast);
+	.faq-header {
+		text-align: center;
 	}
 
-	.faq-box[open] {
-		border-color: var(--border-strong);
-	}
-
-	.faq-head {
-		padding: 18px 22px;
-		font-size: 15px;
-		font-weight: 600;
-		color: var(--text);
-		cursor: pointer;
+	.faq-accordion {
+		max-width: 820px;
+		margin: 0 auto;
+		width: 100%;
 		display: flex;
-		justify-content: space-between;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.faq-item {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: var(--radius-md);
+		overflow: hidden;
+		transition: border-color var(--duration-fast) var(--ease-standard);
+	}
+
+	.faq-item[open] {
+		border-color: var(--line-strong);
+	}
+
+	.faq-question {
+		display: flex;
 		align-items: center;
+		gap: 14px;
+		padding: 16px 20px;
+		cursor: pointer;
 		user-select: none;
 		list-style: none;
 	}
 
-	.faq-head::-webkit-details-marker {
+	.faq-question::-webkit-details-marker {
 		display: none;
 	}
 
-	.faq-chevron {
-		color: var(--text-faint);
-		transition: transform var(--transition-fast);
-		display: flex;
-		align-items: center;
+	.q-num {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 600;
+		color: var(--signal);
 	}
 
-	.faq-box[open] .faq-chevron {
-		transform: rotate(180deg);
-		color: var(--primary);
+	.q-text {
+		flex: 1;
+		font-size: 15px;
+		font-weight: 600;
+		color: var(--text);
 	}
 
-	.faq-body {
-		padding: 0 22px 18px;
-		font-size: 14px;
+	.q-chevron {
+		color: var(--text-subtle);
+		transition: transform var(--duration-fast) var(--ease-standard);
+	}
+
+	.faq-item[open] .q-chevron {
+		transform: rotate(90deg);
+		color: var(--signal);
+	}
+
+	.faq-answer {
+		padding: 0 20px 18px 45px;
 		color: var(--text-muted);
+		font-size: 13px;
 		line-height: 1.6;
 	}
 
-	.faq-body p {
+	.faq-answer p {
 		margin: 0;
 	}
 
 	/* Responsive */
-	@media (max-width: 960px) {
-		.bento-grid {
+	@media (max-width: 900px) {
+		.honesty-grid {
 			grid-template-columns: 1fr;
 		}
-
-		.trust-card {
-			grid-template-columns: 1fr;
-			padding: 28px 20px;
-		}
-
-		.preview-split {
+		.tools-cockpit-grid {
 			grid-template-columns: 1fr;
 		}
-
-		.hero-title {
-			font-size: 38px;
+		.editorial-dual-section {
+			grid-template-columns: 1fr;
 		}
-
-		.hero-desc {
-			font-size: 16px;
+		.triage-card {
+			padding: 14px 16px;
+			gap: 14px;
 		}
-	}
-
-	@media (max-width: 640px) {
-		.ticker-strip {
-			display: none;
-		}
-
-		.hero-section {
-			padding: 48px 0 32px;
-		}
-
-		.command-input {
-			font-size: 14px;
-			padding-right: 20px;
-		}
-
-		.search-hint {
+		.triage-action {
 			display: none;
 		}
 	}

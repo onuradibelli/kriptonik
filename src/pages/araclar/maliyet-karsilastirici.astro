@@ -1,41 +1,62 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Icon from '../../components/ui/Icon.astro';
+import StatusPill from '../../components/ui/StatusPill.astro';
 
-const pageTitle = "Gerçek Maliyet Karşılaştırıcı (TL ↔ Kripto En Ucuz Yol) | Kriptonik";
-const pageDesc = "TL ile kripto alırken veya satarken en ucuz yol hangisi? Komisyon, spread ve ağ çekim ücreti dahil gerçek maliyeti karşılaştırın.";
+const pageTitle = "Gerçek Transfer Maliyeti Karşılaştırıcı | Kriptonik";
+const pageDesc = "TL ile kripto alırken veya satarken en ucuz yol hangisi? Komisyon, spread ve ağ çekim ücreti dahil net rota analizi.";
 ---
 
 <Layout title={pageTitle} description={pageDesc}>
-	<div class="container tool-page">
-		<!-- Breadcrumb -->
-		<nav class="breadcrumb">
-			<a href="/">Ana Sayfa</a>
-			<span>/</span>
-			<a href="/araclar">Araçlar</a>
-			<span>/</span>
-			<span class="current">Gerçek Maliyet Karşılaştırıcı</span>
-		</nav>
+	<div class="cockpit-tool-container">
+		<!-- Breadcrumb & Badges -->
+		<div class="tool-meta-bar">
+			<nav class="cockpit-breadcrumb" aria-label="Gezinti">
+				<a href="/">Ana Sayfa</a>
+				<Icon name="chevron-right" size={12} class="crumb-sep" />
+				<a href="/araclar">Araçlar</a>
+				<Icon name="chevron-right" size={12} class="crumb-sep" />
+				<span class="crumb-current">Gerçek Maliyet Karşılaştırıcı</span>
+			</nav>
+
+			<div class="tool-badges-row">
+				<StatusPill status="live" label="Canlı" />
+				<StatusPill dataFlow="client" />
+			</div>
+		</div>
 
 		<!-- Tool Header -->
-		<div class="tool-header">
-			<div class="badge-pill">
-				<span>⚖️</span>
-				<span>Maliyet & Arbitraj Analizi</span>
+		<div class="tool-intro-box">
+			<div class="tool-title-row">
+				<div class="tool-icon-square">
+					<Icon name="layers" size={24} />
+				</div>
+				<div>
+					<h1 class="tool-heading">Gerçek Maliyet Karşılaştırıcı</h1>
+					<p class="tool-subheading">
+						Borsaların "sıfır komisyon" reklamlarına aldanma. Gerçek maliyet komisyon, alış/satış spread farkı ve blokzincir transfer çekim ücretinin toplamıdır.
+					</p>
+				</div>
 			</div>
-			<h1 class="tool-title">Gerçek Maliyet Karşılaştırıcı (TL ↔ Kripto)</h1>
-			<p class="tool-subtitle">
-				Borsaların reklamını yaptığı sıfır komisyon yanılgısına düşmeyin. Komisyon, alış/satış makası (spread) ve blokzincir transfer ücreti dahil en ucuz transfer rotasını bulun.
-			</p>
+
+			<!-- Mandatory Affiliate / Independence Notice -->
+			<div class="disclosure-mandatory-box">
+				<Icon name="shield-check" size={16} />
+				<span><strong>Bağımsız Sıralama Taahhüdü:</strong> Bu araçtaki borsa sıralamaları ve hesaplama formülleri reklam veya affiliate gelirlerinden kesinlikle etkilenmez; tamamen matematiksel maliyete göre listelenir.</span>
+			</div>
 		</div>
 
 		<!-- Tool Interface -->
-		<div class="tool-card">
-			<div class="tool-card-head">
-				<div class="step-indicator">
-					<span class="step-badge">HESAPLAMA</span>
-					<span class="step-title">İşlem Hacmini ve Yönünü Seçin</span>
+		<div class="cockpit-panel">
+			<div class="panel-header">
+				<div class="panel-title-wrap">
+					<span class="panel-step-num">01</span>
+					<h2 class="panel-title">İşlem Hacmini ve Yönünü Seç</h2>
 				</div>
-				<span class="privacy-note">🔒 Bağımsız & Tarafsız Sıralama</span>
+				<span class="panel-privacy-badge">
+					<Icon name="shield-check" size={13} />
+					<span>Tarayıcında hesaplanır</span>
+				</span>
 			</div>
 
 			<div class="tool-form-grid">
