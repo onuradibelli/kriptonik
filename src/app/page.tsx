@@ -13,6 +13,7 @@ import OpenInterestRadar from '../components/OpenInterestRadar';
 import EtfTracker from '../components/EtfTracker';
 import KacTlConverter from '../components/KacTlConverter';
 import UsdtPremiumWidget from '../components/UsdtPremiumWidget';
+import LiveCryptoMarketTable from '../components/LiveCryptoMarketTable';
 import Sparkline from '../components/Sparkline';
 import {
   Flame,
@@ -302,7 +303,17 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
         </div>
       </section>
 
-      {/* 2. SEGMENTED COCKPIT NAVIGATION BAR (Derli Toplu Görsel Sekmeler) */}
+      {/* 2. REAL-TIME CRYPTO MARKET SCREENER TABLE (Canlı Kripto Varlıklar Pazar Tablosu) */}
+      <section>
+        <LiveCryptoMarketTable
+          coins={COINS_DATA}
+          tickers={tickers}
+          watchlist={watchlist}
+          onToggleWatchlist={toggleFavorite}
+        />
+      </section>
+
+      {/* 3. SEGMENTED COCKPIT NAVIGATION BAR (Derli Toplu Görsel Sekmeler) */}
       <section className="space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
           {/* Scrollable Tabs */}

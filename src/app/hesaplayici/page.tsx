@@ -5,17 +5,23 @@ import Link from 'next/link';
 import { ArrowLeft, HelpCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Kaldıraç & Likidasyon Fiyatı Hesaplayıcı — Kriptonik Terminal',
+  title: 'Kripto Kaldıraç, Likidasyon ve Borsa Komisyon Hesaplayıcı | Kriptonik',
   description:
-    'Bitcoin ve altcoin vadeli işlemlerinde kaldıraç, likidasyon fiyatı, teminat ve net kar/zarar (PnL) hesaplama aracı. Sıfır hata ile riskinizi önceden simüle edin.',
+    'Binance TR, BtcTurk, Paribu komisyon kıyaslama, 1x-125x kaldıraç likidasyon fiyatı, DCA ortalama maliyet düşürme ve net kâr (PnL) simülatörü.',
   keywords: [
     'kripto kaldıraç hesaplama',
     'likidasyon fiyatı hesaplayıcı',
+    'binance tr komisyon hesaplama',
+    'btcturk komisyon hesaplama',
+    'paribu komisyon oranları',
+    'dca hesaplayıcı',
+    'maliyet düşürme hesaplama',
     'futures pnl calculator',
-    'binance kaldıraç hesaplama',
-    'kripto tasfiye fiyatı',
-    'kriptonik'
-  ]
+    'kripto kâr hesaplama'
+  ],
+  alternates: {
+    canonical: 'https://kriptonik.com/hesaplayici/'
+  }
 };
 
 export default function CalculatorPage() {

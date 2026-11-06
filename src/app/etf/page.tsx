@@ -6,12 +6,52 @@ import { BarChart3, ShieldCheck } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Canlı Spot Bitcoin ve Ethereum ETF Giriş/Çıkış Akışları (Net Flows) | Kriptonik',
-  description: 'BlackRock (IBIT), Fidelity (FBTC), Grayscale ve tüm kurumsal ETF ihraççılarının günlük net sermaye akışları, kümülatif girişler ve AUM rezervleri.'
+  description: 'BlackRock (IBIT), Fidelity (FBTC), Grayscale ve tüm kurumsal ETF ihraççılarının günlük net sermaye akışları, SoSoValue konsolide giriş/çıkış bilançosu ve AUM rezervleri.',
+  keywords: [
+    'spot etf akışları',
+    'bitcoin etf girişleri',
+    'ethereum spot etf',
+    'sosovalue etf türkçe',
+    'ibit net flow',
+    'fbtc para girişi',
+    'kripto etf verileri',
+    'blackrock bitcoin rezervi'
+  ],
+  alternates: {
+    canonical: 'https://kriptonik.com/etf/'
+  }
 };
 
 export default function EtfHubPage() {
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Spot Bitcoin ETF Net Giriş/Çıkış (Net Inflow/Outflow) Ne Anlama Gelir?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Net giriş, kurumsal yatırımcıların fon payı satın almak için nakit getirdiğini ve ihraççı fonun (BlackRock, Fidelity vb.) piyasadan gerçek Bitcoin satın aldığını gösterir. Net çıkış ise fon paylarının satılarak rezervdeki Bitcoinlerin bozdurulduğunu ifade eder.'
+        }
+      },
+      {
+        '@type': 'Question',
+        name: 'SoSoValue ETF verileri ne zaman güncellenir?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'ABD spot ETF akışları New York borsa seans kapanışından sonra (TSİ gece yarısı ve sabah saatlerinde) fon ihraççılarının günlük beyanlarıyla konsolide edilir.'
+        }
+      }
+    ]
+  };
+
   return (
     <div className="space-y-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-xs text-[var(--card-muted)] font-mono">
         <Link href="/" className="hover:text-[var(--foreground)]">Kriptonik</Link>

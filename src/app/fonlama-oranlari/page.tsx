@@ -6,13 +6,53 @@ import FundingMatrix from '../../components/FundingMatrix';
 import { DollarSign, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Borsalar Arası Canlı Fonlama Oranları (Funding Rate) | Kriptonik',
-  description: 'Binance, Bybit ve OKX canlı fonlama oranları, geçmiş fonlama verileri, arbitraj spread takibi ve ağırlıklı piyasa ortalaması.'
+  title: 'Borsalar Arası Canlı Fonlama Oranları (Funding Rate) ve Arbitraj Matrisi | Kriptonik',
+  description: 'Binance, Bybit ve OKX canlı fonlama oranları, geçmiş fonlama verileri, arbitraj spread takibi, delta-nötr getiri fırsatları ve ağırlıklı piyasa ortalaması.',
+  keywords: [
+    'kripto fonlama oranları',
+    'funding rate',
+    'binance funding rate',
+    'bybit fonlama oranı',
+    'fonlama arbitrajı',
+    'delta nötr arbitraj',
+    'funding fee hesaplama',
+    'vadeli fonlama oranları'
+  ],
+  alternates: {
+    canonical: 'https://kriptonik.com/fonlama-oranlari/'
+  }
 };
 
 export default function FundingHubPage() {
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Kriptoda Fonlama Oranı (Funding Rate) Nedir?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Sürekli vadeli işlem (perpetual futures) fiyatının spot fiyata yakın kalmasını sağlayan periyodik ödemedir. Pozitif oranda Long pozisyonlar Short pozisyonlara, negatif oranda ise Short pozisyonlar Long pozisyonlara ödeme yapar.'
+        }
+      },
+      {
+        '@type': 'Question',
+        name: 'Fonlama Arbitrajı (Funding Arbitrage) Nasıl Yapılır?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Farklı borsalarda (örneğin Binance ve Bybit) aynı varlık için farklı fonlama oranları oluştuğunda; yüksek fonlama ödeyen borsada short, düşük olan borsada long açılarak fiyattan bağımsız risksiz faiz geliri elde edilir.'
+        }
+      }
+    ]
+  };
+
   return (
     <div className="space-y-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-xs text-[var(--card-muted)] font-mono">
         <Link href="/" className="hover:text-[var(--foreground)]">Kriptonik</Link>

@@ -40,6 +40,8 @@ export default function BulletinPage() {
   const sui = COINS_DATA.find((c) => c.slug === 'sui') || COINS_DATA[6];
   const totalEtf = ((BITCOIN_ETF_SUMMARY.lastDayNetFlowUsd + ETHEREUM_ETF_SUMMARY.lastDayNetFlowUsd) / 1_000_000).toFixed(1);
 
+  const isEtfPositive = Number(totalEtf) >= 0;
+
   // Programmatic live intelligence reports constructed from real API data
   const articles: ReportArticle[] = [
     {
@@ -47,18 +49,18 @@ export default function BulletinPage() {
       category: 'GÜNLÜK PİYASA NABZI',
       categoryColor: 'bg-[#2962FF]/15 text-[#2962FF]',
       title: `Bitcoin $${btc.price.toLocaleString('tr-TR')} Seviyesinde Konsolide Olurken Korku Endeksi ${FEAR_AND_GREED.value} Seviyesine İndi`,
-      subtitle: `Bireysel yatırımcı korku içerisindeyken kurumsal Spot ETF'lere dün +$${totalEtf}M net taze sermaye girişi gerçekleşti.`,
+      subtitle: `Bireysel yatırımcı aşırı korku içerisindeyken kurumsal Spot ETF'lerden dün -$${Math.abs(Number(totalEtf))}M net sermaye çıkışı kaydedildi.`,
       date: 'Bugün, 15:45',
       readTime: '3 dk',
       metrics: [
         { label: 'Spot BTC', value: `$${btc.price.toLocaleString('tr-TR')}` },
         { label: 'Korku/Açgözlülük', value: `${FEAR_AND_GREED.value}/100 (${FEAR_AND_GREED.classification})` },
-        { label: 'ETF Net Akış', value: `+$${totalEtf}M`, isGood: true }
+        { label: 'ETF Net Akış', value: `${isEtfPositive ? '+' : '-'}$${Math.abs(Number(totalEtf))}M`, isGood: isEtfPositive }
       ],
-      summary: `Bitcoin, $${btc.price.toLocaleString('tr-TR')} seviyesinde yatay bir bantta fiyatlanırken türev piyasalarındaki Açık Pozisyon (OI) $${(btc.openInterestUsd / 1_000_000_000).toFixed(2)} milyar dolara yükseldi. Korku ve Açgözlülük endeksinin ${FEAR_AND_GREED.value} (Korku) seviyesine gerilemesi, kurumsal yatırımcıların dipten akümülasyon stratejisini sürdürdüğünü teyit ediyor.`,
+      summary: `Bitcoin, $${btc.price.toLocaleString('tr-TR')} seviyesinde yatay bir bantta fiyatlanırken türev piyasalarındaki Açık Pozisyon (OI) $${(btc.openInterestUsd / 1_000_000_000).toFixed(2)} milyar dolara yükseldi. Korku ve Açgözlülük endeksinin ${FEAR_AND_GREED.value} (Aşırı Korku) seviyesine gerilemesi ve SoSoValue verilerine göre -$${Math.abs(Number(totalEtf))} milyonluk ETF çıkışı piyasadaki kâr satışlarını teyit ediyor.`,
       content: [
-        `Piyasa genelinde son 24 saatlik fiyat hareketleri $${btc.price.toLocaleString('tr-TR')} civarında dengelenme gösteriyor. Bireysel trader duyarlılığını ölçen Alternative.me endeksi ${FEAR_AND_GREED.value} puan ile "Korku" bölgesine çekilmiş durumda. Tarihsel veriler incelendiğinde, bu seviyedeki korku dönemlerinin dip oluşumlarına ve kurumsal alış hacimlerine zemin hazırladığı bilinmektedir.`,
-        `Kurumsal cephede ise tablo oldukça pozitif. BlackRock IBIT ve Fidelity FBTC öncülüğünde Spot Bitcoin ve Ethereum ETF'lerine son seansta toplam +$${totalEtf} milyon net fon girişi kaydedildi. Bu durum, türev piyasalardaki volatiliteye rağmen kurumsal uzun vadeli tutma iştahının korunduğunu gösteriyor.`,
+        `Piyasa genelinde son 24 saatlik fiyat hareketleri $${btc.price.toLocaleString('tr-TR')} civarında dengelenme gösteriyor. Bireysel trader duyarlılığını ölçen Alternative.me endeksi ${FEAR_AND_GREED.value} puan ile "Aşırı Korku" bölgesine çekilmiş durumda. Tarihsel veriler incelendiğinde, bu seviyedeki korku dönemlerinin dip oluşumlarına ve kurumsal yeniden pozisyonlanma dönemlerine zemin hazırladığı bilinmektedir.`,
+        `Kurumsal cephede ise SoSoValue verilerine göre Fidelity FBTC ve BlackRock IBIT öncülüğünde Spot Bitcoin ve Ethereum ETF'lerinden son seansta toplam -$${Math.abs(Number(totalEtf))} milyon net fon çıkışı kaydedildi. Analistler bu çıkışın makroekonomik dalgalanmalar kaynaklı kısa vadeli bir nefeslenme olduğunu belirtiyor.`,
         `Teknik olarak en yakın kritik tasfiye bariyeri $${btc.dominantLiquidationLevel.toLocaleString('tr-TR')} seviyesindedir. Fiyatın bu seviyeyi aşması halinde short pozisyonların zorunlu alımlarıyla sert bir yükseliş dalgası beklenebilir.`
       ]
     },

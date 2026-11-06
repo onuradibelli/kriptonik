@@ -1,0 +1,393 @@
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { CoinData } from '../lib/types';
+import { LIVE_CURRENCY_RATES } from '../lib/data';
+import Sparkline from './Sparkline';
+import {
+  Search,
+  Star,
+  ArrowUpRight,
+  TrendingUp,
+  TrendingDown,
+  Flame,
+  DollarSign,
+  Compass,
+  Layers,
+  ArrowUpDown
+} from 'lucide-react';
+
+interface LiveCryptoMarketTableProps {
+  coins: CoinData[];
+  tickers: Record<string, { price: number; change24h: number; flashDirection?: 'UP' | 'DOWN' | null }>;
+  watchlist: string[];
+  onToggleWatchlist: (symbol: string) => void;
+}
+
+type SortField = 'rank' | 'price' | 'change' | 'liquidation' | 'funding' | 'oi';
+type SortOrder = 'asc' | 'desc';
+
+export default function LiveCryptoMarketTable({
+  coins,
+  tickers,
+  watchlist,
+  onToggleWatchlist,
+}: LiveCryptoMarketTableProps) {
+  const router = useRouter();
+  const [activeCategory, setActiveCategory] = useState<'ALL' | 'GAINERS' | 'LOSERS' | 'LIQUIDATION' | 'OI' | 'FAVORITES'>('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortField, setSortField] = useState<SortField>('rank');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+
+  const usdtRate = LIVE_CURRENCY_RATES.USDT_TRY;
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder(field === 'rank' ? 'asc' : 'desc');
+    }
+  };
+
+  const filteredCoins = useMemo(() => {
+    let result = coins.map((c) => {
+      const liveTick = tickers[c.binanceSymbol];
+      const livePrice = liveTick?.price || c.price;
+      const liveChange = liveTick?.change24h !== undefined ? liveTick.change24h : c.change24h;
+      return {
+        ...c,
+        effectivePrice: livePrice,
+        effectiveChange: liveChange,
+        flash: liveTick?.flashDirection
+      };
+    });
+
+    // 1. Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      result = result.filter(
+        (c) => c.name.toLowerCase().includes(query) || c.symbol.toLowerCase().includes(query)
+      );
+    }
+
+    // 2. Category filter
+    if (activeCategory === 'GAINERS') {
+      result = result.filter((c) => c.effectiveChange > 0).sort((a, b) => b.effectiveChange - a.effectiveChange);
+    } else if (activeCategory === 'LOSERS') {
+      result = result.filter((c) => c.effectiveChange < 0).sort((a, b) => a.effectiveChange - b.effectiveChange);
+    } else if (activeCategory === 'LIQUIDATION') {
+      result = result.sort((a, b) => b.totalLiquidation24hUsd - a.totalLiquidation24hUsd);
+    } else if (activeCategory === 'OI') {
+      result = result.sort((a, b) => b.openInterestUsd - a.openInterestUsd);
+    } else if (activeCategory === 'FAVORITES') {
+      result = result.filter((c) => watchlist.includes(c.symbol));
+    }
+
+    // 3. Sorting
+    if (activeCategory === 'ALL' || activeCategory === 'FAVORITES') {
+      result.sort((a, b) => {
+        let diff = 0;
+        if (sortField === 'rank') diff = a.marketCapRank - b.marketCapRank;
+        else if (sortField === 'price') diff = a.effectivePrice - b.effectivePrice;
+        else if (sortField === 'change') diff = a.effectiveChange - b.effectiveChange;
+        else if (sortField === 'liquidation') diff = a.totalLiquidation24hUsd - b.totalLiquidation24hUsd;
+        else if (sortField === 'funding') diff = a.fundingRates.binance - b.fundingRates.binance;
+        else if (sortField === 'oi') diff = a.openInterestUsd - b.openInterestUsd;
+        return sortOrder === 'asc' ? diff : -diff;
+      });
+    }
+
+    return result;
+  }, [coins, tickers, searchQuery, activeCategory, sortField, sortOrder, watchlist]);
+
+  return (
+    <div className="panel-card p-5 sm:p-6 space-y-5">
+      {/* 1. Header with Title and Search Filter */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-[var(--border)] pb-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#2962FF]/15 text-[#2962FF] font-bold">
+              ⚡
+            </span>
+            <h2 className="text-lg font-black text-[var(--foreground)]">
+              Canlı Kripto Varlıklar Pazar Tablosu
+            </h2>
+            <span className="rounded bg-[#00E699]/15 text-[#00E699] px-2 py-0.5 text-[10px] font-mono font-bold">
+              ANLIK WS SİNYALİ
+            </span>
+          </div>
+          <p className="mt-1 text-xs text-[var(--card-muted)]">
+            Binance vadeli tahta derinliği, tasfiye seviyeleri ve borsalar arası fonlama oranlarıyla anlık güncellenen pazar tarayıcısı.
+          </p>
+        </div>
+
+        {/* Search Bar Input */}
+        <div className="relative w-full md:w-64">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--card-muted)]" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Coin veya sembol ara..."
+            className="w-full rounded-xl border border-[var(--border)] bg-[var(--background)] pl-9 pr-4 py-2 text-xs text-[var(--foreground)] placeholder:text-[var(--card-muted)] focus:border-[#2962FF] focus:outline-hidden transition-colors"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--card-muted)] hover:text-[var(--foreground)]"
+            >
+              ×
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* 2. Category Filter Pills */}
+      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+        {[
+          { id: 'ALL', label: `Tüm Varlıklar (${coins.length})` },
+          { id: 'GAINERS', label: '🔥 En Çok Yükselenler' },
+          { id: 'LOSERS', label: '🔻 En Çok Düşenler' },
+          { id: 'LIQUIDATION', label: '⚡ Yüksek Likidasyon' },
+          { id: 'OI', label: '📊 Yüksek Açık Pozisyon' },
+          { id: 'FAVORITES', label: `⭐ Takip Listem (${watchlist.length})` },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveCategory(tab.id as any)}
+            className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+              activeCategory === tab.id
+                ? 'bg-[#2962FF] text-white shadow-xs font-bold'
+                : 'bg-[var(--card)] text-[var(--card-muted)] hover:text-[var(--foreground)] border border-[var(--border)]'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* 3. The Live Table Screener */}
+      <div className="overflow-x-auto rounded-xl border border-[var(--border)]">
+        <table className="w-full text-left text-xs font-mono">
+          <thead>
+            <tr className="border-b border-[var(--border)] bg-[var(--card-subtle)] text-[11px] text-[var(--card-muted)] select-none">
+              <th className="py-3 px-3 cursor-pointer hover:text-[var(--foreground)]" onClick={() => handleSort('rank')}>
+                <div className="flex items-center gap-1">
+                  <span># Varlık</span>
+                  <ArrowUpDown className="h-3 w-3 opacity-60" />
+                </div>
+              </th>
+              <th className="py-3 px-3 cursor-pointer hover:text-[var(--foreground)]" onClick={() => handleSort('price')}>
+                <div className="flex items-center gap-1">
+                  <span>Canlı Fiyat ($ / ₺)</span>
+                  <ArrowUpDown className="h-3 w-3 opacity-60" />
+                </div>
+              </th>
+              <th className="py-3 px-3 cursor-pointer hover:text-[var(--foreground)]" onClick={() => handleSort('change')}>
+                <div className="flex items-center gap-1">
+                  <span>24s Değişim</span>
+                  <ArrowUpDown className="h-3 w-3 opacity-60" />
+                </div>
+              </th>
+              <th className="py-3 px-3 hidden lg:table-cell">
+                <span>24s Fiyat Aralığı</span>
+              </th>
+              <th className="py-3 px-3 cursor-pointer hover:text-[var(--foreground)] hidden md:table-cell" onClick={() => handleSort('liquidation')}>
+                <div className="flex items-center gap-1">
+                  <span>24s Likidasyon</span>
+                  <ArrowUpDown className="h-3 w-3 opacity-60" />
+                </div>
+              </th>
+              <th className="py-3 px-3 cursor-pointer hover:text-[var(--foreground)] hidden sm:table-cell" onClick={() => handleSort('funding')}>
+                <div className="flex items-center gap-1">
+                  <span>Fonlama (APR)</span>
+                  <ArrowUpDown className="h-3 w-3 opacity-60" />
+                </div>
+              </th>
+              <th className="py-3 px-3 cursor-pointer hover:text-[var(--foreground)] hidden xl:table-cell" onClick={() => handleSort('oi')}>
+                <div className="flex items-center gap-1">
+                  <span>Açık Pozisyon (OI)</span>
+                  <ArrowUpDown className="h-3 w-3 opacity-60" />
+                </div>
+              </th>
+              <th className="py-3 px-3 hidden sm:table-cell text-center">
+                <span>7G Trend</span>
+              </th>
+              <th className="py-3 px-3 text-right">
+                <span>Terminal</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[var(--border)] bg-[var(--card)]">
+            {filteredCoins.map((coin) => {
+              const isFav = watchlist.includes(coin.symbol);
+              const isPos = coin.effectiveChange >= 0;
+              const flash = coin.flash;
+              const tryPrice = coin.effectivePrice * usdtRate;
+
+              // Estimated 24h range
+              const low24 = coin.effectivePrice * 0.965;
+              const high24 = coin.effectivePrice * 1.035;
+              const rangePercent = Math.min(100, Math.max(0, ((coin.effectivePrice - low24) / (high24 - low24)) * 100));
+
+              // Liquidation values
+              const liqTotal = (coin.totalLiquidation24hUsd / 1_000_000).toFixed(1);
+              const shortPercent = coin.shortPercentage;
+
+              // Funding rate (3-session annualized approx)
+              const fundingApr = (coin.fundingRates.binance * 3 * 365 * 100).toFixed(2);
+              const isFundingPos = coin.fundingRates.binance >= 0;
+
+              return (
+                <tr
+                  key={coin.id}
+                  onClick={() => router.push(`/kripto/${coin.slug}/`)}
+                  className="hover:bg-[var(--hover-bg)] transition-colors cursor-pointer group"
+                >
+                  {/* # Rank & Asset */}
+                  <td className="py-3 px-3">
+                    <div className="flex items-center gap-2.5">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onToggleWatchlist(coin.symbol);
+                        }}
+                        className="text-[var(--card-muted)] hover:text-amber-400 transition-colors cursor-pointer"
+                        title={isFav ? 'Takip listesinden çıkar' : 'Takip listesine sabitle'}
+                      >
+                        <Star className={`h-3.5 w-3.5 ${isFav ? 'fill-amber-400 text-amber-400' : ''}`} />
+                      </button>
+
+                      <span className="font-mono text-[11px] text-[var(--card-muted)] w-4 text-center">
+                        {coin.marketCapRank}
+                      </span>
+
+                      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--border)] font-black text-xs text-[var(--foreground)]">
+                        {coin.symbol.slice(0, 3)}
+                      </div>
+
+                      <div>
+                        <div className="font-bold text-[var(--foreground)] group-hover:text-[#2962FF] transition-colors flex items-center gap-1.5 font-sans">
+                          <span>{coin.name}</span>
+                          <span className="font-mono text-[10px] text-[var(--card-muted)]">{coin.symbol}</span>
+                        </div>
+                        <div className="text-[10px] text-[var(--card-muted)] font-mono">
+                          {coin.binanceSymbol}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Price ($ and ₺) */}
+                  <td className="py-3 px-3">
+                    <div className={`font-mono font-bold text-sm text-[var(--foreground)] px-1 rounded transition-colors inline-block ${
+                      flash === 'UP' ? 'tick-flash-up text-[#00E699]' : flash === 'DOWN' ? 'tick-flash-down text-[#FF3B56]' : ''
+                    }`}>
+                      ${coin.effectivePrice > 10 ? coin.effectivePrice.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : coin.effectivePrice.toFixed(4)}
+                    </div>
+                    <div className="text-[10px] font-mono text-[var(--card-muted)]">
+                      ₺{tryPrice > 10 ? tryPrice.toLocaleString('tr-TR', { maximumFractionDigits: 0 }) : tryPrice.toFixed(2)}
+                    </div>
+                  </td>
+
+                  {/* 24h Change */}
+                  <td className="py-3 px-3">
+                    <span className={`inline-flex items-center gap-0.5 rounded-lg px-2 py-0.5 font-mono text-xs font-bold ${
+                      isPos ? 'bg-[#00E699]/15 text-[#00E699]' : 'bg-[#FF3B56]/15 text-[#FF3B56]'
+                    }`}>
+                      {isPos ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                      {isPos ? '+' : ''}{coin.effectiveChange.toFixed(2)}%
+                    </span>
+                  </td>
+
+                  {/* 24h Price Range Slider */}
+                  <td className="py-3 px-3 hidden lg:table-cell">
+                    <div className="space-y-1 w-32">
+                      <div className="flex justify-between text-[9px] font-mono text-[var(--card-muted)]">
+                        <span>${low24 > 10 ? low24.toFixed(0) : low24.toFixed(2)}</span>
+                        <span>${high24 > 10 ? high24.toFixed(0) : high24.toFixed(2)}</span>
+                      </div>
+                      <div className="h-1.5 w-full rounded-full bg-[var(--border)] relative overflow-hidden">
+                        <div
+                          className="absolute top-0 bottom-0 bg-[#2962FF] rounded-full"
+                          style={{ width: `${rangePercent}%` }}
+                        />
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* 24h Liquidation Pool */}
+                  <td className="py-3 px-3 hidden md:table-cell">
+                    <div className="space-y-1">
+                      <div className="font-mono font-bold text-[var(--foreground)]">
+                        ${liqTotal}M
+                      </div>
+                      <div className="flex items-center gap-1 text-[10px] font-mono">
+                        <span className="text-[#FF3B56]">S:%{shortPercent}</span>
+                        <span className="text-[var(--border)]">•</span>
+                        <span className="text-[#00E699]">L:%{100 - shortPercent}</span>
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Funding Rate (APR) */}
+                  <td className="py-3 px-3 hidden sm:table-cell">
+                    <span className={`font-mono font-bold text-[11px] ${
+                      isFundingPos ? 'text-[#00E699]' : 'text-[#FF3B56]'
+                    }`}>
+                      {isFundingPos ? '+' : ''}{fundingApr}%
+                    </span>
+                    <div className="text-[10px] text-[var(--card-muted)] font-mono">
+                      {isFundingPos ? 'Long Öder' : 'Short Öder'}
+                    </div>
+                  </td>
+
+                  {/* Open Interest */}
+                  <td className="py-3 px-3 hidden xl:table-cell">
+                    <div className="font-mono font-bold text-[var(--foreground)]">
+                      ${(coin.openInterestUsd / 1_000_000_000).toFixed(2)}B
+                    </div>
+                    <div className={`text-[10px] font-mono ${
+                      coin.openInterestChange24h >= 0 ? 'text-[#00E699]' : 'text-[#FF3B56]'
+                    }`}>
+                      {coin.openInterestChange24h >= 0 ? '+' : ''}{coin.openInterestChange24h.toFixed(1)}% (24s)
+                    </div>
+                  </td>
+
+                  {/* Sparkline */}
+                  <td className="py-3 px-3 hidden sm:table-cell text-center">
+                    <div className="flex justify-center">
+                      <Sparkline change24h={coin.effectiveChange} width={100} height={26} />
+                    </div>
+                  </td>
+
+                  {/* Terminal Button */}
+                  <td className="py-3 px-3 text-right">
+                    <Link
+                      href={`/kripto/${coin.slug}/`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="inline-flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--card-subtle)] hover:border-[#2962FF] hover:bg-[#2962FF] hover:text-white px-2.5 py-1 text-[11px] font-bold text-[var(--foreground)] transition-all font-sans"
+                    >
+                      <span>Terminal</span>
+                      <ArrowUpRight className="h-3 w-3" />
+                    </Link>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+
+        {filteredCoins.length === 0 && (
+          <div className="py-12 text-center text-xs text-[var(--card-muted)] space-y-2">
+            <p className="font-bold text-[var(--foreground)]">Eşleşen varlık bulunamadı</p>
+            <p>Arama kriterinizi değiştirerek veya filtreleri temizleyerek tekrar deneyin.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

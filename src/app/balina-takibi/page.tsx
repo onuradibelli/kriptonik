@@ -7,12 +7,43 @@ import { ShieldAlert, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Canlı Kripto Balina Takibi ve Büyük Cüzdan Transfer Radarı | Kriptonik',
-  description: 'Milyonlarca dolarlık Bitcoin, Ethereum, Solana ve altcoin balina hareketleri, soğuk cüzdan transferleri ve borsa giriş/çıkış akışları.'
+  description: 'Milyonlarca dolarlık Bitcoin, Ethereum, Solana ve altcoin balina hareketleri, soğuk cüzdan transferleri, borsa giriş/çıkış akışları ve whale alert sinyalleri.',
+  keywords: [
+    'kripto balina takibi',
+    'whale alert türkçe',
+    'bitcoin balina hareketleri',
+    'büyük cüzdan transferleri',
+    'onchain transfer takibi',
+    'borsa para girişi inflow',
+    'soğuk cüzdan outflow'
+  ],
+  alternates: {
+    canonical: 'https://kriptonik.com/balina-takibi/'
+  }
 };
 
 export default function WhaleTrackerPage() {
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Kriptoda Balina Transferleri (Whale Alert) Neden Önemlidir?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Borsalara yapılan büyük miktarda coin transferleri (Inflow) genellikle satış baskısı yaratabilecek potansiyel satış hazırlığını; borsalardan soğuk cüzdanlara çekilen miktarlar (Outflow) ise uzun vadeli biriktirmeyi ve piyasadaki arzın azaldığını gösterir.'
+        }
+      }
+    ]
+  };
+
   return (
     <div className="space-y-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-xs text-[var(--card-muted)] font-mono">
         <Link href="/" className="hover:text-[var(--foreground)]">Kriptonik</Link>

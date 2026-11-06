@@ -19,7 +19,10 @@ export const metadata: Metadata = {
     'ethereum kaç tl',
     'kripto kaç tl',
     'canlı döviz kuru tl'
-  ]
+  ],
+  alternates: {
+    canonical: 'https://kriptonik.com/kac-tl/'
+  }
 };
 
 export default function KacTlHubPage() {

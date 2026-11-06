@@ -7,12 +7,52 @@ import { Compass, TrendingUp } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Kripto Açık Pozisyon (Open Interest - OI) ve Trend Gücü Radarı | Kriptonik',
-  description: 'Vadeli piyasalardaki açık kontrat büyüklüğü, 24 saatlik para giriş/çıkışları, long/short rasyoları ve trend kırılım anormallik analizi.'
+  description: 'Vadeli piyasalardaki açık kontrat büyüklüğü, 24 saatlik para giriş/çıkışları, long/short rasyoları, kurumsal para akışı ve trend kırılım anormallik analizi.',
+  keywords: [
+    'açık pozisyon kripto',
+    'open interest nedir',
+    'kripto oi analizi',
+    'vadeli işlem açık pozisyon',
+    'bitcoin open interest',
+    'trend gücü radarı',
+    'long short rasyosu',
+    'coinglass open interest'
+  ],
+  alternates: {
+    canonical: 'https://kriptonik.com/acik-pozisyon/'
+  }
 };
 
 export default function OpenInterestHubPage() {
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Açık Pozisyon (Open Interest - OI) Nedir?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Vadeli kripto para borsalarında işlem gören ve henüz kapatılmamış, teslim edilmemiş veya likide olmamış toplam aktif vadeli sözleşmelerin toplam değeridir.'
+        }
+      },
+      {
+        '@type': 'Question',
+        name: 'Fiyat Yükselirken Açık Pozisyon Artarsa Ne Anlama Gelir?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Fiyat yükselişine açık pozisyon artışı eşlik ediyorsa piyasaya taze yeni para giriyor demektir. Bu durum boğa trendinin güçlü olduğunu ve yükselişin devam etme olasılığını gösterir.'
+        }
+      }
+    ]
+  };
+
   return (
     <div className="space-y-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-xs text-[var(--card-muted)] font-mono">
         <Link href="/" className="hover:text-[var(--foreground)]">Kriptonik</Link>

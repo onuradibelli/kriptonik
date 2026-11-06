@@ -7,12 +7,42 @@ import { Calendar, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Kripto Token Kilit Açılım Takvimi (Cliff & Linear Unlocks) | Kriptonik',
-  description: 'Önümüzdeki 30 gün içinde kilitli arzı serbest kalacak tokenlar, satış baskısı risk skorları, dolaşım oranları ve yatırımcı/ekip payları.'
+  description: 'Önümüzdeki 30 gün içinde kilitli arzı serbest kalacak tokenlar, satış baskısı risk skorları, dolaşım oranları ve yatırımcı/ekip payları takvimi.',
+  keywords: [
+    'token kilit açılımı',
+    'token unlock takvimi',
+    'cliff unlock nedir',
+    'tokenomik kilit açılışı',
+    'kripto kilitli arz',
+    'satış baskısı riski'
+  ],
+  alternates: {
+    canonical: 'https://kriptonik.com/token-kilit-acilimlari/'
+  }
 };
 
 export default function TokenUnlockHubPage() {
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: 'Token Kilit Açılımı (Token Unlock) Nedir?',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Erken aşama yatırımcılar, proje ekibi veya ekosistem fonları için önceden kilitlenen tokenların belirli bir takvime göre serbest kalarak transfer edilebilir veya satılabilir hale gelmesidir.'
+        }
+      }
+    ]
+  };
+
   return (
     <div className="space-y-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-xs text-[var(--card-muted)] font-mono">
         <Link href="/" className="hover:text-[var(--foreground)]">Kriptonik</Link>
