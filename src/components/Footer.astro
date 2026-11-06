@@ -1,83 +1,83 @@
 ---
-import tr from '../i18n/tr.json';
 ---
 
 <footer class="site-footer">
-	<div class="container footer-grid">
-		<!-- Brand & Mission Column -->
-		<div class="footer-col brand-col">
-			<a href="/" class="footer-brand" aria-label="Kriptonik">
-				<span class="symbol">◈</span>
-				<span class="name">Kriptonik</span>
-			</a>
-			<p class="brand-slogan">{tr.brand.slogan}</p>
-			<p class="brand-desc">
-				{tr.brand.privacy_promise}
+	<div class="container footer-container">
+		<div class="footer-top-grid">
+			<!-- Col 1: Brand & Promise -->
+			<div class="footer-col brand-col">
+				<div class="footer-brand">
+					<div class="f-logo-icon">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+							<path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" opacity="0.9" />
+							<path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+						</svg>
+					</div>
+					<span class="f-logo-text">Kriptonik</span>
+				</div>
+				<p class="footer-desc">
+					Kripto para kullanıcıları için hesapsız, anında ve tarafsız sorun çözümleme ve matematiksel hesaplama platformu.
+				</p>
+				<div class="system-status-indicator">
+					<span class="status-dot"></span>
+					<a href="/durum" class="status-link">Tüm Servisler Operasyonel (Durum)</a>
+				</div>
+			</div>
+
+			<!-- Col 2: Problem Solvers -->
+			<div class="footer-col">
+				<h4 class="col-title">Acil Sorun Çözücüler</h4>
+				<ul class="footer-links">
+					<li><a href="/araclar/yanlis-aga-gonderdim">Yanlış Ağa Gönderdim</a></li>
+					<li><a href="/araclar/takilan-islem">Takılan İşlem Teşhisi</a></li>
+					<li><a href="/araclar/adres-ag-eslestirici">Adres Ağ Eşleştirici</a></li>
+					<li><a href="/araclar/cuzdan-guvenlik-kontrolu">Cüzdan Güvenlik Check-up</a></li>
+					<li><a href="/yardim">Acil Durum Merkezi</a></li>
+				</ul>
+			</div>
+
+			<!-- Col 3: Calculators & Tools -->
+			<div class="footer-col">
+				<h4 class="col-title">Hesaplama Araçları</h4>
+				<ul class="footer-links">
+					<li><a href="/araclar/maliyet-karsilastirici">Borsa Maliyet Kıyaslayıcı</a></li>
+					<li><a href="/araclar/kripto-donusturucu">Kripto Dönüştürücü</a></li>
+					<li><a href="/araclar/dca-simulator">DCA Simülatörü</a></li>
+					<li><a href="/araclar/kar-zarar-hesaplama">Kâr / Zarar Hesaplama</a></li>
+					<li><a href="/araclar/gas-ucret-takip">Gas & Ağ Ücreti Takip</a></li>
+					<li><a href="/araclar">Tüm 21 Aracı İncele →</a></li>
+				</ul>
+			</div>
+
+			<!-- Col 4: Knowledge & Legal -->
+			<div class="footer-col">
+				<h4 class="col-title">Bilgi & Şeffaflık</h4>
+				<ul class="footer-links">
+					<li><a href="/sozluk">Kripto Terimleri Sözlüğü</a></li>
+					<li><a href="/rehber">Güvenlik Rehberleri</a></li>
+					<li><a href="/metodoloji">Hesaplama Metodolojisi</a></li>
+					<li><a href="/gizlilik">Gizlilik Taahhüdü (KVKK)</a></li>
+					<li><a href="/kullanim-sartlari">Kullanım Şartları</a></li>
+					<li><a href="/risk-uyarisi">Risk Uyarısı</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<!-- Legal Disclaimer Box -->
+		<div class="footer-disclaimer-box">
+			<span class="disclaimer-title">YASAL UYARI VE GİZLİLİK TAAHHÜDÜ</span>
+			<p>
+				Kriptonik (kriptonik.com) yalnızca tarafsız bilgi, teşhis simülasyonu ve teknik hesaplama araçları sunar. Sitede yer alan hiçbir içerik veya araç çıktısı <strong>yatırım tavsiyesi</strong> niteliğinde değildir. Girdiğiniz adresler ve işlem kodları sunucularımızda kaydedilmez ve kimliğinizle ilişkilendirilmez. Kriptonik özel anahtar veya tohum kelimeleri asla talep etmez.
 			</p>
-			<div class="lang-selector">
-				<span class="lang-item active">🇹🇷 Türkçe</span>
-				<span class="lang-item disabled">🇬🇧 English <small class="soon-badge">Yakında</small></span>
+		</div>
+
+		<!-- Bottom Copyright Row -->
+		<div class="footer-bottom-row">
+			<div class="copyright-text">
+				© 2026 Kriptonik (kriptonik.com). Tüm hakları saklıdır.
 			</div>
-		</div>
-
-		<!-- Araçlar Column -->
-		<div class="footer-col">
-			<h4 class="col-title">{tr.footer.tools_title}</h4>
-			<ul class="footer-links">
-				<li><a href="/araclar/yanlis-aga-gonderdim">Yanlış Ağa Gönderdim Sihirbazı</a></li>
-				<li><a href="/araclar/takilan-islem">Takılan İşlem & Gas Teşhisi</a></li>
-				<li><a href="/araclar/adres-ag-eslestirici">Adres Ağ Eşleştirici</a></li>
-				<li><a href="/araclar/maliyet-karsilastirici">Gerçek Maliyet Karşılaştırıcı</a></li>
-				<li><a href="/araclar/dca-simulator">DCA Geri Test Simülatörü</a></li>
-				<li><a href="/araclar">Tüm 12 Aracı İncele →</a></li>
-			</ul>
-		</div>
-
-		<!-- İçerik & Bilgi Column -->
-		<div class="footer-col">
-			<h4 class="col-title">{tr.footer.knowledge_title}</h4>
-			<ul class="footer-links">
-				<li><a href="/yardim">Acil Durum Merkezi</a></li>
-				<li><a href="/sozluk">Kripto Terimleri Sözlüğü</a></li>
-				<li><a href="/rehber">Güvenlik ve Çözüm Rehberleri</a></li>
-				<li><a href="/piyasa">Canlı Piyasa & Gas Takibi</a></li>
-				<li><a href="/metodoloji">Metodoloji & Hesaplama</a></li>
-				<li><a href="/durum">Sistem Durumu (Status)</a></li>
-			</ul>
-		</div>
-
-		<!-- Yasal & Şeffaflık Column -->
-		<div class="footer-col">
-			<h4 class="col-title">{tr.footer.legal_title}</h4>
-			<ul class="footer-links">
-				<li><a href="/gizlilik">Gizlilik Politikası (KVKK/GDPR)</a></li>
-				<li><a href="/kullanim-sartlari">Kullanım Şartları</a></li>
-				<li><a href="/risk-uyarisi">Risk Uyarısı & Sorumluluk Reddi</a></li>
-				<li><a href="/affiliate-aciklamasi">Affiliate & Gelir Politikası</a></li>
-				<li><a href="/rapor">Hatalı Bilgi / İtiraz Bildirimi</a></li>
-			</ul>
-		</div>
-	</div>
-
-	<!-- Disclaimer Banner -->
-	<div class="container">
-		<div class="legal-disclaimer">
-			<span class="disclaimer-badge">ÖNEMLİ YASAL UYARI</span>
-			<p>{tr.footer.disclaimer}</p>
-		</div>
-	</div>
-
-	<!-- Bottom Row -->
-	<div class="footer-bottom">
-		<div class="container bottom-container">
-			<div class="cf-badge">
-				<span>⚡ Hosted on</span>
-				<strong>Cloudflare Workers & Pages</strong>
-				<span class="separator">•</span>
-				<a href="/durum" class="status-link">Sistemler Aktif</a>
-			</div>
-			<div class="copyright">
-				{tr.footer.rights}
+			<div class="tech-stack-tag">
+				<span>Global Edge Mimari • Astro & Cloudflare</span>
 			</div>
 		</div>
 	</div>
@@ -85,90 +85,115 @@ import tr from '../i18n/tr.json';
 
 <style>
 	.site-footer {
-		margin-top: auto;
 		background: var(--bg-sunken);
 		border-top: 1px solid var(--border);
-		padding: 56px 0 0;
+		padding: 64px 0 32px;
+		margin-top: auto;
+		transition: background 180ms ease, border-color 180ms ease;
 	}
 
-	.footer-grid {
+	.footer-container {
+		display: flex;
+		flex-direction: column;
+		gap: 40px;
+	}
+
+	.footer-top-grid {
 		display: grid;
-		grid-template-columns: 2fr 1.2fr 1.2fr 1.2fr;
-		gap: 36px;
-		margin-bottom: 40px;
+		grid-template-columns: 1.5fr 1fr 1fr 1fr;
+		gap: 40px;
+	}
+
+	.brand-col {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
 	}
 
 	.footer-brand {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		text-decoration: none;
-		color: var(--text);
-		margin-bottom: 8px;
-	}
-
-	.footer-brand .symbol {
-		font-size: 22px;
-		color: var(--primary);
-	}
-
-	.footer-brand .name {
-		font-family: 'Space Grotesk', sans-serif;
-		font-weight: 700;
-		font-size: 19px;
-		letter-spacing: 0.5px;
-	}
-
-	.brand-slogan {
-		font-size: 14px;
-		color: var(--primary);
-		font-weight: 600;
-		margin-bottom: 8px;
-	}
-
-	.brand-desc {
-		font-size: 13px;
-		line-height: 1.6;
-		color: var(--text-muted);
-		margin-bottom: 16px;
-	}
-
-	.lang-selector {
 		display: flex;
 		align-items: center;
-		gap: 12px;
-		font-size: 12px;
+		gap: 10px;
 	}
 
-	.lang-item.active {
+	.f-logo-icon {
+		width: 30px;
+		height: 30px;
+		border-radius: 8px;
+		background: var(--primary-soft);
+		border: 1px solid rgba(16, 185, 129, 0.2);
+		color: var(--primary);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.f-logo-text {
+		font-family: 'Space Grotesk', sans-serif;
+		font-weight: 800;
+		font-size: 18px;
 		color: var(--text);
-		font-weight: 600;
+		letter-spacing: -0.02em;
 	}
 
-	.lang-item.disabled {
-		color: var(--text-faint);
-		cursor: not-allowed;
+	.footer-desc {
+		font-size: 13px;
+		color: var(--text-muted);
+		line-height: 1.6;
+		max-width: 320px;
+		margin: 0;
 	}
 
-	.soon-badge {
-		font-size: 10px;
+	.system-status-indicator {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 12px;
+		color: var(--text-muted);
 		background: var(--bg-elev);
 		border: 1px solid var(--border);
-		padding: 1px 4px;
-		border-radius: 4px;
+		padding: 6px 12px;
+		border-radius: 9999px;
+		width: fit-content;
+	}
+
+	.status-dot {
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: var(--success);
+		box-shadow: 0 0 6px var(--success);
+	}
+
+	.status-link {
+		color: var(--text-muted);
+		text-decoration: none;
+		font-weight: 500;
+	}
+
+	.status-link:hover {
+		color: var(--text);
+	}
+
+	.footer-col {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
 	}
 
 	.col-title {
-		font-family: 'Space Grotesk', sans-serif;
-		font-size: 14px;
+		font-size: 13px;
 		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
 		color: var(--text);
-		margin-bottom: 16px;
-		letter-spacing: 0.5px;
+		margin: 0;
 	}
 
 	.footer-links {
 		list-style: none;
+		padding: 0;
+		margin: 0;
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
@@ -185,79 +210,57 @@ import tr from '../i18n/tr.json';
 		color: var(--primary);
 	}
 
-	.legal-disclaimer {
+	.footer-disclaimer-box {
 		background: var(--bg-elev);
 		border: 1px solid var(--border);
-		border-radius: 10px;
-		padding: 16px 20px;
-		font-size: 12px;
-		line-height: 1.6;
-		color: var(--text-muted);
-		margin-bottom: 28px;
+		border-radius: 12px;
+		padding: 18px 24px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
 	}
 
-	.disclaimer-badge {
-		display: inline-block;
-		font-family: var(--font-mono, monospace);
-		font-size: 10px;
-		font-weight: 700;
-		color: var(--warning);
-		background: var(--warning-soft);
-		border: 1px solid var(--warning);
-		padding: 2px 6px;
-		border-radius: 4px;
-		margin-bottom: 6px;
-	}
-
-	.footer-bottom {
-		border-top: 1px solid var(--border);
-		padding: 18px 0;
-		font-size: 12px;
+	.disclaimer-title {
+		font-size: 11px;
+		font-weight: 800;
+		letter-spacing: 0.06em;
 		color: var(--text-faint);
 	}
 
-	.bottom-container {
+	.footer-disclaimer-box p {
+		font-size: 12px;
+		color: var(--text-muted);
+		line-height: 1.6;
+		margin: 0;
+	}
+
+	.footer-disclaimer-box strong {
+		color: var(--text);
+	}
+
+	.footer-bottom-row {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		padding-top: 16px;
+		border-top: 1px solid var(--border);
+		font-size: 12px;
+		color: var(--text-faint);
 		flex-wrap: wrap;
 		gap: 12px;
 	}
 
-	.cf-badge {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-	}
-
-	.status-link {
-		color: var(--success);
-		text-decoration: none;
-		font-weight: 500;
-	}
-
-	.separator {
-		color: var(--border-strong);
-	}
-
 	@media (max-width: 900px) {
-		.footer-grid {
+		.footer-top-grid {
 			grid-template-columns: 1fr 1fr;
-			gap: 28px;
-		}
-		.brand-col {
-			grid-column: span 2;
 		}
 	}
 
-	@media (max-width: 600px) {
-		.footer-grid {
+	@media (max-width: 580px) {
+		.footer-top-grid {
 			grid-template-columns: 1fr;
 		}
-		.brand-col {
-			grid-column: span 1;
-		}
-		.bottom-container {
+		.footer-bottom-row {
 			flex-direction: column;
 			align-items: flex-start;
 		}

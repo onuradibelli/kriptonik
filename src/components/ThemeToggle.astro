@@ -3,7 +3,7 @@
 
 <div class="theme-toggle" role="radiogroup" aria-label="Görünüm teması seçimi">
 	<button type="button" class="theme-btn" data-theme-val="light" role="radio" aria-checked="false" title="Açık Tema" aria-label="Açık Tema">
-		<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 			<circle cx="12" cy="12" r="5"></circle>
 			<line x1="12" y1="1" x2="12" y2="3"></line>
 			<line x1="12" y1="21" x2="12" y2="23"></line>
@@ -16,14 +16,14 @@
 		</svg>
 	</button>
 	<button type="button" class="theme-btn" data-theme-val="system" role="radio" aria-checked="true" title="Sistem Teması" aria-label="Sistem Teması">
-		<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 			<rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
 			<line x1="8" y1="21" x2="16" y2="21"></line>
 			<line x1="12" y1="17" x2="12" y2="21"></line>
 		</svg>
 	</button>
 	<button type="button" class="theme-btn" data-theme-val="dark" role="radio" aria-checked="false" title="Koyu Tema" aria-label="Koyu Tema">
-		<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 			<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
 		</svg>
 	</button>
@@ -43,7 +43,7 @@
 
 			const metaTheme = document.querySelector('meta[name="theme-color"]');
 			if (metaTheme) {
-				metaTheme.setAttribute('content', isDark ? '#0A0D14' : '#F6F7F9');
+				metaTheme.setAttribute('content', isDark ? '#090A0F' : '#F8FAFC');
 			}
 
 			buttons.forEach(btn => {
@@ -89,8 +89,8 @@
 		align-items: center;
 		background: var(--bg-sunken);
 		border: 1px solid var(--border);
-		border-radius: 999px;
-		padding: 3px;
+		border-radius: 9999px;
+		padding: 2px;
 		gap: 2px;
 	}
 
@@ -98,15 +98,14 @@
 		background: transparent;
 		border: none;
 		color: var(--text-muted);
-		padding: 6px;
-		border-radius: 999px;
-		cursor: pointer;
+		width: 26px;
+		height: 26px;
+		border-radius: 9999px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		cursor: pointer;
 		transition: all 150ms ease;
-		min-width: 28px;
-		min-height: 28px;
 	}
 
 	.theme-btn:hover {

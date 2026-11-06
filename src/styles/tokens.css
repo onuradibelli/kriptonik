@@ -1,72 +1,158 @@
 /**
- * Kriptonik Tasarım Sistemi Renk ve Boşluk Tokenları
- * Master Spesifikasyon v2 - Bölüm 3.3
+ * Kriptonik Ultra-Modern Design System Tokens
+ * Linear / Raycast inspired Precision Financial Palette
  */
 
 :root, :root[data-theme="light"] {
-  --bg: #F6F7F9;
+  /* Surface & Canvas */
+  --bg: #F8FAFC;
   --bg-elev: #FFFFFF;
-  --bg-sunken: #EEF0F4;
-  --border: #E1E5EC;
-  --border-strong: #CBD2DD;
+  --bg-sunken: #F1F5F9;
+  --bg-glass: rgba(255, 255, 255, 0.85);
+
+  /* Borders */
+  --border: #E2E8F0;
+  --border-strong: #CBD5E1;
+  --border-hover: #94A3B8;
+
+  /* Typography */
   --text: #0F172A;
   --text-muted: #475569;
   --text-faint: #64748B;
-  --primary: #0F766E;
-  --primary-hover: #0B5F59;
+  --text-inverse: #FFFFFF;
+
+  /* Brand Accents - Emerald & Indigo */
+  --primary: #059669;
+  --primary-hover: #047857;
   --primary-contrast: #FFFFFF;
-  --primary-soft: #D9F3EF;
-  --accent: #6D28D9;
-  --accent-soft: #EDE5FB;
-  --success: #15803D;
-  --success-soft: #DCF5E3;
-  --warning: #B45309;
-  --warning-soft: #FDF0D5;
-  --danger:  #B91C1C;
-  --danger-soft:  #FBE0E0;
-  --info:    #1D4ED8;
-  --info-soft:    #DFE8FD;
-  --ring: #0F766E;
-  --shadow-sm: 0 1px 2px rgba(15,23,42,.06), 0 1px 3px rgba(15,23,42,.08);
-  --shadow-md: 0 4px 12px rgba(15,23,42,.08), 0 2px 4px rgba(15,23,42,.06);
-  --chart-1: #0F766E;
-  --chart-2: #6D28D9;
-  --chart-3: #B45309;
-  --chart-4: #1D4ED8;
-  --chart-5: #BE185D;
-  --grid-line: rgba(15,23,42,.08);
+  --primary-soft: rgba(5, 150, 105, 0.08);
+  --primary-glow: rgba(5, 150, 105, 0.2);
+
+  --accent: #6366F1;
+  --accent-soft: rgba(99, 102, 241, 0.08);
+
+  /* Status Colors */
+  --success: #16A34A;
+  --success-soft: rgba(22, 163, 74, 0.1);
+  --warning: #D97706;
+  --warning-soft: rgba(217, 119, 6, 0.1);
+  --danger: #DC2626;
+  --danger-soft: rgba(220, 38, 38, 0.1);
+  --info: #2563EB;
+  --info-soft: rgba(37, 99, 235, 0.1);
+
+  /* Focus & Elevation */
+  --ring: #059669;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 12px 24px -4px rgba(15, 23, 42, 0.1), 0 4px 8px -2px rgba(15, 23, 42, 0.05);
+  --shadow-glow: 0 0 24px -4px rgba(5, 150, 105, 0.15);
+
+  --chart-1: #059669;
+  --chart-2: #6366F1;
+  --chart-3: #D97706;
+  --chart-4: #2563EB;
+  --chart-5: #E11D48;
+  --grid-line: rgba(15, 23, 42, 0.06);
+
+  /* Legacy & Utility Aliases for seamless page compatibility */
+  --color-primary-400: #059669;
+  --color-primary-500: #047857;
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-muted);
+  --color-text-muted: var(--text-faint);
+  --color-surface: var(--bg-elev);
+  --color-surface-hover: var(--bg-sunken);
+  --color-border: var(--border);
+  --color-border-hover: var(--border-strong);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  --text-xs: 12px;
+  --text-sm: 13.5px;
+  --text-base: 15px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 38px;
 }
 
 :root[data-theme="dark"] {
-  --bg: #0A0D14;
-  --bg-elev: #111622;
-  --bg-sunken: #070A10;
-  --border: #1F2735;
-  --border-strong: #2C3648;
-  --text: #E8ECF3;
-  --text-muted: #A3AEC2;
-  --text-faint: #8391A8;
-  --primary: #2DD4BF;
-  --primary-hover: #5EEAD4;
+  /* Surface & Canvas - Deep Obsidian Space */
+  --bg: #090A0F;
+  --bg-elev: #11141F;
+  --bg-sunken: #06070B;
+  --bg-glass: rgba(17, 20, 31, 0.85);
+
+  /* Borders */
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.15);
+  --border-hover: rgba(255, 255, 255, 0.25);
+
+  /* Typography */
+  --text: #F8FAFC;
+  --text-muted: #94A3B8;
+  --text-faint: #64748B;
+  --text-inverse: #090A0F;
+
+  /* Brand Accents - Vibrant Mint & Violet */
+  --primary: #10B981;
+  --primary-hover: #34D399;
   --primary-contrast: #04211D;
-  --primary-soft: #0F2E2B;
-  --accent: #A78BFA;
-  --accent-soft: #231B3F;
-  --success: #4ADE80;
-  --success-soft: #0F2A1A;
+  --primary-soft: rgba(16, 185, 129, 0.12);
+  --primary-glow: rgba(16, 185, 129, 0.3);
+
+  --accent: #818CF8;
+  --accent-soft: rgba(129, 140, 248, 0.12);
+
+  /* Status Colors */
+  --success: #34D399;
+  --success-soft: rgba(52, 211, 153, 0.12);
   --warning: #FBBF24;
-  --warning-soft: #33260A;
-  --danger:  #F87171;
-  --danger-soft:  #3A1414;
-  --info:    #60A5FA;
-  --info-soft:    #10223F;
-  --ring: #2DD4BF;
-  --shadow-sm: none;
-  --shadow-md: 0 8px 24px rgba(0,0,0,.45);
-  --chart-1: #2DD4BF;
-  --chart-2: #A78BFA;
+  --warning-soft: rgba(251, 191, 36, 0.12);
+  --danger: #F87171;
+  --danger-soft: rgba(248, 113, 113, 0.15);
+  --info: #60A5FA;
+  --info-soft: rgba(96, 165, 250, 0.12);
+
+  /* Focus & Elevation */
+  --ring: #10B981;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px -2px rgba(0, 0, 0, 0.5), 0 2px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.6), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 32px -4px rgba(16, 185, 129, 0.25);
+
+  --chart-1: #10B981;
+  --chart-2: #818CF8;
   --chart-3: #FBBF24;
   --chart-4: #60A5FA;
-  --chart-5: #F472B6;
-  --grid-line: rgba(232,236,243,.08);
+  --chart-5: #FB7185;
+  --grid-line: rgba(255, 255, 255, 0.05);
+
+  /* Dark mode compatibility aliases */
+  --color-primary-400: #10B981;
+  --color-primary-500: #34D399;
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-muted);
+  --color-text-muted: var(--text-faint);
+  --color-surface: var(--bg-elev);
+  --color-surface-hover: rgba(255, 255, 255, 0.05);
+  --color-border: var(--border);
+  --color-border-hover: var(--border-strong);
 }
