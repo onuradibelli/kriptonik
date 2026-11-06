@@ -1,7 +1,21 @@
 {
-  "name": "kriptonik",
-  "version": "1.0.0",
-  "scripts": {
-    "build": "node build.js"
-  }
+	"name": "kriptonik",
+	"description": "Kriptonik",
+	"type": "module",
+	"private": true,
+	"engines": {
+		"node": ">=22"
+	},
+	"scripts": {
+		"astro": "astro",
+		"build": "astro build",
+		"deploy": "wrangler deploy"
+	},
+	"dependencies": {
+		"@astrojs/cloudflare": "12.6.12",
+		"astro": "5.16.9"
+	},
+	"devDependencies": {
+		"wrangler": "4.136.1"
+	}
 }
