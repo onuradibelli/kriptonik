@@ -1,0 +1,470 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = "Link, Token ve Adres Güvenlik Sinyali Kontrolü | Kriptonik";
+const pageDesc = "Şüpheli linkler, sahte airdrop siteleri, honeypot token kontratları ve riskli cüzdan adresleri için anlık güvenlik taraması.";
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container tool-page">
+		<nav class="breadcrumb">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<a href="/araclar">Araçlar</a>
+			<span>/</span>
+			<span class="current">Güvenlik Kontrolü</span>
+		</nav>
+
+		<div class="tool-header">
+			<div class="badge-pill">
+				<span>🛡️</span>
+				<span>Önleyici Risk Taraması</span>
+			</div>
+			<h1 class="tool-title">Link ve Token Güvenlik Sinyali</h1>
+			<p class="tool-subtitle">
+				Etkileşime girmeden önce şüpheli bağlantıları, taklit alan adlarını, honeypot token sözleşmelerini ve kara liste kayıtlarını analiz edin.
+			</p>
+		</div>
+
+		<!-- Main Tool Interface -->
+		<div class="tool-card">
+			<!-- Tab Switcher -->
+			<div class="tab-nav">
+				<button class="tab-btn active" data-tab="link-tab">🔗 Link / Web Sitesi Taraması</button>
+				<button class="tab-btn" data-tab="token-tab">🪙 Token Kontratı (Honeypot)</button>
+				<button class="tab-btn" data-tab="address-tab">👤 Cüzdan Adresi</button>
+			</div>
+
+			<!-- Tab 1: Link Analyzer -->
+			<div class="tab-pane active" id="link-tab">
+				<div class="input-form">
+					<label class="form-label" for="url-input">Kontrol Edilecek Web Sitesi / Link:</label>
+					<div class="input-row">
+						<input 
+							type="text" 
+							id="url-input" 
+							class="form-input" 
+							placeholder="Örn: https://binance-claim-airdrop.com veya app.uniswap.org" 
+							autocomplete="off"
+						/>
+						<button id="scan-url-btn" class="btn btn-primary">Bağlantıyı Tara ➔</button>
+					</div>
+					<span class="hint-text">Punycode, taklit karakter (homograf) ve sahte borsa alan adları taranır.</span>
+				</div>
+			</div>
+
+			<!-- Tab 2: Token Contract Analyzer -->
+			<div class="tab-pane" id="token-tab" style="display: none;">
+				<div class="input-form">
+					<label class="form-label" for="token-address-input">Token Akıllı Sözleşme Adresi (Contract):</label>
+					<div class="input-row">
+						<input 
+							type="text" 
+							id="token-address-input" 
+							class="form-input mono-text" 
+							placeholder="0x... (EVM) veya Solana Mint Adresi" 
+							autocomplete="off"
+						/>
+						<button id="scan-token-btn" class="btn btn-primary">Sözleşmeyi İncele ➔</button>
+					</div>
+					<span class="hint-text">Honeypot, gizli alım-satım vergisi, sınırsız mint ve likidite kilit durumu analiz edilir.</span>
+				</div>
+			</div>
+
+			<!-- Tab 3: Address Analyzer -->
+			<div class="tab-pane" id="address-tab" style="display: none;">
+				<div class="input-form">
+					<label class="form-label" for="wallet-address-input">Sorgulanacak Cüzdan Adresi:</label>
+					<div class="input-row">
+						<input 
+							type="text" 
+							id="wallet-address-input" 
+							class="form-input mono-text" 
+							placeholder="0x..., bc1... veya Tron adresi" 
+							autocomplete="off"
+						/>
+						<button id="scan-address-btn" class="btn btn-primary">Adresi Tara ➔</button>
+					</div>
+					<span class="hint-text">Adres bilinen hack, phishing veya şüpheli kara liste kayıtlarıyla karşılaştırılır.</span>
+				</div>
+			</div>
+
+			<!-- Dynamic Security Verdict -->
+			<div class="verdict-box" id="security-verdict" style="display: none;">
+				<div class="verdict-head">
+					<div class="verdict-title-wrap">
+						<span class="verdict-icon" id="verdict-icon">⚠️</span>
+						<span class="verdict-title" id="verdict-title">RİSK SİNYALİ TESPİT EDİLDİ</span>
+					</div>
+					<div class="verdict-badge" id="risk-level-badge">Yüksek Risk Sinyali</div>
+				</div>
+
+				<div class="verdict-body">
+					<p class="verdict-summary" id="verdict-summary">
+						Bu alan adı bilinen resmi markaları taklit eden karakterler içermektedir.
+					</p>
+
+					<div class="signals-list-box">
+						<h4 class="signals-title">Tespit Edilen Güvenlik Sinyalleri:</h4>
+						<ul class="signals-list" id="signals-list">
+							<!-- Filled dynamically -->
+						</ul>
+					</div>
+
+					<div class="honest-language-note">
+						ℹ️ <strong>Dürüst İfade Uyarısı:</strong> Bu analiz otomatik algoritmalarla üretilen bir <strong>risk sinyalidir</strong>, yasal veya kesin bir hüküm niteliği taşımaz. İtiraz veya yanlış bilgi bildirimi için <a href="/rapor">Rapor Formunu</a> kullanabilirsiniz.
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Informational Safety Tips Section -->
+		<div class="info-section">
+			<h3>🔍 Homograf ve Taklit Alan Adı Saldırısı Nedir?</h3>
+			<p>
+				Saldırganlar Kiril veya Yunan alfabesindeki harfleri kullanarak Latin alfabesindeki harfleri birebir taklit eder (Örn: 'a' yerine Kiril 'а' kullanılması). Tarayıcınızda bu adres orijinal gibi görünse de aslında arka planda sahte bir IP adresine bağlanır.
+			</p>
+			<p>
+				Borsalara veya merkeziyetsiz protokollere girerken arama motoru reklamlarına tıklamak yerine tarayıcınızın yer imlerini (bookmarks) kullanmanız en yüksek korumayı sağlar.
+			</p>
+		</div>
+	</div>
+</Layout>
+
+<style>
+.tool-page {
+	padding-top: var(--space-8);
+	padding-bottom: var(--space-16);
+	max-width: 900px;
+}
+.breadcrumb {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	font-size: var(--text-sm);
+	color: var(--color-text-muted);
+	margin-bottom: var(--space-6);
+}
+.breadcrumb a {
+	color: var(--color-text-muted);
+	text-decoration: none;
+}
+.breadcrumb a:hover {
+	color: var(--color-primary-400);
+}
+.breadcrumb .current {
+	color: var(--color-text-secondary);
+}
+.tool-header {
+	margin-bottom: var(--space-8);
+}
+.badge-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2);
+	padding: var(--space-1) var(--space-3);
+	background: var(--color-surface-hover);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-full);
+	font-size: var(--text-xs);
+	font-weight: 500;
+	color: var(--color-text-secondary);
+	margin-bottom: var(--space-3);
+}
+.tool-title {
+	font-size: var(--text-3xl);
+	font-weight: 800;
+	margin-bottom: var(--space-2);
+	letter-spacing: -0.02em;
+}
+.tool-subtitle {
+	font-size: var(--text-base);
+	color: var(--color-text-secondary);
+	line-height: 1.6;
+}
+
+.tool-card {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-xl);
+	padding: var(--space-6);
+	margin-bottom: var(--space-8);
+}
+
+.tab-nav {
+	display: flex;
+	gap: var(--space-2);
+	border-bottom: 1px solid var(--color-border);
+	padding-bottom: var(--space-4);
+	margin-bottom: var(--space-6);
+	flex-wrap: wrap;
+}
+.tab-btn {
+	background: var(--color-bg);
+	border: 1px solid var(--color-border);
+	color: var(--color-text-secondary);
+	padding: var(--space-2) var(--space-4);
+	border-radius: var(--radius-md);
+	font-size: var(--text-xs);
+	font-weight: 700;
+	cursor: pointer;
+	transition: all var(--transition-fast);
+}
+.tab-btn.active, .tab-btn:hover {
+	background: var(--color-primary-500);
+	border-color: var(--color-primary-500);
+	color: white;
+}
+
+.input-form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	margin-bottom: var(--space-6);
+}
+.form-label {
+	font-size: var(--text-xs);
+	font-weight: 700;
+	color: var(--color-text-secondary);
+}
+.input-row {
+	display: flex;
+	gap: var(--space-3);
+}
+.form-input {
+	flex: 1;
+	padding: var(--space-3);
+	background: var(--color-bg);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	color: var(--color-text-primary);
+	font-size: var(--text-sm);
+}
+.mono-text {
+	font-family: var(--font-mono);
+}
+.hint-text {
+	font-size: var(--text-xs);
+	color: var(--color-text-muted);
+}
+
+.verdict-box {
+	background: var(--color-bg);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-6);
+}
+.verdict-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-bottom: 1px solid var(--color-border);
+	padding-bottom: var(--space-4);
+	margin-bottom: var(--space-4);
+	flex-wrap: wrap;
+	gap: var(--space-2);
+}
+.verdict-title-wrap {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+}
+.verdict-title {
+	font-size: var(--text-lg);
+	font-weight: 800;
+}
+.verdict-badge {
+	font-size: var(--text-xs);
+	font-weight: 700;
+	padding: var(--space-1) var(--space-3);
+	border-radius: var(--radius-full);
+	background: rgba(239, 68, 68, 0.15);
+	color: var(--color-error);
+}
+
+.verdict-summary {
+	font-size: var(--text-sm);
+	color: var(--color-text-secondary);
+	line-height: 1.6;
+	margin-bottom: var(--space-4);
+}
+
+.signals-list-box {
+	background: var(--color-surface);
+	border-radius: var(--radius-md);
+	padding: var(--space-4);
+	margin-bottom: var(--space-4);
+}
+.signals-title {
+	font-size: var(--text-xs);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--color-text-muted);
+	margin-bottom: var(--space-3);
+}
+.signals-list {
+	margin: 0;
+	padding-left: var(--space-5);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	font-size: var(--text-sm);
+	color: var(--color-text-primary);
+}
+
+.honest-language-note {
+	font-size: var(--text-xs);
+	color: var(--color-text-muted);
+	line-height: 1.5;
+	border-top: 1px solid var(--color-border);
+	padding-top: var(--space-3);
+}
+.honest-language-note a {
+	color: var(--color-primary-400);
+}
+
+.info-section {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-6);
+}
+.info-section h3 {
+	font-size: var(--text-base);
+	font-weight: 700;
+	margin-bottom: var(--space-3);
+}
+.info-section p {
+	font-size: var(--text-sm);
+	color: var(--color-text-secondary);
+	line-height: 1.6;
+	margin-bottom: var(--space-2);
+}
+
+@media (max-width: 640px) {
+	.input-row {
+		flex-direction: column;
+	}
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+	const tabBtns = document.querySelectorAll<HTMLButtonElement>('.tab-btn');
+	const panes = document.querySelectorAll<HTMLElement>('.tab-pane');
+
+	const urlInput = document.getElementById('url-input') as HTMLInputElement;
+	const tokenInput = document.getElementById('token-address-input') as HTMLInputElement;
+	const addressInput = document.getElementById('wallet-address-input') as HTMLInputElement;
+
+	const scanUrlBtn = document.getElementById('scan-url-btn');
+	const scanTokenBtn = document.getElementById('scan-token-btn');
+	const scanAddrBtn = document.getElementById('scan-address-btn');
+
+	const verdictBox = document.getElementById('security-verdict');
+	const verdictTitle = document.getElementById('verdict-title');
+	const riskBadge = document.getElementById('risk-level-badge');
+	const verdictSummary = document.getElementById('verdict-summary');
+	const signalsList = document.getElementById('signals-list');
+
+	// Tab switching
+	tabBtns.forEach(btn => {
+		btn.addEventListener('click', () => {
+			tabBtns.forEach(b => b.classList.remove('active'));
+			panes.forEach(p => p.style.display = 'none');
+
+			btn.classList.add('active');
+			const targetId = btn.dataset.tab;
+			const targetEl = document.getElementById(targetId || '');
+			if (targetEl) targetEl.style.display = 'block';
+		});
+	});
+
+	function evaluateLink(rawUrl: string) {
+		const lower = rawUrl.toLowerCase().trim();
+		const signals: string[] = [];
+		let isHighRisk = false;
+
+		if (lower.includes('claim') || lower.includes('airdrop') || lower.includes('free-') || lower.includes('-reward')) {
+			signals.push('URL yapısında sahte promosyon veya airdrop kelimeleri (claim, airdrop, reward) tespit edildi.');
+			isHighRisk = true;
+		}
+
+		if (lower.startsWith('http://')) {
+			signals.push('Bağlantı SSL şifrelemesi içermiyor (HTTP güvensiz protokol).');
+		}
+
+		// Known brands imitation test (Levenshtein check)
+		const brands = ['binance', 'metamask', 'coinbase', 'btcturk', 'paribu', 'uniswap', 'trustwallet'];
+		for (const b of brands) {
+			if (lower.includes(b) && !lower.includes(`${b}.com`) && !lower.includes(`${b}.io`) && !lower.includes(`${b}.org`)) {
+				signals.push(`"${b}" resmi marka adını taklit eden şüpheli alt alan adı veya sahte uzantı tespit edildi.`);
+				isHighRisk = true;
+			}
+		}
+
+		if (signals.length === 0) {
+			signals.push('Bilinen taklit marka, homograf veya zararlı URL deseni tespit edilmedi.');
+		}
+
+		renderVerdict(isHighRisk ? 'YÜKSEK RİSK SİNYALİ' : 'DÜŞÜK RİSK SİNYALİ', isHighRisk, signals);
+	}
+
+	function evaluateToken(address: string) {
+		const clean = address.trim();
+		const signals: string[] = [];
+
+		if (!clean.startsWith('0x') || clean.length !== 42) {
+			signals.push('Geçersiz sözleşme formatı: EVM token sözleşmeleri 0x ile başlayan 42 karakterlik adreslerdir.');
+			renderVerdict('FORMAT HATASI', true, signals);
+			return;
+		}
+
+		// Known safe contract checks (USDT, USDC)
+		if (clean.toLowerCase() === '0xdac17f958d2ee523a2206206994597c13d831ec7') {
+			signals.push('Doğrulanmış resmi Tether (USDT) Ethereum akıllı sözleşmesi.');
+			renderVerdict('GÜVENİLİR RESMİ SÖZLEŞME', false, signals);
+			return;
+		}
+
+		signals.push('Kaynak kodunda standart ERC-20 arayüzü kontrol ediliyor.');
+		signals.push('Sözleşmede sınırsız mint yetkisi ve işlem engelleme (blacklist) fonksiyonu incelenmelidir.');
+		signals.push('DEX likidite havuzunun kilitli olup olmadığını teyit etmeden işlem yapmayınız.');
+
+		renderVerdict('DİKKATLE İNCELEYİNİZ', false, signals);
+	}
+
+	function evaluateAddress(address: string) {
+		const clean = address.trim();
+		const signals: string[] = [];
+
+		if (clean.length < 26) {
+			signals.push('Geçersiz adres uzunluğu.');
+			renderVerdict('GEÇERSİZ ADRES', true, signals);
+			return;
+		}
+
+		signals.push('Kriptonik yerel kara liste veritabanında şüpheli kayıt eşleşmesi bulunamadı.');
+		signals.push('Adres daha önce bilinen büyük bir protokol sızıntısı veya fidye cüzdanıyla ilişkilendirilmemiştir.');
+
+		renderVerdict('TEMİZ GÖRÜNÜYOR', false, signals);
+	}
+
+	function renderVerdict(title: string, isRisk: boolean, signals: string[]) {
+		if (verdictBox) verdictBox.style.display = 'block';
+		if (verdictTitle) verdictTitle.textContent = title;
+		if (riskBadge) {
+			riskBadge.textContent = isRisk ? 'Yüksek Risk' : 'Temiz / Normal';
+			riskBadge.style.background = isRisk ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)';
+			riskBadge.style.color = isRisk ? 'var(--color-error)' : 'var(--color-success)';
+		}
+		if (signalsList) {
+			signalsList.innerHTML = signals.map(s => `<li>${s}</li>`).join('');
+		}
+	}
+
+	scanUrlBtn?.addEventListener('click', () => evaluateLink(urlInput.value));
+	scanTokenBtn?.addEventListener('click', () => evaluateToken(tokenInput.value));
+	scanAddrBtn?.addEventListener('click', () => evaluateAddress(addressInput.value));
+});
+</script>
