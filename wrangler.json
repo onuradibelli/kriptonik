@@ -1,7 +1,10 @@
 {
+	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "kriptonik",
 	"compatibility_date": "2025-10-08",
-	"compatibility_flags": ["nodejs_compat"],
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
 	"main": "./dist/_worker.js/index.js",
 	"assets": {
 		"directory": "./dist",
@@ -10,5 +13,31 @@
 	"observability": {
 		"enabled": true
 	},
-	"upload_source_maps": true
+	"upload_source_maps": true,
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "kriptonik-db",
+			"database_id": "kriptonik-d1-prod"
+		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "KV_CACHE",
+			"id": "kriptonik-kv-cache"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "R2_MEDIA",
+			"bucket_name": "kriptonik-assets"
+		}
+	],
+	"ai": {
+		"binding": "AI"
+	},
+	"vars": {
+		"ENV": "production",
+		"SITE_URL": "https://kriptonik.com"
+	}
 }

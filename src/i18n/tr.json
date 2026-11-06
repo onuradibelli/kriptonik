@@ -1,0 +1,61 @@
+{
+  "brand": {
+    "name": "Kriptonik",
+    "domain": "kriptonik.com",
+    "slogan": "Kripto'da takıldığın an, çözüm burada.",
+    "subtext": "Hesapsız, anında, anlaşılır kripto araçları.",
+    "privacy_promise": "Girdiğiniz adres ve işlem kodları Kriptonik tarafından kaydedilmez ve kimliğinizle ilişkilendirilmez. Bazı araçlar veri almak için herkese açık blokzincir servislerine sorgu gönderir.",
+    "browser_only_promise": "Bu araç tamamen cihazınızda çalışır, harici hiçbir ağ isteği yapmaz."
+  },
+  "nav": {
+    "home": "Ana Sayfa",
+    "tools": "Araçlar",
+    "help": "Acil Yardım",
+    "market": "Piyasa",
+    "glossary": "Sözlük",
+    "guides": "Rehberler",
+    "status": "Sistem Durumu",
+    "emergency_button": "⚡ Sorunum Var",
+    "search_placeholder": "Araç, terim veya problem ara (Ctrl+K)"
+  },
+  "footer": {
+    "about_title": "Hakkında & Vizyon",
+    "tools_title": "Çözüm Araçları",
+    "knowledge_title": "Bilgi & Acil Durum",
+    "legal_title": "Şeffaflık & Yasal",
+    "disclaimer": "Kriptonik (kriptonik.com) yalnızca tarafsız teknik hesaplama, format doğrulama ve genel bilgi araçları sunar. Sitede yer alan hiçbir içerik, araç çıktısı veya simülasyon yatırım tavsiyesi (YTD) niteliği taşımaz. Kriptonik alım-satım aracılığı veya saklama hizmeti vermez; özel anahtar (private key) veya seed phrase asla talep etmez.",
+    "rights": "© 2026 Kriptonik. Tüm hakları saklıdır.",
+    "cloudflare_badge": "Cloudflare Workers & Pages üzerinde barındırılmaktadır."
+  },
+  "common": {
+    "calculate": "Hesapla",
+    "diagnose": "Teşhis Et",
+    "verify": "Doğrula",
+    "clear": "Temizle",
+    "copy": "Kopyala",
+    "copied": "Kopyalandı!",
+    "share": "Sonucu Paylaş",
+    "loading": "Yükleniyor...",
+    "error": "Bir hata oluştu",
+    "retry": "Yeniden Dene",
+    "how_calculated": "Nasıl hesaplandı?",
+    "data_source": "Veri Kaynağı",
+    "last_updated": "Son Güncelleme",
+    "stale_warning": "Veri gecikmeli olabilir (son bilinen değer gösteriliyor)",
+    "not_financial_advice": "Yatırım tavsiyesi değildir."
+  },
+  "status": {
+    "live": "Canlı",
+    "beta": "Beta",
+    "soon": "Yakında",
+    "operational": "Tüm Sistemler Çalışıyor",
+    "degraded": "Kısmi Hizmet Kesintisi"
+  },
+  "errors": {
+    "invalid_number": "Lütfen geçerli bir sayı giriniz.",
+    "invalid_address": "Adres biçimi tanınamadı veya doğrulanamadı.",
+    "invalid_hash": "Geçersiz işlem hash'i.",
+    "seed_warning": "Girdiğiniz metin bir gizli kurtarma ifadesine (Seed Phrase) benziyor. Güvenliğiniz için bu bilgiyi hiçbir web sitesine veya forma girmeyiniz!",
+    "upstream_timeout": "Harici blokzincir servisinden yanıt alınamadı. Lütfen birkaç saniye sonra tekrar deneyiniz."
+  }
+}
