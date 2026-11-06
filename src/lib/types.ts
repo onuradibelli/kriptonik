@@ -32,6 +32,22 @@ export interface CoinData {
     predicted: number;
     nextFundingTime: string;
   };
+  athUsd?: number;
+  athChangePercent?: number;
+  athDate?: string;
+  atlUsd?: number;
+  atlChangePercent?: number;
+  atlDate?: string;
+  fdvUsd?: number;
+  dominancePercent?: number;
+  category?: string;
+  descriptionTr?: string;
+  officialWebsite?: string;
+  whitepaperUrl?: string;
+  explorerUrl?: string;
+  twitterUrl?: string;
+  githubUrl?: string;
+  faqs?: Array<{ question: string; answer: string }>;
   tokenUnlock?: {
     nextUnlockDate: string;
     unlockedTokens: number;
