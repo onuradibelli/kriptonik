@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import Layout from '../../layouts/Layout.astro';
 
 // Spec v3: Modül 8 - F: Zincir Üstü (On-Chain) Verileri
 const btcOnChain = {
@@ -40,7 +40,7 @@ const title = "Zincir Üstü (On-Chain) Veriler: Bitcoin Mempool, Hashrate & Gas
 const description = "Canlı Bitcoin mempool sat/vB ücretleri, ağ hashrate'i, madencilik zorluğu ayarlaması ve Ethereum ile Layer 2 gerçek zamanlı gas maliyetleri analizi.";
 ---
 
-<BaseLayout title={title} description={description}>
+<Layout title={title} description={description}>
   <div class="onchain-page">
     <div class="container">
       
@@ -205,7 +205,7 @@ const description = "Canlı Bitcoin mempool sat/vB ücretleri, ağ hashrate'i, m
 
     </div>
   </div>
-</BaseLayout>
+</Layout>
 
 <style>
   .onchain-page {

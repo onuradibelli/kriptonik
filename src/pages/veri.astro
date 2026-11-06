@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import Layout from '../layouts/Layout.astro';
 
 // Spec v3: Bölüm 2.4 Veri İndirme Merkezi (CC BY 4.0 Açık Veri Portalı)
 const datasets = [
@@ -74,7 +74,7 @@ const title = "Açık Veri Portalı & Veri İndirme (CSV / JSON) | Kriptonik";
 const description = "Kriptonik tarafından hesaplanan Türkiye Tether primi, TL likidite skoru, ETF akışları ve türev piyasa veri serilerini CC BY 4.0 lisansıyla ücretsiz indirin.";
 ---
 
-<BaseLayout title={title} description={description}>
+<Layout title={title} description={description}>
   <div class="data-hub-page">
     <div class="container">
       
@@ -159,7 +159,7 @@ const description = "Kriptonik tarafından hesaplanan Türkiye Tether primi, TL 
 
     </div>
   </div>
-</BaseLayout>
+</Layout>
 
 <style>
   .data-hub-page {

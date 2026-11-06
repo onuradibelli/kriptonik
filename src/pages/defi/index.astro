@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import Layout from '../../layouts/Layout.astro';
 
 // Spec v3: Modül 8 - E1, E2, E3, E4 DeFi Verisi
 const defiStats = {
@@ -46,7 +46,7 @@ const title = "DeFi Verileri: Toplam TVL, DEX Hacimleri ve Protokol Ücretleri |
 const description = "Merkeziyetsiz finans (DeFi) ekosisteminin canlı metrikleri: Toplam kilitli değer (TVL), 24 saatlik DEX hacimleri, zincir pazar payları ve protokol gelir tablosu.";
 ---
 
-<BaseLayout title={title} description={description}>
+<Layout title={title} description={description}>
   <div class="defi-page">
     <div class="container">
       
@@ -214,7 +214,7 @@ const description = "Merkeziyetsiz finans (DeFi) ekosisteminin canlı metrikleri
 
     </div>
   </div>
-</BaseLayout>
+</Layout>
 
 <style>
   .defi-page {

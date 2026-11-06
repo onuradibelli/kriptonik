@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import Layout from '../../layouts/Layout.astro';
 
 // Spec v3: Bölüm 2.3 Kriptonik Endeksleri (Özgün, Sürümlü, Metodolojisi Açık)
 const indices = [
@@ -93,7 +93,7 @@ const title = "Kriptonik Endeksleri: Metodolojisi Açık Özgün Veri Serileri |
 const description = "Kriptonik tarafından formüle edilen şeffaf ve sürümlü kripto endeksleri: Tether Primi, TL Likidite Skoru, ETF Akış Momentumu, Fonlama Isısı ve Altcoin Sezonu.";
 ---
 
-<BaseLayout title={title} description={description}>
+<Layout title={title} description={description}>
   <div class="indices-page">
     <div class="container">
       
@@ -180,7 +180,7 @@ const description = "Kriptonik tarafından formüle edilen şeffaf ve sürümlü
 
     </div>
   </div>
-</BaseLayout>
+</Layout>
 
 <style>
   .indices-page {
