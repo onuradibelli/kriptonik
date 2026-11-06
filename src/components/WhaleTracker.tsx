@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { WhaleTransaction } from '../lib/types';
-import { ShieldAlert, ArrowDownRight, ArrowUpRight, ArrowRight, Filter, Volume2, VolumeX, Radio, Sparkles, Activity } from 'lucide-react';
+import { ShieldAlert, ArrowDownRight, ArrowUpRight, ArrowRight, Filter, Volume2, VolumeX, Radio, Sparkles, Activity, Copy, Check } from 'lucide-react';
 
 interface WhaleTrackerProps {
   transactions: WhaleTransaction[];
@@ -15,8 +15,10 @@ interface DynamicWhaleTx extends WhaleTransaction {
 export default function WhaleTracker({ transactions }: WhaleTrackerProps) {
   const [filterType, setFilterType] = useState<'ALL' | 'INFLOW' | 'OUTFLOW'>('ALL');
   const [symbolFilter, setSymbolFilter] = useState<string>('ALL');
+  const [minAmountFilter, setMinAmountFilter] = useState<number>(0);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [totalMonitoredVolume, setTotalMonitoredVolume] = useState(842500000);
+  const [copiedHash, setCopiedHash] = useState<string | null>(null);
 
   // Live dynamic transaction feed
   const [liveList, setLiveList] = useState<DynamicWhaleTx[]>(() =>
@@ -92,7 +94,7 @@ export default function WhaleTracker({ transactions }: WhaleTrackerProps) {
         secondsAgo: 0
       };
 
-      setLiveList((prev) => [newTx, ...prev.slice(0, 19)]);
+      setLiveList((prev) => [newTx, ...prev.slice(0, 24)]);
       setTotalMonitoredVolume((v) => v + amtUsd);
       playWhaleAlert(isInflow ? 'INFLOW' : 'OUTFLOW');
     }, 5500);
@@ -110,11 +112,27 @@ export default function WhaleTracker({ transactions }: WhaleTrackerProps) {
     };
   }, [soundEnabled]);
 
+  const handleCopyHash = (hash: string) => {
+    if (navigator?.clipboard) {
+      navigator.clipboard.writeText(hash);
+      setCopiedHash(hash);
+      setTimeout(() => setCopiedHash(null), 2000);
+    }
+  };
+
   const filtered = liveList.filter((tx) => {
     if (filterType !== 'ALL' && tx.type !== filterType) return false;
     if (symbolFilter !== 'ALL' && tx.symbol !== symbolFilter) return false;
+    if (minAmountFilter > 0 && tx.amountUsd < minAmountFilter) return false;
     return true;
   });
+
+  // Calculate live inflow vs outflow
+  const totalInflow = liveList.filter((t) => t.type === 'INFLOW').reduce((a, b) => a + b.amountUsd, 0);
+  const totalOutflow = liveList.filter((t) => t.type === 'OUTFLOW').reduce((a, b) => a + b.amountUsd, 0);
+  const sumBoth = totalInflow + totalOutflow || 1;
+  const outflowRatio = (totalOutflow / sumBoth) * 100;
+  const inflowRatio = (totalInflow / sumBoth) * 100;
 
   return (
     <div className="panel-card p-5 sm:p-6 space-y-5">
@@ -140,7 +158,76 @@ export default function WhaleTracker({ transactions }: WhaleTrackerProps) {
           </p>
         </div>
 
-        {/* Filters and Audio Alert Toggle */}
+        {/* Audio Alert Toggle */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setSoundEnabled(!soundEnabled)}
+            className={`rounded-xl border p-2 transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold ${
+              soundEnabled
+                ? 'bg-[#00E699]/15 border-[#00E699]/40 text-[#00E699]'
+                : 'border-[var(--border)] bg-[var(--background)] text-[var(--card-muted)] hover:text-[var(--foreground)]'
+            }`}
+            title={soundEnabled ? 'Balina uyarısını kapat' : 'Balina sesli uyarısını aç'}
+          >
+            {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+            <span>{soundEnabled ? 'Ses Açık' : 'Ses Kapalı'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 2. Three Dynamic KPI Radar Cards with Net Flow Visual Bar */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5 space-y-1">
+          <div className="text-xs text-[var(--card-muted)] font-medium">İzlenen 24s Balina Hacmi</div>
+          <div className="font-mono text-xl sm:text-2xl font-black text-[var(--foreground)]">
+            ${(totalMonitoredVolume / 1_000_000).toFixed(1)}M USD
+          </div>
+          <div className="text-xs text-[#2962FF] font-mono">
+            Otomatik Canlı Blokzincir Akışı
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5 space-y-1">
+          <div className="text-xs text-[var(--card-muted)] font-medium flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-[#00E699]" />
+            <span>Soğuk Cüzdana Çıkış (Birikim)</span>
+          </div>
+          <div className="font-mono text-xl sm:text-2xl font-black text-[#00E699]">
+            ${(totalOutflow / 1_000_000).toFixed(1)}M (%{outflowRatio.toFixed(1)})
+          </div>
+          <div className="text-xs text-[#00E699] font-mono">
+            Kurumsal Pozitif Akümülasyon
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5 space-y-1">
+          <div className="text-xs text-[var(--card-muted)] font-medium flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-[#FF3B56]" />
+            <span>Borsaya Giriş (Satış Baskısı)</span>
+          </div>
+          <div className="font-mono text-xl sm:text-2xl font-black text-[#FF3B56]">
+            ${(totalInflow / 1_000_000).toFixed(1)}M (%{inflowRatio.toFixed(1)})
+          </div>
+          <div className="text-xs text-[#FF3B56] font-mono">
+            Olası Satış Tehdidi
+          </div>
+        </div>
+      </div>
+
+      {/* Visual Balance Bar */}
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 space-y-1.5">
+        <div className="flex justify-between text-xs font-mono">
+          <span className="text-[#00E699] font-bold">🟢 Soğuk Cüzdana Çıkış: %{outflowRatio.toFixed(1)}</span>
+          <span className="text-[#FF3B56] font-bold">🔴 Borsa Satışına Giriş: %{inflowRatio.toFixed(1)}</span>
+        </div>
+        <div className="h-2 w-full rounded-full bg-[var(--border)] overflow-hidden flex">
+          <div style={{ width: `${outflowRatio}%` }} className="bg-[#00E699] h-full" />
+          <div style={{ width: `${inflowRatio}%` }} className="bg-[#FF3B56] h-full" />
+        </div>
+      </div>
+
+      {/* 3. Filters: Symbol, Flow Direction & Min Amount */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           {/* Symbol Filter */}
           <div className="flex items-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--background)] p-1 text-xs font-mono">
@@ -167,7 +254,11 @@ export default function WhaleTracker({ transactions }: WhaleTrackerProps) {
                 onClick={() => setFilterType(t)}
                 className={`rounded-lg px-2.5 py-1 font-bold transition-all cursor-pointer ${
                   filterType === t
-                    ? t === 'INFLOW' ? 'bg-[#FF3B56] text-white shadow-xs' : t === 'OUTFLOW' ? 'bg-[#00E699] text-black shadow-xs' : 'bg-[#2962FF] text-white shadow-xs'
+                    ? t === 'INFLOW'
+                      ? 'bg-[#FF3B56] text-white shadow-xs'
+                      : t === 'OUTFLOW'
+                      ? 'bg-[#00E699] text-black shadow-xs'
+                      : 'bg-[#2962FF] text-white shadow-xs'
                     : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
                 }`}
               >
@@ -175,126 +266,102 @@ export default function WhaleTracker({ transactions }: WhaleTrackerProps) {
               </button>
             ))}
           </div>
+        </div>
 
-          {/* Audio toggle */}
-          <button
-            onClick={() => setSoundEnabled(!soundEnabled)}
-            className={`rounded-xl border p-2 transition-all cursor-pointer ${
-              soundEnabled
-                ? 'bg-[#00E699]/15 border-[#00E699]/40 text-[#00E699]'
-                : 'border-[var(--border)] bg-[var(--background)] text-[var(--card-muted)] hover:text-[var(--foreground)]'
-            }`}
-            title={soundEnabled ? 'Balina uyarısını kapat' : 'Balina uyarısını aç'}
-          >
-            {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-          </button>
+        {/* Min Amount Filter */}
+        <div className="flex items-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--background)] p-1 text-xs font-mono">
+          {[
+            { label: 'TÜM TUTARLAR', val: 0 },
+            { label: '>$5M', val: 5000000 },
+            { label: '>$20M', val: 20000000 }
+          ].map((item) => (
+            <button
+              key={item.label}
+              onClick={() => setMinAmountFilter(item.val)}
+              className={`rounded-lg px-2.5 py-1 font-bold transition-all cursor-pointer ${
+                minAmountFilter === item.val
+                  ? 'bg-[#2962FF] text-white shadow-xs'
+                  : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* 2. Three Dynamic KPI Radar Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5">
-          <div className="text-xs text-[var(--card-muted)] font-medium">İzlenen 24s Balina Hacmi</div>
-          <div className="mt-1 font-mono text-xl sm:text-2xl font-black text-[var(--foreground)]">
-            ${(totalMonitoredVolume / 1_000_000).toFixed(1)}M
-          </div>
-          <div className="text-xs text-[#2962FF] font-mono mt-0.5">
-            Otomatik Canlı Blokzincir Akışı
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5">
-          <div className="text-xs text-[var(--card-muted)] font-medium flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#00E699]" />
-            <span>Soğuk Cüzdana Çıkış (Birikim)</span>
-          </div>
-          <div className="mt-1 font-mono text-xl sm:text-2xl font-black text-[#00E699]">
-            $532.8M (%63.2)
-          </div>
-          <div className="text-xs text-[#00E699] font-mono mt-0.5">
-            Kurumsal Pozitif Akümülasyon
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5">
-          <div className="text-xs text-[var(--card-muted)] font-medium flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#FF3B56]" />
-            <span>Borsa Girişi (Olası Satış)</span>
-          </div>
-          <div className="mt-1 font-mono text-xl sm:text-2xl font-black text-[#FF3B56]">
-            $309.7M (%36.8)
-          </div>
-          <div className="text-xs text-[#FF3B56] font-mono mt-0.5">
-            Yatırma İşlemleri (Satış Baskısı)
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Live Animated Stream of Whale Orders */}
-      <div className="space-y-2.5 font-mono text-xs">
+      {/* 4. Live Feed Stream List */}
+      <div className="space-y-2.5 max-h-[520px] overflow-y-auto pr-1">
         {filtered.map((tx) => {
           const isInflow = tx.type === 'INFLOW';
-          const isOutflow = tx.type === 'OUTFLOW';
+          const isCopied = copiedHash === tx.hash;
 
           return (
             <div
               key={tx.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--border)] bg-[var(--card-subtle)] p-3.5 hover:border-[#2962FF] transition-all animate-in fade-in slide-in-from-top-1 duration-200"
+              className={`rounded-xl border p-3.5 transition-all text-xs font-mono flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
+                isInflow
+                  ? 'border-[#FF3B56]/30 bg-[#FF3B56]/5 hover:border-[#FF3B56]/60'
+                  : 'border-[#00E699]/30 bg-[#00E699]/5 hover:border-[#00E699]/60'
+              }`}
             >
+              {/* Left Column: Asset, Type & Time */}
               <div className="flex items-center gap-3">
                 <div
-                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
-                    isInflow
-                      ? 'bg-[#FF3B56]/15 text-[#FF3B56] border border-[#FF3B56]/30'
-                      : isOutflow
-                      ? 'bg-[#00E699]/15 text-[#00E699] border border-[#00E699]/30'
-                      : 'bg-[#2962FF]/15 text-[#2962FF] border border-[#2962FF]/30'
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-bold ${
+                    isInflow ? 'bg-[#FF3B56]/20 text-[#FF3B56]' : 'bg-[#00E699]/20 text-[#00E699]'
                   }`}
                 >
-                  {isInflow ? (
-                    <ArrowDownRight className="h-5 w-5" />
-                  ) : isOutflow ? (
-                    <ArrowUpRight className="h-5 w-5" />
-                  ) : (
-                    <ArrowRight className="h-5 w-5" />
-                  )}
+                  {isInflow ? <ArrowDownRight className="h-5 w-5" /> : <ArrowUpRight className="h-5 w-5" />}
                 </div>
 
                 <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-bold text-sm sm:text-base text-[var(--foreground)]">
-                      {tx.amount.toLocaleString('tr-TR')} {tx.symbol}
-                    </span>
-                    <span className="text-xs text-[var(--card-muted)] font-semibold">
-                      (${ (tx.amountUsd / 1_000_000).toFixed(2) }M)
+                  <div className="flex items-center gap-2">
+                    <span className="font-sans text-sm font-black text-[var(--foreground)]">
+                      {tx.symbol}
                     </span>
                     <span
-                      className={`rounded-lg px-2 py-0.5 text-xs font-bold uppercase ${
-                        isInflow
-                          ? 'bg-[#FF3B56]/15 text-[#FF3B56] border border-[#FF3B56]/30'
-                          : isOutflow
-                          ? 'bg-[#00E699]/15 text-[#00E699] border border-[#00E699]/30'
-                          : 'bg-[#2962FF]/15 text-[#2962FF] border border-[#2962FF]/30'
+                      className={`rounded px-1.5 py-0.2 text-[10px] font-bold ${
+                        isInflow ? 'bg-[#FF3B56]/20 text-[#FF3B56]' : 'bg-[#00E699]/20 text-[#00E699]'
                       }`}
                     >
-                      {isInflow ? 'Borsaya Yatırıldı (Satış Baskısı)' : isOutflow ? 'Soğuk Cüzdana Çekildi (Boğa)' : 'Cüzdan Transferi'}
+                      {isInflow ? 'BORSA GİRİŞİ (INFLOW)' : 'SOĞUK CÜZDAN (OUTFLOW)'}
                     </span>
                   </div>
 
-                  <div className="mt-1 flex items-center gap-2 text-xs text-[var(--card-muted)]">
-                    <span className="text-[var(--foreground)] font-medium">{tx.fromName}</span>
-                    <ArrowRight className="h-3 w-3 text-[#2962FF] shrink-0" />
-                    <span className="text-[var(--foreground)] font-medium">{tx.toName}</span>
+                  <div className="text-[11px] text-[var(--card-muted)] mt-0.5 flex items-center gap-1.5">
+                    <span>{tx.secondsAgo < 5 ? 'Şimdi' : `${tx.secondsAgo} sn önce`}</span>
+                    <span>•</span>
+                    <button
+                      onClick={() => handleCopyHash(tx.hash)}
+                      className="text-[var(--card-muted)] hover:text-[var(--foreground)] flex items-center gap-1 cursor-pointer"
+                      title="Tx Hash Kopyala"
+                    >
+                      <span>{tx.hash}</span>
+                      {isCopied ? <Check className="h-3 w-3 text-[#00E699]" /> : <Copy className="h-3 w-3 opacity-60" />}
+                    </button>
                   </div>
                 </div>
               </div>
 
-              <div className="text-right text-xs text-[var(--card-muted)]">
-                <div className="font-bold text-[var(--foreground)]">
-                  {tx.secondsAgo === 0 ? 'Az önce' : tx.secondsAgo < 60 ? `${tx.secondsAgo} sn önce` : `${Math.floor(tx.secondsAgo / 60)} dk önce`}
+              {/* Middle: Route */}
+              <div className="text-[11px] text-[var(--card-muted)] flex items-center gap-1.5">
+                <span className="truncate max-w-[120px] text-[var(--foreground)] font-semibold">{tx.fromName}</span>
+                <ArrowRight className="h-3 w-3 shrink-0 text-[#2962FF]" />
+                <span className="truncate max-w-[120px] text-[var(--foreground)] font-semibold">{tx.toName}</span>
+              </div>
+
+              {/* Right: Amount in Coin & USD */}
+              <div className="text-right sm:shrink-0 w-full sm:w-auto flex sm:flex-col justify-between sm:justify-start items-center sm:items-end">
+                <div className="font-black text-sm text-[var(--foreground)]">
+                  {tx.amount.toLocaleString('tr-TR')} {tx.symbol}
                 </div>
-                <div className="text-[11px] text-[#2962FF] font-bold">
-                  Tx: {tx.hash}
+                <div
+                  className={`text-xs font-bold ${
+                    isInflow ? 'text-[#FF3B56]' : 'text-[#00E699]'
+                  }`}
+                >
+                  ${(tx.amountUsd / 1_000_000).toFixed(2)}M USD
                 </div>
               </div>
             </div>

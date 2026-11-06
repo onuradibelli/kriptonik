@@ -4,18 +4,32 @@ import React, { useState } from 'react';
 import LeverageCalculator from './LeverageCalculator';
 import DcaCalculator from './DcaCalculator';
 import ExchangeFeeCalculator from './ExchangeFeeCalculator';
-import { Calculator, Layers, Zap, ArrowRightLeft } from 'lucide-react';
+import CryptoProfitCalculator from './CryptoProfitCalculator';
+import { Calculator, Layers, Zap, ArrowRightLeft, TrendingUp } from 'lucide-react';
 
 export default function CalculatorSuite() {
-  const [activeTab, setActiveTab] = useState<'leverage' | 'dca' | 'fees'>('leverage');
+  const [activeTab, setActiveTab] = useState<'profit' | 'leverage' | 'dca' | 'fees'>('profit');
 
   return (
     <div className="space-y-6">
       {/* Tab Switcher */}
       <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-1.5 w-fit">
         <button
+          onClick={() => setActiveTab('profit')}
+          className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
+            activeTab === 'profit'
+              ? 'bg-gradient-to-r from-[#2962FF] to-[#00E699] text-white shadow-xs'
+              : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+          }`}
+        >
+          <TrendingUp className="h-4 w-4" />
+          <span>Kâr / Zarar & Hedef Fiyat (PnL)</span>
+          <span className="rounded bg-white/20 px-1.5 py-0.2 text-[9px] font-mono">POPÜLER</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('leverage')}
-          className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+          className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'leverage'
               ? 'bg-[#2962FF] text-white shadow-xs'
               : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
@@ -27,7 +41,7 @@ export default function CalculatorSuite() {
 
         <button
           onClick={() => setActiveTab('dca')}
-          className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+          className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'dca'
               ? 'bg-[#00E699] text-black shadow-xs'
               : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
@@ -39,19 +53,19 @@ export default function CalculatorSuite() {
 
         <button
           onClick={() => setActiveTab('fees')}
-          className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+          className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'fees'
-              ? 'bg-gradient-to-r from-[#2962FF] to-[#00E699] text-white shadow-xs'
+              ? 'bg-[#2962FF] text-white shadow-xs'
               : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
           }`}
         >
           <ArrowRightLeft className="h-4 w-4" />
           <span>Borsa Komisyon & Kâr Kıyaslama</span>
-          <span className="rounded bg-white/20 px-1.5 py-0.2 text-[9px] font-mono">YENİ</span>
         </button>
       </div>
 
       {/* Active Tab View */}
+      {activeTab === 'profit' && <CryptoProfitCalculator />}
       {activeTab === 'leverage' && <LeverageCalculator />}
       {activeTab === 'dca' && <DcaCalculator />}
       {activeTab === 'fees' && <ExchangeFeeCalculator />}

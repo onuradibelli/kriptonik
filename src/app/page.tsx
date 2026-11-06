@@ -16,6 +16,7 @@ import UsdtPremiumWidget from '../components/UsdtPremiumWidget';
 import LiveCryptoMarketTable from '../components/LiveCryptoMarketTable';
 import CryptoMarketHeatmapGrid from '../components/CryptoMarketHeatmapGrid';
 import MajorAssetsPulseBar from '../components/MajorAssetsPulseBar';
+import MarketMoversBar from '../components/MarketMoversBar';
 import Sparkline from '../components/Sparkline';
 import {
   Flame,
@@ -179,6 +180,9 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
 
         {/* Market Isı Şeması (Hacim Ağırlıklı Yatay Canlı Treemap) */}
         <CryptoMarketHeatmapGrid coins={COINS_DATA} tickers={tickers} />
+
+        {/* 24s Piyasa Hareketi: En Çok Yükselenler, Düşenler ve Hacim Liderleri */}
+        <MarketMoversBar coins={COINS_DATA} tickers={tickers} />
 
         {/* 4 Primary High-Impact Visual Cards (Görsel Odak Kartları) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
