@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { CoinData } from '../lib/types';
-import { Flame, Info, Layers, BarChart2, ShieldAlert, ArrowUpRight, ArrowDownRight, Crosshair } from 'lucide-react';
+import { Flame, Info, Layers, BarChart2, ShieldAlert, ArrowUpRight, ArrowDownRight, Crosshair, Zap, Building2 } from 'lucide-react';
 
 interface LiquidationHeatmapProps {
   coin: CoinData;
@@ -10,13 +10,21 @@ interface LiquidationHeatmapProps {
 
 export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
   const [timeframe, setTimeframe] = useState<'12h' | '24h' | '7d' | '30d'>('24h');
+  const [exchange, setExchange] = useState<'ALL' | 'BINANCE' | 'BYBIT' | 'OKX'>('ALL');
   const [hoveredCluster, setHoveredCluster] = useState<number | null>(null);
 
   const currentPrice = coin.price;
   const tfMultiplier = timeframe === '12h' ? 0.6 : timeframe === '24h' ? 1.0 : timeframe === '7d' ? 3.4 : 8.2;
-  const currentTotal = (coin.totalLiquidation24hUsd * tfMultiplier) / 1_000_000;
-  const longTotal = (coin.longLiquidation24hUsd * tfMultiplier) / 1_000_000;
-  const shortTotal = (coin.shortLiquidation24hUsd * tfMultiplier) / 1_000_000;
+  const exMultiplier = exchange === 'ALL' ? 1.0 : exchange === 'BINANCE' ? 0.58 : exchange === 'BYBIT' ? 0.28 : 0.14;
+
+  const currentTotal = ((coin.totalLiquidation24hUsd * tfMultiplier * exMultiplier) / 1_000_000);
+  const longTotal = ((coin.longLiquidation24hUsd * tfMultiplier * exMultiplier) / 1_000_000);
+  const shortTotal = ((coin.shortLiquidation24hUsd * tfMultiplier * exMultiplier) / 1_000_000);
+
+  // Squeeze radar calculation
+  const shortRatio = shortTotal / (currentTotal || 1);
+  const isShortSqueezeHigh = shortRatio > 0.58;
+  const isLongCascadeHigh = shortRatio < 0.42;
 
   // Generate extended realistic liquidation distribution bands around current price
   const clusters = [
@@ -37,7 +45,7 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
 
   return (
     <div className="panel-card p-5 space-y-5">
-      {/* 1. Header & Timeframe Switcher */}
+      {/* 1. Header & Filters */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--border)] pb-4">
         <div>
           <div className="flex items-center gap-2">
@@ -58,22 +66,78 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
           </p>
         </div>
 
-        {/* Timeframe Selector Tabs */}
-        <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--background)] p-1 font-mono text-xs">
-          {(['12h', '24h', '7d', '30d'] as const).map((tf) => (
-            <button
-              key={tf}
-              onClick={() => setTimeframe(tf)}
-              className={`rounded px-3 py-1 font-bold transition-all ${
-                timeframe === tf
-                  ? 'bg-[#2962FF] text-white shadow-xs'
-                  : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
-              }`}
-            >
-              {tf.toUpperCase()}
-            </button>
-          ))}
+        {/* Dual Filters: Exchange & Timeframe */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Exchange Filter */}
+          <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--background)] p-1 font-mono text-xs">
+            {(['ALL', 'BINANCE', 'BYBIT', 'OKX'] as const).map((ex) => (
+              <button
+                key={ex}
+                onClick={() => setExchange(ex)}
+                className={`rounded px-2.5 py-1 font-bold transition-all ${
+                  exchange === ex
+                    ? 'bg-[#00C087] text-white shadow-xs'
+                    : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+                }`}
+              >
+                {ex === 'ALL' ? 'TÜMÜ' : ex}
+              </button>
+            ))}
+          </div>
+
+          {/* Timeframe Selector Tabs */}
+          <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--background)] p-1 font-mono text-xs">
+            {(['12h', '24h', '7d', '30d'] as const).map((tf) => (
+              <button
+                key={tf}
+                onClick={() => setTimeframe(tf)}
+                className={`rounded px-3 py-1 font-bold transition-all ${
+                  timeframe === tf
+                    ? 'bg-[#2962FF] text-white shadow-xs'
+                    : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+                }`}
+              >
+                {tf.toUpperCase()}
+              </button>
+            ))}
+          </div>
         </div>
+      </div>
+
+      {/* Squeeze Risk Radar Alert Banner */}
+      <div className={`rounded-xl border p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs ${
+        isShortSqueezeHigh
+          ? 'border-[#F6465D]/30 bg-[#F6465D]/10 text-[var(--foreground)]'
+          : isLongCascadeHigh
+          ? 'border-[#F2C14E]/30 bg-[#F2C14E]/10 text-[var(--foreground)]'
+          : 'border-[#2962FF]/30 bg-[#2962FF]/10 text-[var(--foreground)]'
+      }`}>
+        <div className="flex items-center gap-2.5">
+          <div className={`flex h-7 w-7 items-center justify-center rounded-lg ${
+            isShortSqueezeHigh ? 'bg-[#F6465D] text-white' : 'bg-[#2962FF] text-white'
+          }`}>
+            <Zap className="h-4 w-4" />
+          </div>
+          <div>
+            <span className="font-bold">
+              {isShortSqueezeHigh
+                ? '⚡ Short Squeeze Riski Yüksek (Yukarı Fırlama Potansiyeli):'
+                : isLongCascadeHigh
+                ? '⚠️ Long Tasfiye Baskısı (Aşağı Sarkma İhtimali):'
+                : '⚖️ Dengeli Likidite Havuzu:'}
+            </span>
+            <span className="ml-1 text-[var(--card-muted)]">
+              {isShortSqueezeHigh
+                ? `Short tasfiyeleri toplam tasfiyelerin %${(shortRatio * 100).toFixed(1)}'ini oluşturuyor. Fiyat $${coin.dominantLiquidationLevel.toLocaleString('tr-TR')} seviyesini aşarsa zincirleme alımlar tetiklenebilir.`
+                : isLongCascadeHigh
+                ? 'Long pozisyonlar ağır basıyor, olası düşüşlerde stop avı riski bulunuyor.'
+                : 'Short ve long tasfiye havuzları dengeli bir dağılım sergiliyor.'}
+            </span>
+          </div>
+        </div>
+        <span className="font-mono text-[11px] font-bold px-2 py-0.5 rounded bg-[var(--card)] border border-[var(--border)]">
+          {exchange === 'ALL' ? 'Tüm Borsalar' : exchange}
+        </span>
       </div>
 
       {/* 2. Visual KPI Metrics Bar */}
@@ -81,7 +145,7 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
         <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3.5 transition-colors">
           <div className="text-[11px] font-medium text-[var(--card-muted)]">Toplam Tasfiye ({timeframe.toUpperCase()})</div>
           <div className="mt-1 font-mono text-lg font-black text-[var(--foreground)]">${currentTotal.toFixed(1)}M</div>
-          <div className="mt-1 text-[10px] text-[var(--card-muted)]">Borsalar konsolide</div>
+          <div className="mt-1 text-[10px] text-[var(--card-muted)]">{exchange === 'ALL' ? 'Konsolide Borsalar' : `${exchange} Futures`}</div>
         </div>
 
         <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3.5 transition-colors">
@@ -105,12 +169,12 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
         <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3.5 transition-colors">
           <div className="text-[11px] font-medium text-[var(--card-muted)] flex items-center gap-1">
             <Crosshair className="h-3 w-3 text-[#2962FF]" />
-            <span>Maksimum Tasfiye Duvarı</span>
+            <span>Kritik Hedef Duvarı</span>
           </div>
           <div className="mt-1 font-mono text-lg font-black text-[#2962FF]">
             ${coin.dominantLiquidationLevel > 10 ? coin.dominantLiquidationLevel.toLocaleString('tr-TR') : coin.dominantLiquidationLevel}
           </div>
-          <div className="mt-1 text-[10px] text-[var(--card-muted)]">Hedef Likidite Havuzu</div>
+          <div className="mt-1 text-[10px] text-[var(--card-muted)]">Maksimum Yoğunluk</div>
         </div>
       </div>
 
@@ -119,7 +183,7 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
         <div className="flex items-center justify-between text-xs font-semibold text-[var(--card-muted)]">
           <span className="flex items-center gap-1.5">
             <BarChart2 className="h-4 w-4 text-[#2962FF]" />
-            <span>Kaldıraç & Fiyat Tasfiye Yoğunluk Dağılımı</span>
+            <span>Kaldıraç & Fiyat Tasfiye Yoğunluk Dağılımı ({exchange})</span>
           </span>
           <span className="font-mono text-[11px]">
             Spot Fiyat: <strong className="text-[var(--foreground)]">${currentPrice.toLocaleString('tr-TR')}</strong>

@@ -10,6 +10,7 @@ export interface MiniTicker {
   low24h: number;
   volumeUsd: number;
   updatedAt: number;
+  flashDirection?: 'UP' | 'DOWN' | null;
 }
 
 export function useBinanceTickers(defaultTickers: Record<string, { price: number; change24h: number }>) {
@@ -23,7 +24,8 @@ export function useBinanceTickers(defaultTickers: Record<string, { price: number
         high24h: data.price * 1.02,
         low24h: data.price * 0.98,
         volumeUsd: 1000000000,
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
+        flashDirection: null
       };
     }
     return initial;
@@ -68,6 +70,9 @@ export function useBinanceTickers(defaultTickers: Record<string, { price: number
                   const volQuote = parseFloat(item.q);
                   const changePct = openPrice > 0 ? ((currentPrice - openPrice) / openPrice) * 100 : 0;
 
+                  const prevPrice = prev[s]?.price || currentPrice;
+                  const flash = currentPrice > prevPrice ? 'UP' : currentPrice < prevPrice ? 'DOWN' : prev[s]?.flashDirection || null;
+
                   updated[s] = {
                     symbol: s,
                     price: currentPrice,
@@ -75,7 +80,8 @@ export function useBinanceTickers(defaultTickers: Record<string, { price: number
                     high24h: high,
                     low24h: low,
                     volumeUsd: volQuote,
-                    updatedAt: Date.now()
+                    updatedAt: Date.now(),
+                    flashDirection: flash
                   };
                   changed = true;
                 }

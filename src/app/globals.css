@@ -109,6 +109,22 @@ body {
   100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(246, 70, 93, 0); }
 }
 
+/* Tick Flash Animation */
+@keyframes flash-green-tick {
+  0% { background-color: rgba(0, 192, 135, 0.4); border-color: rgba(0, 192, 135, 0.6); }
+  100% { background-color: transparent; }
+}
+@keyframes flash-red-tick {
+  0% { background-color: rgba(246, 70, 93, 0.4); border-color: rgba(246, 70, 93, 0.6); }
+  100% { background-color: transparent; }
+}
+.tick-flash-up {
+  animation: flash-green-tick 0.8s ease-out;
+}
+.tick-flash-down {
+  animation: flash-red-tick 0.8s ease-out;
+}
+
 /* Hide scrollbar utility */
 .no-scrollbar::-webkit-scrollbar {
   display: none;

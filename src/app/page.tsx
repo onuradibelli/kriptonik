@@ -11,6 +11,7 @@ import FearGreedWidget from '../components/FearGreedWidget';
 import OpenInterestRadar from '../components/OpenInterestRadar';
 import EtfTracker from '../components/EtfTracker';
 import KacTlConverter from '../components/KacTlConverter';
+import Sparkline from '../components/Sparkline';
 import { Flame, DollarSign, Calendar, Compass, ShieldAlert, ArrowUpRight, Zap, TrendingUp, BarChart3, Calculator } from 'lucide-react';
 
 export default function HomePage() {
@@ -155,6 +156,11 @@ export default function HomePage() {
                 <div className="text-[11px] text-[var(--card-muted)] truncate">{coin.name}</div>
                 <div className="font-mono text-xs font-bold text-[var(--foreground)] mt-1">
                   ${coin.price > 10 ? coin.price.toLocaleString('tr-TR') : coin.price.toFixed(4)}
+                </div>
+
+                {/* 24h Trend Sparkline */}
+                <div className="mt-2 flex justify-center">
+                  <Sparkline change24h={coin.change24h} width={120} height={28} />
                 </div>
               </div>
 

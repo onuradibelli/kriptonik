@@ -43,7 +43,10 @@ export default function RootLayout({
   return (
     <html lang="tr" className="dark" suppressHydrationWarning>
       <head>
-        <meta name="theme-color" content="#0B0E14" />
+        <meta name="theme-color" content="#2962FF" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/icon.svg" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('kriptonik-theme');if(t==='light'||(!t&&window.matchMedia('(prefers-color-scheme: light)').matches&&t!=='dark')){document.documentElement.classList.remove('dark');document.documentElement.classList.add('light');}else{document.documentElement.classList.remove('light');document.documentElement.classList.add('dark');}}catch(e){}})();`

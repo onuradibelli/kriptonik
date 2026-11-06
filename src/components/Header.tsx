@@ -80,7 +80,9 @@ export default function Header() {
                     className="flex items-center gap-1.5 transition-colors hover:text-[#2962FF]"
                   >
                     <span className="font-semibold text-[var(--card-muted)]">{name}:</span>
-                    <span className="font-mono font-medium text-[var(--foreground)]">
+                    <span className={`font-mono font-medium text-[var(--foreground)] px-1 rounded transition-colors ${
+                      tick.flashDirection === 'UP' ? 'tick-flash-up text-[#00C087]' : tick.flashDirection === 'DOWN' ? 'tick-flash-down text-[#F6465D]' : ''
+                    }`}>
                       ${tick.price > 10 ? tick.price.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : tick.price.toFixed(4)}
                     </span>
                     <span className={`font-mono font-bold text-[11px] ${isPositive ? 'text-[#00C087]' : 'text-[#F6465D]'}`}>

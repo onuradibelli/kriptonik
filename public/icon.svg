@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#0B0E14"/>
+      <stop offset="100%" stopColor="#151A23"/>
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#2962FF"/>
+      <stop offset="100%" stopColor="#00C087"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background with rounded corners -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  <rect width="512" height="512" rx="112" fill="none" stroke="#222938" stroke-width="8"/>
+
+  <!-- Glowing Emblem -->
+  <g transform="translate(256, 256)" filter="url(#glow)">
+    <!-- Outer Diamond Ring -->
+    <polygon points="0,-140 140,0 0,140 -140,0" fill="none" stroke="url(#primaryGrad)" stroke-width="20" stroke-linejoin="round"/>
+    <!-- Inner Diamond Core -->
+    <polygon points="0,-85 85,0 0,85 -85,0" fill="url(#primaryGrad)"/>
+    <circle cx="0" cy="0" r="28" fill="#0B0E14"/>
+  </g>
+</svg>
