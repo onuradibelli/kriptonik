@@ -1,8 +1,14 @@
 {
   "name": "kriptonik",
+  "type": "module",
   "version": "1.0.0",
-  "description": "hoşgeldin",
   "scripts": {
-    "build": "node build.js"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^12.6.9",
+    "astro": "^5.16.9"
   }
 }
