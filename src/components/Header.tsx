@@ -89,6 +89,7 @@ export default function Header() {
                 const tick = tickers[sym] || defaultTickers[sym as keyof typeof defaultTickers];
                 if (!tick) return null;
                 const isPositive = tick.change24h >= 0;
+                const flash = (tick as any).flashDirection;
                 return (
                   <Link
                     key={sym}
@@ -97,7 +98,7 @@ export default function Header() {
                   >
                     <span className="font-semibold text-[var(--card-muted)]">{name}:</span>
                     <span className={`font-mono font-medium text-[var(--foreground)] px-1 rounded transition-colors ${
-                      tick.flashDirection === 'UP' ? 'tick-flash-up text-[#00C087]' : tick.flashDirection === 'DOWN' ? 'tick-flash-down text-[#F6465D]' : ''
+                      flash === 'UP' ? 'tick-flash-up text-[#00C087]' : flash === 'DOWN' ? 'tick-flash-down text-[#F6465D]' : ''
                     }`}>
                       ${tick.price > 10 ? tick.price.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : tick.price.toFixed(4)}
                     </span>
@@ -110,13 +111,21 @@ export default function Header() {
             </div>
           </div>
 
-          <div className="hidden md:flex items-center gap-3 text-[var(--card-muted)]">
+          <div className="hidden lg:flex items-center gap-3 text-[var(--card-muted)]">
             <span className="font-mono text-[11px]">
-              Korku/Açgözlülük: <strong className="text-[#F6465D]">{FEAR_AND_GREED.value} ({FEAR_AND_GREED.classification})</strong>
+              BTC Dom: <strong className="text-[var(--foreground)]">%58.4</strong>
             </span>
             <span>•</span>
             <span className="font-mono text-[11px]">
-              Spot ETF Toplam Net: <strong className="text-[#00C087]">+$361.0M</strong>
+              ETH Gas: <strong className="text-[#00C087]">8 Gwei</strong>
+            </span>
+            <span>•</span>
+            <span className="font-mono text-[11px]">
+              Korku/Açgözlülük: <strong className="text-[#F6465D]">{FEAR_AND_GREED.value} ({FEAR_AND_GREED.classification.split(' ')[0]})</strong>
+            </span>
+            <span>•</span>
+            <span className="font-mono text-[11px]">
+              ETF Net: <strong className="text-[#00C087]">+$361.0M</strong>
             </span>
           </div>
         </div>

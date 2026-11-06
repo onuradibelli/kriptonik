@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import LeverageCalculator from '../../components/LeverageCalculator';
+import CalculatorSuite from '../../components/CalculatorSuite';
 import Link from 'next/link';
 import { ArrowLeft, HelpCircle } from 'lucide-react';
 
@@ -68,8 +68,8 @@ export default function CalculatorPage() {
         <span className="text-[var(--foreground)] font-bold">Kaldıraç & Likidasyon Hesaplayıcı</span>
       </div>
 
-      {/* Main Interactive Tool */}
-      <LeverageCalculator />
+      {/* Main Interactive Tool Suite */}
+      <CalculatorSuite />
 
       {/* Educational & SEO FAQ Section */}
       <section className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 space-y-4">

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { COINS_DATA } from '../lib/data';
-import { Search, Flame, DollarSign, Calendar, Compass, ShieldAlert, Newspaper, Calculator, BarChart3, ArrowRight, Zap, ExternalLink, X } from 'lucide-react';
+import { Search, Flame, DollarSign, Calendar, Compass, ShieldAlert, Newspaper, Calculator, BarChart3, ArrowRight, Zap, ExternalLink, X, Layers } from 'lucide-react';
 
 interface PaletteItem {
   id: string;
@@ -50,6 +50,15 @@ export default function CommandPalette() {
       subtitle: 'Futures PnL, likidasyon fiyatı ve risk simülatörü',
       href: '/hesaplayici/',
       icon: Calculator,
+      badge: 'YENİ'
+    },
+    {
+      id: 'tool-dca',
+      category: 'ARAÇLAR',
+      title: 'DCA & Ortalama Maliyet Hesaplayıcı',
+      subtitle: 'Kademeli alım, başabaş fiyatı ve maliyet düşürme simülatörü',
+      href: '/hesaplayici/',
+      icon: Layers,
       badge: 'YENİ'
     },
     {

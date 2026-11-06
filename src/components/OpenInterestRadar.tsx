@@ -10,6 +10,51 @@ interface OpenInterestRadarProps {
 }
 
 export default function OpenInterestRadar({ coins }: OpenInterestRadarProps) {
+  const [signalFilter, setSignalFilter] = React.useState<'ALL' | 'BULL' | 'BEAR' | 'SQUEEZE'>('ALL');
+  const [showAll, setShowAll] = React.useState(false);
+
+  const getSignalData = (coin: CoinData) => {
+    const isOiUp = coin.openInterestChange24h >= 0;
+    const isPriceUp = coin.change24h >= 0;
+
+    if (isOiUp && isPriceUp) {
+      return {
+        type: 'BULL',
+        label: 'Güçlü Yükseliş Trendi (Taze Sermaye)',
+        color: 'text-[#00C087]',
+        badge: 'bg-[#00C087]/15 text-[#00C087] border-[#00C087]/30'
+      };
+    } else if (isOiUp && !isPriceUp) {
+      return {
+        type: 'BEAR',
+        label: 'Agresif Short Baskısı (Kırılım Riski)',
+        color: 'text-[#F6465D]',
+        badge: 'bg-[#F6465D]/15 text-[#F6465D] border-[#F6465D]/30'
+      };
+    } else if (!isOiUp && isPriceUp) {
+      return {
+        type: 'SQUEEZE',
+        label: 'Short Squeeze / Zayıflayan Trend',
+        color: 'text-[#D97706] dark:text-[#F2C14E]',
+        badge: 'bg-[#F2C14E]/15 text-[#D97706] dark:text-[#F2C14E] border-[#F2C14E]/30'
+      };
+    } else {
+      return {
+        type: 'BEAR',
+        label: 'Long Tasfiyesi / Pozisyon Boşaltma',
+        color: 'text-[#F6465D]',
+        badge: 'bg-[#F6465D]/15 text-[#F6465D] border-[#F6465D]/30'
+      };
+    }
+  };
+
+  const filteredCoins = coins.filter((coin) => {
+    if (signalFilter === 'ALL') return true;
+    const sig = getSignalData(coin);
+    return sig.type === signalFilter;
+  });
+
+  const displayedCoins = showAll ? filteredCoins : filteredCoins.slice(0, 6);
   return (
     <div className="panel-card p-5 space-y-4">
       {/* Header */}
@@ -30,31 +75,45 @@ export default function OpenInterestRadar({ coins }: OpenInterestRadarProps) {
             Vadeli piyasalardaki açık kontrat büyüklüğü, 24 saatlik sermaye giriş/çıkışları ve trend kırılım sinyalleri.
           </p>
         </div>
+
+        {/* Signal Filters & Toggle */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--background)] p-1 font-mono text-xs">
+            {[
+              { id: 'ALL', label: 'TÜMÜ' },
+              { id: 'BULL', label: '🟢 BOĞA GİRİŞİ' },
+              { id: 'BEAR', label: '🔴 SHORT BASKISI' },
+              { id: 'SQUEEZE', label: '⚡ SQUEEZE' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setSignalFilter(tab.id as any)}
+                className={`rounded px-2.5 py-1 font-bold transition-all ${
+                  signalFilter === tab.id
+                    ? 'bg-[#2962FF] text-white shadow-xs'
+                    : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setShowAll(!showAll)}
+            className="rounded-lg border border-[var(--border)] bg-[var(--card-subtle)] px-2.5 py-1 font-mono text-xs font-semibold text-[var(--foreground)] hover:border-[#2962FF] transition-colors"
+          >
+            {showAll ? 'İlk 6 Göster' : `Tümünü Göster (${coins.length})`}
+          </button>
+        </div>
       </div>
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 font-mono text-xs">
-        {coins.slice(0, 6).map((coin) => {
+        {displayedCoins.map((coin) => {
           const isOiUp = coin.openInterestChange24h >= 0;
           const isPriceUp = coin.change24h >= 0;
-
-          // Anomaly logic
-          let signal = 'Normal Akış';
-          let signalColor = 'text-[var(--card-muted)]';
-
-          if (isOiUp && isPriceUp) {
-            signal = 'Güçlü Yükseliş Trendi (Taze Sermaye Girişi)';
-            signalColor = 'text-[#00C087]';
-          } else if (isOiUp && !isPriceUp) {
-            signal = 'Agresif Short Baskısı (Dip Kırılım Riski)';
-            signalColor = 'text-[#F6465D]';
-          } else if (!isOiUp && isPriceUp) {
-            signal = 'Short Squeeze / Kâr Satışı (Zayıflayan Trend)';
-            signalColor = 'text-[#D97706] dark:text-[#F2C14E]';
-          } else {
-            signal = 'Long Tasfiyesi / Pozisyon Boşaltma';
-            signalColor = 'text-[#F6465D]';
-          }
+          const sig = getSignalData(coin);
 
           return (
             <div
@@ -100,8 +159,8 @@ export default function OpenInterestRadar({ coins }: OpenInterestRadarProps) {
 
               <div className="mt-3 pt-2.5 border-t border-[var(--border)]">
                 <div className="text-[10px] text-[var(--card-muted)]">Piyasa Sinyali:</div>
-                <div className={`text-[11px] font-sans font-bold mt-0.5 ${signalColor}`}>
-                  {signal}
+                <div className={`text-[11px] font-sans font-bold mt-0.5 ${sig.color}`}>
+                  {sig.label}
                 </div>
               </div>
             </div>

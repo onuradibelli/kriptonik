@@ -13,12 +13,34 @@ export default function FundingMatrix({ coins }: FundingMatrixProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortKey, setSortKey] = useState<'binance' | 'volume' | 'spread'>('spread');
   const [sortDesc, setSortDesc] = useState(true);
+  const [filterMode, setFilterMode] = useState<'ALL' | 'HIGH_ARB' | 'POSITIVE' | 'NEGATIVE'>('ALL');
 
-  const filteredCoins = coins.filter(
-    (c) =>
+  const arbitrageOpps = [...coins]
+    .map((c) => {
+      const spread = Math.abs(c.fundingRates.binance - c.fundingRates.bybit);
+      const apr = spread * 3 * 365 * 100;
+      const longEx = c.fundingRates.binance < c.fundingRates.bybit ? 'Binance' : 'Bybit';
+      const shortEx = c.fundingRates.binance < c.fundingRates.bybit ? 'Bybit' : 'Binance';
+      return { coin: c, spread, apr, longEx, shortEx };
+    })
+    .sort((a, b) => b.spread - a.spread)
+    .slice(0, 3);
+
+  const filteredCoins = coins.filter((c) => {
+    const matchesSearch =
       c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.symbol.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      c.symbol.toLowerCase().includes(searchTerm.toLowerCase());
+    if (!matchesSearch) return false;
+
+    if (filterMode === 'HIGH_ARB') {
+      const apr = Math.abs(c.fundingRates.binance - c.fundingRates.bybit) * 3 * 365 * 100;
+      return apr >= 1.0;
+    }
+    if (filterMode === 'POSITIVE') return c.fundingRates.binance > 0;
+    if (filterMode === 'NEGATIVE') return c.fundingRates.binance < 0;
+
+    return true;
+  });
 
   const sortedCoins = [...filteredCoins].sort((a, b) => {
     let valA = 0;
@@ -59,19 +81,71 @@ export default function FundingMatrix({ coins }: FundingMatrixProps) {
           </p>
         </div>
 
-        {/* Search input */}
-        <div className="flex items-center gap-2">
+        {/* Filter Tabs & Search */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--background)] p-1 font-mono text-xs">
+            {[
+              { id: 'ALL', label: 'TÜMÜ' },
+              { id: 'HIGH_ARB', label: '🔥 ARBİTRAJ' },
+              { id: 'POSITIVE', label: 'POZİTİF' },
+              { id: 'NEGATIVE', label: 'NEGATİF' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setFilterMode(tab.id as any)}
+                className={`rounded px-2.5 py-1 font-bold transition-all ${
+                  filterMode === tab.id
+                    ? 'bg-[#2962FF] text-white shadow-xs'
+                    : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[var(--card-muted)]" />
             <input
               type="text"
-              placeholder="Coin ara (BTC, SOL...)"
+              placeholder="Coin ara..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="rounded-lg border border-[var(--border)] bg-[var(--background)] pl-8 pr-3 py-1.5 text-xs text-[var(--foreground)] placeholder-[var(--card-muted)] outline-none focus:border-[#2962FF] w-48 transition-colors"
+              className="rounded-lg border border-[var(--border)] bg-[var(--background)] pl-8 pr-3 py-1.5 text-xs text-[var(--foreground)] placeholder-[var(--card-muted)] outline-none focus:border-[#2962FF] w-36 transition-colors"
             />
           </div>
         </div>
+      </div>
+
+      {/* Top 3 Delta-Neutral Arbitrage Opportunities Banner */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        {arbitrageOpps.map((opp, idx) => (
+          <div
+            key={opp.coin.id}
+            className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3 text-xs font-mono space-y-1.5 hover:border-[#00C087] transition-all"
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-[var(--foreground)] flex items-center gap-1">
+                <span className="text-[#00C087]">#{idx + 1}</span> {opp.coin.name} ({opp.coin.symbol})
+              </span>
+              <span className="rounded bg-[#00C087]/15 px-1.5 py-0.2 font-black text-[#00C087] text-[10px]">
+                %{opp.apr.toFixed(1)} APR
+              </span>
+            </div>
+
+            <div className="text-[11px] text-[var(--card-muted)] flex items-center justify-between">
+              <span>Arbitraj Stratejisi:</span>
+              <span className="text-[var(--foreground)] font-bold">
+                Long {opp.longEx} / Short {opp.shortEx}
+              </span>
+            </div>
+
+            <div className="text-[10px] text-[var(--card-muted)] pt-0.5 border-t border-[var(--border)] flex justify-between">
+              <span>Spread: %{(opp.spread * 100).toFixed(4)}</span>
+              <span className="text-[#00C087] font-semibold">Delta-Nötr Kâr</span>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Table */}
