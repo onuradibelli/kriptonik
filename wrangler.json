@@ -14,28 +14,6 @@
 		"enabled": true
 	},
 	"upload_source_maps": true,
-	"d1_databases": [
-		{
-			"binding": "DB",
-			"database_name": "kriptonik-db",
-			"database_id": "kriptonik-d1-prod"
-		}
-	],
-	"kv_namespaces": [
-		{
-			"binding": "KV_CACHE",
-			"id": "kriptonik-kv-cache"
-		}
-	],
-	"r2_buckets": [
-		{
-			"binding": "R2_MEDIA",
-			"bucket_name": "kriptonik-assets"
-		}
-	],
-	"ai": {
-		"binding": "AI"
-	},
 	"vars": {
 		"ENV": "production",
 		"SITE_URL": "https://kriptonik.com"
