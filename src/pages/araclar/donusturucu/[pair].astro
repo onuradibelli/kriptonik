@@ -1,0 +1,232 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+
+export function getStaticPaths() {
+	const pairs = [
+		{ pair: 'btc-try', base: 'BTC', quote: 'TRY', baseName: 'Bitcoin', quoteName: 'Türk Lirası', initialRate: '3.250.000', desc: 'Bitcoin (BTC) kuru anlık olarak Türk Lirası (TRY) karşısında canlı piyasa verileriyle güncellenmektedir.' },
+		{ pair: 'eth-try', base: 'ETH', quote: 'TRY', baseName: 'Ethereum', quoteName: 'Türk Lirası', initialRate: '115.000', desc: 'Ethereum (ETH) fiyatı canlı verilerle Türk Lirası cinsinden anında hesaplanmaktadır.' },
+		{ pair: 'sol-try', base: 'SOL', quote: 'TRY', baseName: 'Solana', quoteName: 'Türk Lirası', initialRate: '7.150', desc: 'Solana (SOL) anlık TRY fiyatı ve yaygın miktar çevirileri.' },
+		{ pair: 'usdt-try', base: 'USDT', quote: 'TRY', baseName: 'Tether USD', quoteName: 'Türk Lirası', initialRate: '36,80', desc: 'Tether (USDT) dolar kuru karşılığı canlı Türk Lirası borsa makas farkı.' },
+		{ pair: 'btc-usd', base: 'BTC', quote: 'USD', baseName: 'Bitcoin', quoteName: 'ABD Doları', initialRate: '88.500', desc: '1 Bitcoin kaç Dolar (USD)? Canlı BTC/USD piyasa kuru ve dönüşüm tablosu.' },
+		{ pair: 'eth-usd', base: 'ETH', quote: 'USD', baseName: 'Ethereum', quoteName: 'ABD Doları', initialRate: '3.150', desc: '1 Ethereum kaç Dolar (USD)? Anlık ETH/USD değeri.' },
+		{ pair: 'sol-usd', base: 'SOL', quote: 'USD', baseName: 'Solana', quoteName: 'ABD Doları', initialRate: '195', desc: 'Solana kaç Dolar? Canlı SOL/USD paritesi ve hesaplayıcı.' }
+	];
+
+	return pairs.map(p => ({
+		params: { pair: p.pair },
+		props: { pairData: p }
+	}));
+}
+
+const { pairData } = Astro.props;
+const pageTitle = `${pairData.base} - ${pairData.quote} Dönüştürücü (1 ${pairData.base} Kaç ${pairData.quote}?) | Kriptonik`;
+const pageDesc = `${pairData.baseName} - ${pairData.quoteName} canlı çevirici. 1 ${pairData.base} = ${pairData.initialRate} ${pairData.quote}. Anlık piyasa kuru ve yaygın miktarlar tablosu.`;
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container tool-page">
+		<nav class="breadcrumb">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<a href="/araclar">Araçlar</a>
+			<span>/</span>
+			<a href="/araclar/kripto-donusturucu">Dönüştürücü</a>
+			<span>/</span>
+			<span class="current">{pairData.base} / {pairData.quote}</span>
+		</nav>
+
+		<div class="tool-header">
+			<h1 class="tool-title">{pairData.baseName} ({pairData.base}) ➔ {pairData.quoteName} ({pairData.quote})</h1>
+			<p class="tool-subtitle">{pairData.desc}</p>
+		</div>
+
+		<div class="pair-converter-card">
+			<div class="rate-banner">
+				<span class="rate-lbl">1 {pairData.base} Değeri:</span>
+				<span class="rate-val font-mono">{pairData.initialRate} {pairData.quote}</span>
+			</div>
+
+			<div class="quick-link-box">
+				<a href="/araclar/kripto-donusturucu" class="btn btn-primary">Tam Kripto Dönüştürücüyü Aç ➔</a>
+				<a href="/araclar/maliyet-karsilastirici" class="btn btn-secondary">Borsa Komisyonlarını Kıyasla</a>
+			</div>
+		</div>
+
+		<!-- Common amounts table -->
+		<div class="amounts-section">
+			<h3>Yaygın Miktarlar ({pairData.base} ➔ {pairData.quote})</h3>
+			<table class="data-table">
+				<thead>
+					<tr>
+						<th>{pairData.base} Miktarı</th>
+						<th>{pairData.quote} Karşılığı (Yaklaşık)</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>0.1 {pairData.base}</td>
+						<td class="font-mono">{(parseFloat(pairData.initialRate.replace('.', '').replace(',', '.')) * 0.1).toLocaleString('tr-TR')} {pairData.quote}</td>
+					</tr>
+					<tr>
+						<td>0.5 {pairData.base}</td>
+						<td class="font-mono">{(parseFloat(pairData.initialRate.replace('.', '').replace(',', '.')) * 0.5).toLocaleString('tr-TR')} {pairData.quote}</td>
+					</tr>
+					<tr>
+						<td>1 {pairData.base}</td>
+						<td class="font-mono">{pairData.initialRate} {pairData.quote}</td>
+					</tr>
+					<tr>
+						<td>5 {pairData.base}</td>
+						<td class="font-mono">{(parseFloat(pairData.initialRate.replace('.', '').replace(',', '.')) * 5).toLocaleString('tr-TR')} {pairData.quote}</td>
+					</tr>
+					<tr>
+						<td>10 {pairData.base}</td>
+						<td class="font-mono">{(parseFloat(pairData.initialRate.replace('.', '').replace(',', '.')) * 10).toLocaleString('tr-TR')} {pairData.quote}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<!-- FAQ -->
+		<div class="faq-section">
+			<h3>Sıkça Sorulan Sorular</h3>
+			<div class="faq-item">
+				<strong>1 {pairData.base} kaç {pairData.quote}?</strong>
+				<p>Şu anki piyasa şartlarında 1 {pairData.base} yaklaşık {pairData.initialRate} {pairData.quote} seviyesindedir. Fiyatlar anlık alım satım talebine göre değişir.</p>
+			</div>
+			<div class="faq-item">
+				<strong>Borsada bozdururken aynı tutarı alabilir miyim?</strong>
+				<p>Borsalarda işlem yaparken borsa komisyonu (maker/taker) ve tahtadaki alış-satış makas farkı (spread) nedeniyle net tutar küçük farklılıklar içerebilir.</p>
+			</div>
+		</div>
+	</div>
+</Layout>
+
+<style>
+.tool-page {
+	padding-top: var(--space-8);
+	padding-bottom: var(--space-16);
+	max-width: 800px;
+}
+.breadcrumb {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	font-size: var(--text-sm);
+	color: var(--color-text-muted);
+	margin-bottom: var(--space-6);
+}
+.breadcrumb a {
+	color: var(--color-text-muted);
+	text-decoration: none;
+}
+.breadcrumb a:hover {
+	color: var(--color-primary-400);
+}
+.breadcrumb .current {
+	color: var(--color-text-secondary);
+}
+.tool-header {
+	margin-bottom: var(--space-8);
+}
+.tool-title {
+	font-size: var(--text-2xl);
+	font-weight: 800;
+	margin-bottom: var(--space-2);
+}
+.tool-subtitle {
+	font-size: var(--text-base);
+	color: var(--color-text-secondary);
+	line-height: 1.6;
+}
+
+.pair-converter-card {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-xl);
+	padding: var(--space-8);
+	margin-bottom: var(--space-8);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-6);
+}
+.rate-banner {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	border-bottom: 1px solid var(--color-border);
+	padding-bottom: var(--space-4);
+	flex-wrap: wrap;
+	gap: var(--space-2);
+}
+.rate-lbl {
+	font-size: var(--text-base);
+	color: var(--color-text-secondary);
+	font-weight: 600;
+}
+.rate-val {
+	font-size: var(--text-3xl);
+	font-weight: 900;
+	color: var(--color-primary-400);
+}
+.quick-link-box {
+	display: flex;
+	gap: var(--space-4);
+	flex-wrap: wrap;
+}
+
+.amounts-section {
+	margin-bottom: var(--space-8);
+}
+.amounts-section h3 {
+	font-size: var(--text-lg);
+	font-weight: 700;
+	margin-bottom: var(--space-4);
+}
+.data-table {
+	width: 100%;
+	border-collapse: collapse;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	font-size: var(--text-sm);
+}
+.data-table th, .data-table td {
+	padding: var(--space-3) var(--space-4);
+	border-bottom: 1px solid var(--color-border);
+	text-align: left;
+}
+.data-table th {
+	background: var(--color-surface-hover);
+	font-size: var(--text-xs);
+	color: var(--color-text-secondary);
+}
+
+.faq-section {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-6);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+}
+.faq-section h3 {
+	font-size: var(--text-lg);
+	font-weight: 700;
+	margin-bottom: var(--space-2);
+}
+.faq-item strong {
+	display: block;
+	font-size: var(--text-sm);
+	color: var(--color-text-primary);
+	margin-bottom: 4px;
+}
+.faq-item p {
+	font-size: var(--text-sm);
+	color: var(--color-text-secondary);
+	line-height: 1.5;
+	margin: 0;
+}
+</style>

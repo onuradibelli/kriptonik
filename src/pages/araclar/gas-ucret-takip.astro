@@ -1,0 +1,432 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = "Canlı Gas & Ağ Ücreti Takipçisi (EVM, Bitcoin, Tron) | Kriptonik";
+const pageDesc = "Ethereum, Bitcoin, Arbitrum, Polygon ve Tron ağlarında anlık transfer ve swap maliyetlerini takip edin. En ucuz transfer saatlerini keşfedin.";
+
+const chains = [
+	{ id: 'ethereum', name: 'Ethereum Mainnet', symbol: 'ETH', standardGas: '18 Gwei', usdCostTransfer: '$0.85', usdCostSwap: '$6.12', fastGas: '24 Gwei' },
+	{ id: 'arbitrum', name: 'Arbitrum One (L2)', symbol: 'ETH', standardGas: '0.1 Gwei', usdCostTransfer: '<$0.01', usdCostSwap: '$0.05', fastGas: '0.15 Gwei' },
+	{ id: 'optimism', name: 'Optimism (OP)', symbol: 'ETH', standardGas: '0.08 Gwei', usdCostTransfer: '<$0.01', usdCostSwap: '$0.04', fastGas: '0.12 Gwei' },
+	{ id: 'polygon', name: 'Polygon PoS', symbol: 'POL', standardGas: '35 Gwei', usdCostTransfer: '$0.01', usdCostSwap: '$0.04', fastGas: '45 Gwei' },
+	{ id: 'bnb', name: 'BNB Smart Chain', symbol: 'BNB', standardGas: '3 Gwei', usdCostTransfer: '$0.04', usdCostSwap: '$0.18', fastGas: '3.5 Gwei' },
+	{ id: 'bitcoin', name: 'Bitcoin (Mempool)', symbol: 'BTC', standardGas: '12 sat/vB', usdCostTransfer: '$1.45', usdCostSwap: 'N/A', fastGas: '18 sat/vB' },
+	{ id: 'tron', name: 'Tron (TRC20)', symbol: 'TRX', standardGas: '65k Enerji', usdCostTransfer: '$1.80', usdCostSwap: 'N/A', fastGas: '130k Enerji' }
+];
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container tool-page">
+		<nav class="breadcrumb">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<a href="/araclar">Araçlar</a>
+			<span>/</span>
+			<span class="current">Gas & Ağ Ücreti Takipçisi</span>
+		</nav>
+
+		<div class="tool-header">
+			<div class="badge-pill">
+				<span>⛽</span>
+				<span>Canlı Ağ Yoğunluğu</span>
+			</div>
+			<h1 class="tool-title">Canlı Gas ve Ağ Transfer Ücreti Takipçisi</h1>
+			<p class="tool-subtitle">
+				Ethereum, L2 katmanları, Bitcoin ve Tron ağlarındaki transfer ve DeFi maliyetlerini anlık olarak kıyaslayın; yüksek komisyon ödemekten kaçının.
+			</p>
+		</div>
+
+		<!-- Chain Overview Cards Grid -->
+		<div class="gas-cards-grid">
+			{chains.map(chain => (
+				<div class="gas-card" data-chain={chain.id}>
+					<div class="gas-card-top">
+						<span class="chain-name">{chain.name}</span>
+						<span class="chain-badge">{chain.symbol}</span>
+					</div>
+					<div class="gas-rate-row">
+						<span class="gas-rate-val">{chain.standardGas}</span>
+						<span class="gas-rate-tag">Standart</span>
+					</div>
+					<div class="cost-table-mini">
+						<div class="cost-row">
+							<span>Standart Transfer:</span>
+							<strong>{chain.usdCostTransfer}</strong>
+						</div>
+						{chain.usdCostSwap !== 'N/A' && (
+							<div class="cost-row">
+								<span>DEX Swap:</span>
+								<strong>{chain.usdCostSwap}</strong>
+							</div>
+						)}
+					</div>
+					<div class="gas-card-footer">
+						<span>Hızlı İşlem: <strong>{chain.fastGas}</strong></span>
+					</div>
+				</div>
+			))}
+		</div>
+
+		<!-- Interactive Cost Calculator for Ethereum -->
+		<div class="calculator-panel">
+			<h2 class="panel-heading">🧮 Detaylı İşlem Maliyet Hesaplayıcısı</h2>
+			<p class="panel-desc">Aşağıdaki parametreleri değiştirerek işleminizin yaklaşık dolar ve Türk Lirası maliyetini hesaplayabilirsiniz.</p>
+
+			<div class="calc-grid">
+				<div class="calc-field">
+					<label for="gas-gwei-input">Gas Fiyatı (Gwei):</label>
+					<input type="number" id="gas-gwei-input" class="form-input" value="18" min="1" max="1000" />
+				</div>
+				<div class="calc-field">
+					<label for="eth-price-input">ETH Fiyatı (USD):</label>
+					<input type="number" id="eth-price-input" class="form-input" value="3150" min="100" />
+				</div>
+				<div class="calc-field">
+					<label for="usd-try-input">USD/TRY Kuru:</label>
+					<input type="number" id="usd-try-input" class="form-input" value="36.80" step="0.1" />
+				</div>
+			</div>
+
+			<div class="preset-tx-types">
+				<span class="preset-label">İşlem Türü Seçin:</span>
+				<button class="preset-pill active" data-gas="21000">Standart ETH Transferi (21.000 Gas)</button>
+				<button class="preset-pill" data-gas="65000">ERC-20 Token Transferi (~65.000 Gas)</button>
+				<button class="preset-pill" data-gas="150000">Uniswap / DEX Swap (~150.000 Gas)</button>
+				<button class="preset-pill" data-gas="250000">NFT Mint / Karmaşık Sözleşme (~250.000 Gas)</button>
+			</div>
+
+			<div class="calc-result-box">
+				<div class="res-item">
+					<span class="res-label">Toplam İşlem Ücreti (ETH):</span>
+					<span class="res-val mono" id="calc-eth-res">0.000378 ETH</span>
+				</div>
+				<div class="res-item">
+					<span class="res-label">Dolar Karşılığı:</span>
+					<span class="res-val highlight" id="calc-usd-res">$1.19</span>
+				</div>
+				<div class="res-item">
+					<span class="res-label">Türk Lirası Karşılığı:</span>
+					<span class="res-val" id="calc-try-res">₺43.82</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- Best Hours / Transfer Optimization Section -->
+		<div class="info-section">
+			<h3>⏰ Ağ Komisyonları Ne Zaman Düşer?</h3>
+			<p>
+				Ethereum ve Bitcoin gibi ağlarda gas ücretleri blok alanına olan anlık talebe göre belirlenir. Türkiye Saati (UTC+3) ile:
+			</p>
+			<ul>
+				<li><strong>En Ucuz Saatler:</strong> Hafta sonları sabah erken saatler (04:00 - 09:00 TSI) genellikle ABD ve Asya piyasalarının aynı anda uykuda olduğu en sakin periyotlardır.</li>
+				<li><strong>En Yoğun / Pahalı Saatler:</strong> Hafta içi öğleden sonra ve akşam saatleri (15:30 - 21:00 TSI) New York borsası açılışıyla birlikte işlem yoğunluğunun ve gas fiyatlarının zirve yaptığı saatlerdir.</li>
+				<li><strong>L2 Çözümleri:</strong> DApp etkileşimlerinizde Arbitrum, Optimism veya Base gibi Layer-2 katmanlarını kullanarak komisyonları %95'e varan oranlarda düşürebilirsiniz.</li>
+			</ul>
+		</div>
+	</div>
+</Layout>
+
+<style>
+.tool-page {
+	padding-top: var(--space-8);
+	padding-bottom: var(--space-16);
+	max-width: 900px;
+}
+.breadcrumb {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	font-size: var(--text-sm);
+	color: var(--color-text-muted);
+	margin-bottom: var(--space-6);
+}
+.breadcrumb a {
+	color: var(--color-text-muted);
+	text-decoration: none;
+}
+.breadcrumb a:hover {
+	color: var(--color-primary-400);
+}
+.breadcrumb .current {
+	color: var(--color-text-secondary);
+}
+.tool-header {
+	margin-bottom: var(--space-8);
+}
+.badge-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2);
+	padding: var(--space-1) var(--space-3);
+	background: var(--color-surface-hover);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-full);
+	font-size: var(--text-xs);
+	font-weight: 500;
+	color: var(--color-text-secondary);
+	margin-bottom: var(--space-3);
+}
+.tool-title {
+	font-size: var(--text-3xl);
+	font-weight: 800;
+	margin-bottom: var(--space-2);
+	letter-spacing: -0.02em;
+}
+.tool-subtitle {
+	font-size: var(--text-base);
+	color: var(--color-text-secondary);
+	line-height: 1.6;
+}
+
+.gas-cards-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+	gap: var(--space-4);
+	margin-bottom: var(--space-8);
+}
+.gas-card {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-4);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+.gas-card:hover {
+	transform: translateY(-2px);
+	border-color: var(--color-primary-500);
+}
+.gas-card-top {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.chain-name {
+	font-size: var(--text-sm);
+	font-weight: 700;
+	color: var(--color-text-primary);
+}
+.chain-badge {
+	font-size: var(--text-xs);
+	font-weight: 600;
+	background: var(--color-surface-hover);
+	padding: 2px 6px;
+	border-radius: var(--radius-sm);
+	color: var(--color-text-muted);
+}
+.gas-rate-row {
+	display: flex;
+	align-items: baseline;
+	gap: var(--space-2);
+}
+.gas-rate-val {
+	font-size: var(--text-xl);
+	font-weight: 800;
+	font-family: var(--font-mono);
+	color: var(--color-primary-400);
+}
+.gas-rate-tag {
+	font-size: var(--text-xs);
+	color: var(--color-text-muted);
+}
+.cost-table-mini {
+	background: var(--color-bg);
+	border-radius: var(--radius-md);
+	padding: var(--space-2) var(--space-3);
+	font-size: var(--text-xs);
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+.cost-row {
+	display: flex;
+	justify-content: space-between;
+	color: var(--color-text-secondary);
+}
+.cost-row strong {
+	color: var(--color-text-primary);
+	font-family: var(--font-mono);
+}
+.gas-card-footer {
+	font-size: var(--text-xs);
+	color: var(--color-text-muted);
+	border-top: 1px solid var(--color-border);
+	padding-top: var(--space-2);
+}
+
+.calculator-panel {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-xl);
+	padding: var(--space-6);
+	margin-bottom: var(--space-8);
+}
+.panel-heading {
+	font-size: var(--text-xl);
+	font-weight: 700;
+	margin-bottom: var(--space-2);
+}
+.panel-desc {
+	font-size: var(--text-sm);
+	color: var(--color-text-secondary);
+	margin-bottom: var(--space-4);
+}
+.calc-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: var(--space-4);
+	margin-bottom: var(--space-4);
+}
+.calc-field label {
+	display: block;
+	font-size: var(--text-xs);
+	font-weight: 600;
+	color: var(--color-text-secondary);
+	margin-bottom: var(--space-1);
+}
+.form-input {
+	width: 100%;
+	padding: var(--space-2) var(--space-3);
+	background: var(--color-bg);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-md);
+	color: var(--color-text-primary);
+	font-family: var(--font-mono);
+	font-size: var(--text-sm);
+}
+.preset-tx-types {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-2);
+	margin-bottom: var(--space-5);
+	align-items: center;
+}
+.preset-label {
+	font-size: var(--text-xs);
+	color: var(--color-text-muted);
+	font-weight: 600;
+}
+.preset-pill {
+	background: var(--color-bg);
+	border: 1px solid var(--color-border);
+	color: var(--color-text-secondary);
+	padding: var(--space-1) var(--space-3);
+	border-radius: var(--radius-full);
+	font-size: var(--text-xs);
+	cursor: pointer;
+	transition: all var(--transition-fast);
+}
+.preset-pill.active, .preset-pill:hover {
+	background: var(--color-primary-500);
+	border-color: var(--color-primary-500);
+	color: white;
+}
+
+.calc-result-box {
+	background: var(--color-bg);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-4);
+	display: flex;
+	justify-content: space-around;
+	gap: var(--space-4);
+	flex-wrap: wrap;
+}
+.res-item {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+.res-label {
+	font-size: var(--text-xs);
+	color: var(--color-text-muted);
+}
+.res-val {
+	font-size: var(--text-lg);
+	font-weight: 700;
+	font-family: var(--font-mono);
+}
+.res-val.highlight {
+	color: var(--color-primary-400);
+}
+
+.info-section {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-6);
+}
+.info-section h3 {
+	font-size: var(--text-lg);
+	font-weight: 700;
+	margin-bottom: var(--space-3);
+}
+.info-section p, .info-section li {
+	font-size: var(--text-sm);
+	color: var(--color-text-secondary);
+	line-height: 1.6;
+}
+.info-section ul {
+	margin: 0;
+	padding-left: var(--space-5);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+}
+
+@media (max-width: 640px) {
+	.calc-grid {
+		grid-template-columns: 1fr;
+	}
+	.calc-result-box {
+		flex-direction: column;
+	}
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+	const gasInput = document.getElementById('gas-gwei-input') as HTMLInputElement;
+	const ethPriceInput = document.getElementById('eth-price-input') as HTMLInputElement;
+	const usdTryInput = document.getElementById('usd-try-input') as HTMLInputElement;
+	const presetBtns = document.querySelectorAll<HTMLButtonElement>('.preset-pill');
+
+	const ethRes = document.getElementById('calc-eth-res');
+	const usdRes = document.getElementById('calc-usd-res');
+	const tryRes = document.getElementById('calc-try-res');
+
+	let selectedGasUnits = 21000;
+
+	function calculate() {
+		const gwei = parseFloat(gasInput.value) || 0;
+		const ethPrice = parseFloat(ethPriceInput.value) || 0;
+		const usdTry = parseFloat(usdTryInput.value) || 0;
+
+		// 1 Gwei = 10^-9 ETH
+		const totalEth = (selectedGasUnits * gwei) / 1e9;
+		const totalUsd = totalEth * ethPrice;
+		const totalTry = totalUsd * usdTry;
+
+		if (ethRes) ethRes.textContent = `${totalEth.toFixed(6)} ETH`;
+		if (usdRes) usdRes.textContent = `$${totalUsd.toFixed(2)}`;
+		if (tryRes) tryRes.textContent = `₺${totalTry.toFixed(2)}`;
+	}
+
+	presetBtns.forEach(btn => {
+		btn.addEventListener('click', () => {
+			presetBtns.forEach(b => b.classList.remove('active'));
+			btn.classList.add('active');
+			selectedGasUnits = parseInt(btn.dataset.gas || '21000', 10);
+			calculate();
+		});
+	});
+
+	gasInput?.addEventListener('input', calculate);
+	ethPriceInput?.addEventListener('input', calculate);
+	usdTryInput?.addEventListener('input', calculate);
+
+	calculate();
+});
+</script>

@@ -1,0 +1,392 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = "Bitcoin Halving Geri Sayımı & Blok Ödülü Yarılanması | Kriptonik";
+const pageDesc = "Sonraki Bitcoin blok ödülü yarılanmasına (5. Halving - Blok 1.050.000) kalan süreyi, blok sayısını ve tarihsel halving verilerini inceleyin.";
+
+const pastHalvings = [
+	{ num: '1. Halving', block: '210.000', date: '28 Kasım 2012', rewardBefore: '50 BTC', rewardAfter: '25 BTC', priceAtHalving: '$12,35' },
+	{ num: '2. Halving', block: '420.000', date: '9 Temmuz 2016', rewardBefore: '25 BTC', rewardAfter: '12,5 BTC', priceAtHalving: '$650,63' },
+	{ num: '3. Halving', block: '630.000', date: '11 Mayıs 2020', rewardBefore: '12,5 BTC', rewardAfter: '6,25 BTC', priceAtHalving: '$8.821,42' },
+	{ num: '4. Halving', block: '840.000', date: '20 Nisan 2024', rewardBefore: '6,25 BTC', rewardAfter: '3,125 BTC', priceAtHalving: '$63.900,00' },
+	{ num: '5. Halving (Gelecek)', block: '1.050.000', date: 'Tahmini Nisan 2028', rewardBefore: '3,125 BTC', rewardAfter: '1,5625 BTC', priceAtHalving: 'Belirlenmedi' }
+];
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container tool-page">
+		<nav class="breadcrumb">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<a href="/araclar">Araçlar</a>
+			<span>/</span>
+			<span class="current">Bitcoin Halving Sayacı</span>
+		</nav>
+
+		<div class="tool-header">
+			<div class="badge-pill">
+				<span>⏳</span>
+				<span>Blok Ödülü Yarılanması</span>
+			</div>
+			<h1 class="tool-title">Bitcoin Halving Geri Sayımı (5. Halving)</h1>
+			<p class="tool-subtitle">
+				Bitcoin protokolü gereği her 210.000 blokta bir madencilere verilen blok ödülü yarı yarıya azalır. Bir sonraki yarılanma Blok 1.050.000 seviyesinde gerçekleşecektir.
+			</p>
+		</div>
+
+		<!-- Live Countdown Card -->
+		<div class="countdown-card">
+			<div class="countdown-head">
+				<span class="target-title">5. HALVİNG HEDEFİ: BLOK 1.050.000</span>
+				<span class="reward-change-badge">3,125 BTC ➔ 1,5625 BTC</span>
+			</div>
+
+			<div class="timer-grid">
+				<div class="timer-box">
+					<span class="timer-num" id="days-val">--</span>
+					<span class="timer-lbl">GÜN</span>
+				</div>
+				<div class="timer-box">
+					<span class="timer-num" id="hours-val">--</span>
+					<span class="timer-lbl">SAAT</span>
+				</div>
+				<div class="timer-box">
+					<span class="timer-num" id="mins-val">--</span>
+					<span class="timer-lbl">DAKİKA</span>
+				</div>
+				<div class="timer-box">
+					<span class="timer-num" id="secs-val">--</span>
+					<span class="timer-lbl">SANİYE</span>
+				</div>
+			</div>
+
+			<!-- Meta Stats -->
+			<div class="halving-stats-grid">
+				<div class="stat-col">
+					<span class="stat-col-lbl">Tahmini Tarih:</span>
+					<strong class="stat-col-val" id="estimated-date">Nisan 2028</strong>
+				</div>
+				<div class="stat-col">
+					<span class="stat-col-lbl">Kalan Blok Sayısı:</span>
+					<strong class="stat-col-val font-mono" id="blocks-left">~178.000 Blok</strong>
+				</div>
+				<div class="stat-col">
+					<span class="stat-col-lbl">Mevcut Blok Yüksekliği:</span>
+					<strong class="stat-col-val font-mono" id="current-height">~872.000</strong>
+				</div>
+			</div>
+
+			<div class="honest-note">
+				⚠️ <strong>Dürüstlük Notu:</strong> Halving zamanı kesin bir takvime değil, blok üretim hızına bağlıdır. Ağın ortalama blok süresi 10 dakika olsa da hash gücündeki dalgalanmalara bağlı olarak gerçekleşme tarihi birkaç hafta sapabilir.
+			</div>
+		</div>
+
+		<!-- Past Halvings Table -->
+		<div class="history-table-section">
+			<h2 class="section-title">📜 Tarihsel Halving Olayları ve Ödül Evrimi</h2>
+			<div class="table-wrap">
+				<table class="halving-table">
+					<thead>
+						<tr>
+							<th>Halving</th>
+							<th>Hedef Blok</th>
+							<th>Tarih</th>
+							<th>Önceki Ödül</th>
+							<th>Yeni Ödül</th>
+							<th>O Günün Fiyatı</th>
+						</tr>
+					</thead>
+					<tbody>
+						{pastHalvings.map(item => (
+							<tr class={item.num.includes('Gelecek') ? 'future-row' : ''}>
+								<td><strong>{item.num}</strong></td>
+								<td class="font-mono">{item.block}</td>
+								<td>{item.date}</td>
+								<td class="font-mono">{item.rewardBefore}</td>
+								<td class="font-mono reward-accent">{item.rewardAfter}</td>
+								<td class="font-mono">{item.priceAtHalving}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- What is Halving Guide -->
+		<div class="halving-faq">
+			<h3>💡 Bitcoin Halving Neden Önemlidir?</h3>
+			<p>
+				Satoshi Nakamoto tarafından tasarlanan Bitcoin arz mekanizması, geleneksel itibari para birimlerindeki kontrolsüz enflasyonun tersine kıtlık yaratacak şekilde kurgulanmıştır:
+			</p>
+			<ul>
+				<li><strong>21 Milyonluk Sabit Arz:</strong> Toplamda sadece 21 milyon adet Bitcoin üretilebilir. Halving mekanizması yeni Bitcoin'lerin piyasaya sürülme hızını her 4 yılda bir yarı yarıya keser.</li>
+				<li><strong>Enflasyon Oranının Düşüşü:</strong> 4. Halving ile birlikte yıllık Bitcoin enflasyonu yaklaşık %0,85 seviyesine gerileyerek altından daha düşük bir arz artış oranına ulaşmıştır.</li>
+				<li><strong>Madencilik Ekonomisi:</strong> Madencilerin blok başına kazandığı ödül azaldığı için daha verimli yeni nesil ASIC donanımlarına geçiş hızlanır ve işlem ücretlerinin toplam gelirdeki payı artar.</li>
+			</ul>
+		</div>
+	</div>
+</Layout>
+
+<style>
+.tool-page {
+	padding-top: var(--space-8);
+	padding-bottom: var(--space-16);
+	max-width: 900px;
+}
+.breadcrumb {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	font-size: var(--text-sm);
+	color: var(--color-text-muted);
+	margin-bottom: var(--space-6);
+}
+.breadcrumb a {
+	color: var(--color-text-muted);
+	text-decoration: none;
+}
+.breadcrumb a:hover {
+	color: var(--color-primary-400);
+}
+.breadcrumb .current {
+	color: var(--color-text-secondary);
+}
+.tool-header {
+	margin-bottom: var(--space-8);
+}
+.badge-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2);
+	padding: var(--space-1) var(--space-3);
+	background: var(--color-surface-hover);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-full);
+	font-size: var(--text-xs);
+	font-weight: 500;
+	color: var(--color-text-secondary);
+	margin-bottom: var(--space-3);
+}
+.tool-title {
+	font-size: var(--text-3xl);
+	font-weight: 800;
+	margin-bottom: var(--space-2);
+	letter-spacing: -0.02em;
+}
+.tool-subtitle {
+	font-size: var(--text-base);
+	color: var(--color-text-secondary);
+	line-height: 1.6;
+}
+
+.countdown-card {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-xl);
+	padding: var(--space-8);
+	margin-bottom: var(--space-8);
+}
+.countdown-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: var(--space-6);
+	flex-wrap: wrap;
+	gap: var(--space-2);
+}
+.target-title {
+	font-size: var(--text-sm);
+	font-weight: 800;
+	letter-spacing: 0.05em;
+	color: var(--color-text-muted);
+}
+.reward-change-badge {
+	font-size: var(--text-xs);
+	font-weight: 700;
+	background: rgba(245, 158, 11, 0.15);
+	color: var(--color-warning);
+	padding: var(--space-1) var(--space-3);
+	border-radius: var(--radius-full);
+}
+
+.timer-grid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: var(--space-4);
+	margin-bottom: var(--space-8);
+}
+.timer-box {
+	background: var(--color-bg);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-5) var(--space-3);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+.timer-num {
+	font-size: var(--text-4xl);
+	font-weight: 900;
+	font-family: var(--font-mono);
+	color: var(--color-primary-400);
+	line-height: 1;
+	margin-bottom: var(--space-1);
+}
+.timer-lbl {
+	font-size: 11px;
+	color: var(--color-text-muted);
+	font-weight: 700;
+	letter-spacing: 0.05em;
+}
+
+.halving-stats-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: var(--space-4);
+	background: var(--color-bg);
+	border-radius: var(--radius-lg);
+	padding: var(--space-4);
+	margin-bottom: var(--space-4);
+}
+.stat-col {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+.stat-col-lbl {
+	font-size: var(--text-xs);
+	color: var(--color-text-muted);
+}
+.stat-col-val {
+	font-size: var(--text-base);
+	color: var(--color-text-primary);
+}
+
+.honest-note {
+	font-size: var(--text-xs);
+	color: var(--color-text-secondary);
+	background: var(--color-surface-hover);
+	border-left: 3px solid var(--color-warning);
+	padding: var(--space-3) var(--space-4);
+	border-radius: var(--radius-sm);
+	line-height: 1.5;
+}
+
+.history-table-section {
+	margin-bottom: var(--space-8);
+}
+.section-title {
+	font-size: var(--text-xl);
+	font-weight: 700;
+	margin-bottom: var(--space-4);
+}
+.table-wrap {
+	overflow-x: auto;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+}
+.halving-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--text-sm);
+}
+.halving-table th, .halving-table td {
+	padding: var(--space-3) var(--space-4);
+	border-bottom: 1px solid var(--color-border);
+	text-align: left;
+}
+.halving-table th {
+	background: var(--color-surface-hover);
+	color: var(--color-text-secondary);
+	font-weight: 600;
+	font-size: var(--text-xs);
+}
+.reward-accent {
+	color: var(--color-primary-400);
+	font-weight: 700;
+}
+.future-row {
+	background: rgba(59, 130, 246, 0.05);
+}
+
+.halving-faq {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-6);
+}
+.halving-faq h3 {
+	font-size: var(--text-lg);
+	font-weight: 700;
+	margin-bottom: var(--space-3);
+}
+.halving-faq p, .halving-faq li {
+	font-size: var(--text-sm);
+	color: var(--color-text-secondary);
+	line-height: 1.6;
+}
+.halving-faq ul {
+	margin: 0;
+	padding-left: var(--space-5);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+}
+
+@media (max-width: 640px) {
+	.timer-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+	.halving-stats-grid {
+		grid-template-columns: 1fr;
+	}
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+	const TARGET_BLOCK = 1050000;
+	// Baseline height anchor: at block ~872,000 in early 2025
+	const CURRENT_HEIGHT = 872500;
+	const AVG_BLOCK_TIME_SEC = 600; // 10 minutes
+
+	const daysVal = document.getElementById('days-val');
+	const hoursVal = document.getElementById('hours-val');
+	const minsVal = document.getElementById('mins-val');
+	const secsVal = document.getElementById('secs-val');
+	const blocksLeftEl = document.getElementById('blocks-left');
+	const currentHeightEl = document.getElementById('current-height');
+	const estDateEl = document.getElementById('estimated-date');
+
+	const remainingBlocks = Math.max(0, TARGET_BLOCK - CURRENT_HEIGHT);
+	let remainingSeconds = remainingBlocks * AVG_BLOCK_TIME_SEC;
+
+	if (blocksLeftEl) blocksLeftEl.textContent = `${remainingBlocks.toLocaleString('tr-TR')} Blok`;
+	if (currentHeightEl) currentHeightEl.textContent = `${CURRENT_HEIGHT.toLocaleString('tr-TR')}`;
+
+	const targetDate = new Date(Date.now() + remainingSeconds * 1000);
+	if (estDateEl) {
+		estDateEl.textContent = targetDate.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric', day: 'numeric' });
+	}
+
+	function tick() {
+		if (remainingSeconds <= 0) return;
+		remainingSeconds--;
+
+		const days = Math.floor(remainingSeconds / 86400);
+		const hours = Math.floor((remainingSeconds % 86400) / 3600);
+		const mins = Math.floor((remainingSeconds % 3600) / 60);
+		const secs = Math.floor(remainingSeconds % 60);
+
+		if (daysVal) daysVal.textContent = days.toString();
+		if (hoursVal) hoursVal.textContent = hours.toString().padStart(2, '0');
+		if (minsVal) minsVal.textContent = mins.toString().padStart(2, '0');
+		if (secsVal) secsVal.textContent = secs.toString().padStart(2, '0');
+	}
+
+	tick();
+	setInterval(tick, 1000);
+});
+</script>

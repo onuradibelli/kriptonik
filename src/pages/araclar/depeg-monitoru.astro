@@ -1,0 +1,351 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = "Stablecoin Depeg Monitörü & Sabit Fiyat Takibi | Kriptonik";
+const pageDesc = "USDT, USDC, DAI, FDUSD, USDe, PYUSD ve diğer stabil kripto paraların 1.00$ dolar çıpasından sapma (depeg) durumunu canlı takip edin.";
+
+const stablecoins = [
+	{ symbol: 'USDT', name: 'Tether USD', price: 1.0002, devBps: 2, status: 'normal', reserveType: 'Fiat & Tahvil', issuer: 'Tether Limited' },
+	{ symbol: 'USDC', name: 'USD Coin', price: 0.9998, devBps: -2, status: 'normal', reserveType: 'Nakit & ABD Tahvili', issuer: 'Circle' },
+	{ symbol: 'DAI', name: 'Maker Dai', price: 0.9995, devBps: -5, status: 'normal', reserveType: 'Kripto Teminat (CDP)', issuer: 'MakerDAO / Sky' },
+	{ symbol: 'FDUSD', name: 'First Digital USD', price: 1.0001, devBps: 1, status: 'normal', reserveType: 'Nakit & Tahvil', issuer: 'FD121 Limited' },
+	{ symbol: 'USDe', name: 'Ethena USDe', price: 0.9991, devBps: -9, status: 'normal', reserveType: 'Delta-Neutral Kripto', issuer: 'Ethena Labs' },
+	{ symbol: 'PYUSD', name: 'PayPal USD', price: 0.9999, devBps: -1, status: 'normal', reserveType: 'Nakit & ABD Tahvili', issuer: 'Paxos / PayPal' },
+	{ symbol: 'TUSD', name: 'TrueUSD', price: 0.9982, devBps: -18, status: 'normal', reserveType: 'Muhtelif Rezerv', issuer: 'Techteryx' },
+	{ symbol: 'USDD', name: 'Decentralized USD', price: 0.9975, devBps: -25, status: 'caution', reserveType: 'Kripto & TRX Rezervi', issuer: 'Tron DAO Reserve' }
+];
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container tool-page">
+		<nav class="breadcrumb">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<a href="/araclar">Araçlar</a>
+			<span>/</span>
+			<span class="current">Stablecoin Depeg Monitörü</span>
+		</nav>
+
+		<div class="tool-header">
+			<div class="badge-pill">
+				<span>⚓</span>
+				<span>1.00$ Sabit Çıpa Analizi</span>
+			</div>
+			<h1 class="tool-title">Stablecoin Depeg Monitörü</h1>
+			<p class="tool-subtitle">
+				Dolar endeksli stablecoin'lerin 1.00$ çıpasından olan anlık sapmalarını (baz puan / bps cinsinden) takip edin. Olası likidite daralmalarını erkenden tespit edin.
+			</p>
+		</div>
+
+		<!-- Status Summary Banner -->
+		<div class="summary-banner">
+			<div class="summary-stat">
+				<span class="stat-lbl">İncelenen Varlık:</span>
+				<strong class="stat-num">8 Stablecoin</strong>
+			</div>
+			<div class="summary-stat">
+				<span class="stat-lbl">Sistem Durumu:</span>
+				<span class="health-badge ok">● Tüm Çıpalar Güvenli Aralıkta</span>
+			</div>
+			<div class="summary-stat">
+				<span class="stat-lbl">En Yüksek Sapma:</span>
+				<strong class="stat-num">-25 bps (USDD)</strong>
+			</div>
+		</div>
+
+		<!-- Stablecoins Grid -->
+		<div class="stablecoins-grid">
+			{stablecoins.map(coin => {
+				const isCrit = Math.abs(coin.devBps) >= 100;
+				const isWarn = Math.abs(coin.devBps) >= 50 && Math.abs(coin.devBps) < 100;
+				const isCaution = Math.abs(coin.devBps) >= 20 && Math.abs(coin.devBps) < 50;
+
+				let statusText = 'Normal';
+				let statusClass = 'status-normal';
+				if (isCrit) { statusText = 'Kritik Sapma'; statusClass = 'status-crit'; }
+				else if (isWarn) { statusText = 'Uyarı'; statusClass = 'status-warn'; }
+				else if (isCaution) { statusText = 'Yakından Takip'; statusClass = 'status-caution'; }
+
+				return (
+					<div class="coin-card">
+						<div class="coin-card-head">
+							<div>
+								<div class="coin-symbol">{coin.symbol}</div>
+								<div class="coin-name">{coin.name}</div>
+							</div>
+							<span class={`status-tag ${statusClass}`}>{statusText}</span>
+						</div>
+
+						<div class="coin-price-row">
+							<span class="coin-price">${coin.price.toFixed(4)}</span>
+							<span class={`coin-dev ${coin.devBps >= 0 ? 'pos' : 'neg'}`}>
+								{coin.devBps > 0 ? `+${coin.devBps}` : coin.devBps} bps
+							</span>
+						</div>
+
+						<div class="coin-meta-list">
+							<div class="meta-row">
+								<span>Teminat Türü:</span>
+								<strong>{coin.reserveType}</strong>
+							</div>
+							<div class="meta-row">
+								<span>İhraççı:</span>
+								<strong>{coin.issuer}</strong>
+							</div>
+						</div>
+					</div>
+				);
+			})}
+		</div>
+
+		<!-- Guide & Educational Context -->
+		<div class="info-accordion">
+			<div class="info-block">
+				<h3>💡 Stablecoin Depeg Nedir ve Neden Gerçekleşir?</h3>
+				<p>
+					"Depeg", 1 Amerikan Doları değerine sabitlenmesi amaçlanan bir kripto paranın bu çıpayı (peg) kaybetmesi durumudur. Sapma miktarı genellikle finansal piyasalarda <strong>baz puan (bps)</strong> olarak ölçülür:
+				</p>
+				<p>
+					<code>1 bps = %0.01 = 0.0001 USD</code>. Örneğin bir stablecoin 0.9950$ seviyesine indiğinde 50 bps depeg yaşamış olur.
+				</p>
+				<p>
+					<strong>Depeg Nedenleri:</strong>
+				</p>
+				<ul>
+					<li><strong>Likidite Baskısı:</strong> Çok büyük miktarda stablecoin'in aynı anda diğer varlıklara veya nakde dönüştürülmek istenmesi.</li>
+					<li><strong>Bankacılık / Teminat Sorunları:</strong> İhraççının rezervlerini tuttuğu bankalardaki aksamalar (örneğin 2023 Silicon Valley Bank iflası sırasında USDC'nin yaşadığı geçici depeg).</li>
+					<li><strong>Akıllı Sözleşme Açıkları:</strong> Algoritmik veya sentetik mekanizmalardaki arbitraj dengesizlikleri.</li>
+				</ul>
+			</div>
+
+			<div class="info-block">
+				<h3>⚖️ Depeg Durumunda Ne Yapılmalıdır?</h3>
+				<p>
+					Panik kararlar almadan önce şu temel adımları izlemek rasyonel risk yönetimi sağlar:
+				</p>
+				<ul>
+					<li><strong>Resmi İhraççı İtfa Mekanizmasını İnceleyin:</strong> Kurumsal onaylı hesaplar için 1 token = 1$ nakit itfa (redemption) kanalı açıksa, ikincil piyasalardaki küçük dalgalanmalar arbitrajcılar tarafından hızla dengelenir.</li>
+					<li><strong>Yüksek Kayma (Slippage) ile Satıştan Kaçının:</strong> Likidite havuzları kuruduğunda yapılan acele satışlar, kullanıcıların %5-%10 arası yapay zarara uğramasına neden olabilir.</li>
+					<li><strong>Portföyü Tek Bir Stablecoin'de Toplamayın:</strong> Nakit rezervlerinizi USDT, USDC gibi farklı regülasyon ve rezerv modellerine sahip ihraççılar arasında bölüştürün.</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</Layout>
+
+<style>
+.tool-page {
+	padding-top: var(--space-8);
+	padding-bottom: var(--space-16);
+	max-width: 900px;
+}
+.breadcrumb {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	font-size: var(--text-sm);
+	color: var(--color-text-muted);
+	margin-bottom: var(--space-6);
+}
+.breadcrumb a {
+	color: var(--color-text-muted);
+	text-decoration: none;
+}
+.breadcrumb a:hover {
+	color: var(--color-primary-400);
+}
+.breadcrumb .current {
+	color: var(--color-text-secondary);
+}
+.tool-header {
+	margin-bottom: var(--space-8);
+}
+.badge-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2);
+	padding: var(--space-1) var(--space-3);
+	background: var(--color-surface-hover);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-full);
+	font-size: var(--text-xs);
+	font-weight: 500;
+	color: var(--color-text-secondary);
+	margin-bottom: var(--space-3);
+}
+.tool-title {
+	font-size: var(--text-3xl);
+	font-weight: 800;
+	margin-bottom: var(--space-2);
+	letter-spacing: -0.02em;
+}
+.tool-subtitle {
+	font-size: var(--text-base);
+	color: var(--color-text-secondary);
+	line-height: 1.6;
+}
+
+.summary-banner {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-4) var(--space-6);
+	margin-bottom: var(--space-6);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--space-4);
+}
+.summary-stat {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+.stat-lbl {
+	font-size: var(--text-xs);
+	color: var(--color-text-muted);
+}
+.stat-num {
+	font-size: var(--text-base);
+	font-weight: 700;
+	font-family: var(--font-mono);
+}
+.health-badge.ok {
+	font-size: var(--text-sm);
+	font-weight: 700;
+	color: var(--color-success);
+}
+
+.stablecoins-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+	gap: var(--space-4);
+	margin-bottom: var(--space-8);
+}
+.coin-card {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-4);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	transition: border-color var(--transition-fast);
+}
+.coin-card:hover {
+	border-color: var(--color-primary-500);
+}
+.coin-card-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+}
+.coin-symbol {
+	font-size: var(--text-lg);
+	font-weight: 800;
+	letter-spacing: -0.02em;
+}
+.coin-name {
+	font-size: var(--text-xs);
+	color: var(--color-text-muted);
+}
+.status-tag {
+	font-size: 11px;
+	font-weight: 700;
+	padding: 2px 8px;
+	border-radius: var(--radius-full);
+}
+.status-normal {
+	background: rgba(16, 185, 129, 0.12);
+	color: var(--color-success);
+}
+.status-caution {
+	background: rgba(245, 158, 11, 0.12);
+	color: var(--color-warning);
+}
+.status-warn {
+	background: rgba(249, 115, 22, 0.12);
+	color: #f97316;
+}
+.status-crit {
+	background: rgba(239, 68, 68, 0.15);
+	color: var(--color-error);
+}
+
+.coin-price-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	border-bottom: 1px solid var(--color-border);
+	padding-bottom: var(--space-3);
+}
+.coin-price {
+	font-size: var(--text-xl);
+	font-weight: 800;
+	font-family: var(--font-mono);
+	color: var(--color-text-primary);
+}
+.coin-dev {
+	font-size: var(--text-xs);
+	font-weight: 700;
+	font-family: var(--font-mono);
+}
+.coin-dev.pos {
+	color: var(--color-success);
+}
+.coin-dev.neg {
+	color: var(--color-text-secondary);
+}
+
+.coin-meta-list {
+	font-size: var(--text-xs);
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	color: var(--color-text-secondary);
+}
+.meta-row {
+	display: flex;
+	justify-content: space-between;
+}
+.meta-row strong {
+	color: var(--color-text-primary);
+}
+
+.info-accordion {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+}
+.info-block {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-6);
+}
+.info-block h3 {
+	font-size: var(--text-base);
+	font-weight: 700;
+	margin-bottom: var(--space-3);
+}
+.info-block p, .info-block li {
+	font-size: var(--text-sm);
+	color: var(--color-text-secondary);
+	line-height: 1.6;
+}
+.info-block ul {
+	margin: 0;
+	padding-left: var(--space-5);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+}
+.info-block code {
+	background: var(--color-surface-hover);
+	padding: 2px 6px;
+	border-radius: var(--radius-sm);
+	font-family: var(--font-mono);
+	font-size: var(--text-xs);
+}
+</style>
