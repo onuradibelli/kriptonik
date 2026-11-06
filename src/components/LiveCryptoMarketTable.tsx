@@ -173,51 +173,51 @@ export default function LiveCryptoMarketTable({
       <div className="overflow-x-auto rounded-xl border border-[var(--border)]">
         <table className="w-full text-left text-xs font-mono">
           <thead>
-            <tr className="border-b border-[var(--border)] bg-[var(--card-subtle)] text-[11px] text-[var(--card-muted)] select-none">
+            <tr className="border-b border-[var(--border)] bg-[var(--card-subtle)] text-xs text-[var(--card-muted)] select-none">
               <th className="py-3 px-3 cursor-pointer hover:text-[var(--foreground)]" onClick={() => handleSort('rank')}>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 font-semibold">
                   <span># Varlık</span>
                   <ArrowUpDown className="h-3 w-3 opacity-60" />
                 </div>
               </th>
               <th className="py-3 px-3 cursor-pointer hover:text-[var(--foreground)]" onClick={() => handleSort('price')}>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 font-semibold">
                   <span>Canlı Fiyat ($ / ₺)</span>
                   <ArrowUpDown className="h-3 w-3 opacity-60" />
                 </div>
               </th>
               <th className="py-3 px-3 cursor-pointer hover:text-[var(--foreground)]" onClick={() => handleSort('change')}>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 font-semibold">
                   <span>24s Değişim</span>
                   <ArrowUpDown className="h-3 w-3 opacity-60" />
                 </div>
               </th>
-              <th className="py-3 px-3 hidden lg:table-cell">
-                <span>24s Fiyat Aralığı</span>
+              <th className="py-3 px-3 hidden lg:table-cell font-semibold">
+                <span>24s Aralık</span>
               </th>
               <th className="py-3 px-3 cursor-pointer hover:text-[var(--foreground)] hidden md:table-cell" onClick={() => handleSort('liquidation')}>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 font-semibold">
                   <span>24s Likidasyon</span>
                   <ArrowUpDown className="h-3 w-3 opacity-60" />
                 </div>
               </th>
               <th className="py-3 px-3 cursor-pointer hover:text-[var(--foreground)] hidden sm:table-cell" onClick={() => handleSort('funding')}>
-                <div className="flex items-center gap-1">
-                  <span>Fonlama (APR)</span>
+                <div className="flex items-center gap-1 font-semibold">
+                  <span>Fonlama APR</span>
                   <ArrowUpDown className="h-3 w-3 opacity-60" />
                 </div>
               </th>
               <th className="py-3 px-3 cursor-pointer hover:text-[var(--foreground)] hidden xl:table-cell" onClick={() => handleSort('oi')}>
-                <div className="flex items-center gap-1">
-                  <span>Açık Pozisyon (OI)</span>
+                <div className="flex items-center gap-1 font-semibold">
+                  <span>Açık Pozisyon</span>
                   <ArrowUpDown className="h-3 w-3 opacity-60" />
                 </div>
               </th>
-              <th className="py-3 px-3 hidden sm:table-cell text-center">
+              <th className="py-3 px-3 hidden sm:table-cell text-center font-semibold">
                 <span>7G Trend</span>
               </th>
-              <th className="py-3 px-3 text-right">
-                <span>Terminal</span>
+              <th className="py-3 px-3 text-right font-semibold">
+                <span>Detay</span>
               </th>
             </tr>
           </thead>
@@ -245,10 +245,10 @@ export default function LiveCryptoMarketTable({
                 <tr
                   key={coin.id}
                   onClick={() => router.push(`/kripto/${coin.slug}/`)}
-                  className="hover:bg-[var(--hover-bg)] transition-colors cursor-pointer group"
+                  className="hover:bg-[var(--hover-bg)] transition-colors cursor-pointer group text-xs"
                 >
                   {/* # Rank & Asset */}
-                  <td className="py-3 px-3">
+                  <td className="py-3.5 px-3">
                     <div className="flex items-center gap-2.5">
                       <button
                         onClick={(e) => {
@@ -258,23 +258,23 @@ export default function LiveCryptoMarketTable({
                         className="text-[var(--card-muted)] hover:text-amber-400 transition-colors cursor-pointer"
                         title={isFav ? 'Takip listesinden çıkar' : 'Takip listesine sabitle'}
                       >
-                        <Star className={`h-3.5 w-3.5 ${isFav ? 'fill-amber-400 text-amber-400' : ''}`} />
+                        <Star className={`h-4 w-4 ${isFav ? 'fill-amber-400 text-amber-400' : ''}`} />
                       </button>
 
-                      <span className="font-mono text-[11px] text-[var(--card-muted)] w-4 text-center">
+                      <span className="font-mono text-xs text-[var(--card-muted)] w-4 text-center">
                         {coin.marketCapRank}
                       </span>
 
-                      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--border)] font-black text-xs text-[var(--foreground)]">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--background)] border border-[var(--border)] font-black text-xs text-[#2962FF]">
                         {coin.symbol.slice(0, 3)}
                       </div>
 
                       <div>
-                        <div className="font-bold text-[var(--foreground)] group-hover:text-[#2962FF] transition-colors flex items-center gap-1.5 font-sans">
+                        <div className="font-bold text-sm text-[var(--foreground)] group-hover:text-[#2962FF] transition-colors flex items-center gap-1.5 font-sans">
                           <span>{coin.name}</span>
-                          <span className="font-mono text-[10px] text-[var(--card-muted)]">{coin.symbol}</span>
+                          <span className="font-mono text-xs text-[var(--card-muted)]">{coin.symbol}</span>
                         </div>
-                        <div className="text-[10px] text-[var(--card-muted)] font-mono">
+                        <div className="text-[11px] text-[var(--card-muted)] font-mono">
                           {coin.binanceSymbol}
                         </div>
                       </div>
@@ -282,13 +282,13 @@ export default function LiveCryptoMarketTable({
                   </td>
 
                   {/* Price ($ and ₺) */}
-                  <td className="py-3 px-3">
-                    <div className={`font-mono font-bold text-sm text-[var(--foreground)] px-1 rounded transition-colors inline-block ${
+                  <td className="py-3.5 px-3">
+                    <div className={`font-mono font-bold text-sm sm:text-base text-[var(--foreground)] px-1 rounded transition-colors inline-block ${
                       flash === 'UP' ? 'tick-flash-up text-[#00E699]' : flash === 'DOWN' ? 'tick-flash-down text-[#FF3B56]' : ''
                     }`}>
                       ${coin.effectivePrice > 10 ? coin.effectivePrice.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : coin.effectivePrice.toFixed(4)}
                     </div>
-                    <div className="text-[10px] font-mono text-[var(--card-muted)]">
+                    <div className="text-xs font-mono text-[var(--card-muted)]">
                       ₺{tryPrice > 10 ? tryPrice.toLocaleString('tr-TR', { maximumFractionDigits: 0 }) : tryPrice.toFixed(2)}
                     </div>
                   </td>

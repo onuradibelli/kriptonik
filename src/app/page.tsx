@@ -14,6 +14,8 @@ import EtfTracker from '../components/EtfTracker';
 import KacTlConverter from '../components/KacTlConverter';
 import UsdtPremiumWidget from '../components/UsdtPremiumWidget';
 import LiveCryptoMarketTable from '../components/LiveCryptoMarketTable';
+import CryptoMarketHeatmapGrid from '../components/CryptoMarketHeatmapGrid';
+import MajorAssetsPulseBar from '../components/MajorAssetsPulseBar';
 import Sparkline from '../components/Sparkline';
 import {
   Flame,
@@ -172,6 +174,9 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
           </div>
         </div>
 
+        {/* Major Assets Market Pulse Hero Bar (BTC, ETH, SOL, BNB with Real-Time Ticks) */}
+        <MajorAssetsPulseBar coins={COINS_DATA} tickers={tickers} />
+
         {/* 4 Primary High-Impact Visual Cards (Görsel Odak Kartları) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Card 1: Fear & Greed Visual Segmented Gauge */}
@@ -303,14 +308,27 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
         </div>
       </section>
 
-      {/* 2. REAL-TIME CRYPTO MARKET SCREENER TABLE (Canlı Kripto Varlıklar Pazar Tablosu) */}
-      <section>
-        <LiveCryptoMarketTable
-          coins={COINS_DATA}
-          tickers={tickers}
-          watchlist={watchlist}
-          onToggleWatchlist={toggleFavorite}
-        />
+      {/* 2. REAL-TIME CRYPTO MARKET SCREENER & SQUARE TREEMAP HEATMAP (Coinglass Architecture) */}
+      <section className="space-y-4">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-stretch">
+          {/* Left 8 cols: Live Screener Table */}
+          <div className="xl:col-span-8">
+            <LiveCryptoMarketTable
+              coins={COINS_DATA}
+              tickers={tickers}
+              watchlist={watchlist}
+              onToggleWatchlist={toggleFavorite}
+            />
+          </div>
+
+          {/* Right 4 cols: Coinglass Treemap Heatmap Square Matrix */}
+          <div className="xl:col-span-4">
+            <CryptoMarketHeatmapGrid
+              coins={COINS_DATA}
+              tickers={tickers}
+            />
+          </div>
+        </div>
       </section>
 
       {/* 3. SEGMENTED COCKPIT NAVIGATION BAR (Derli Toplu Görsel Sekmeler) */}

@@ -214,13 +214,13 @@ export default function Header() {
                     title={`${name} Canlı Kripto Terminali ve Verileri`}
                     className="flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--card)]/60 hover:bg-[var(--card)] hover:border-[#2962FF]/50 px-2.5 py-1 transition-all shrink-0 group"
                   >
-                    <span className="font-bold text-[var(--foreground)] group-hover:text-[#2962FF] transition-colors">{name}</span>
-                    <span className={`font-mono font-medium text-[var(--foreground)] px-1 rounded transition-colors ${
+                    <span className="font-bold text-xs text-[var(--foreground)] group-hover:text-[#2962FF] transition-colors">{name}</span>
+                    <span className={`font-mono text-xs font-semibold text-[var(--foreground)] px-1 rounded transition-colors ${
                       flash === 'UP' ? 'tick-flash-up text-[#00E699]' : flash === 'DOWN' ? 'tick-flash-down text-[#FF3B56]' : ''
                     }`}>
                       ${tick.price > 10 ? tick.price.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : tick.price.toFixed(4)}
                     </span>
-                    <span className={`font-mono text-[10px] font-bold rounded px-1.5 py-0.2 ${
+                    <span className={`font-mono text-xs font-bold rounded px-1.5 py-0.5 ${
                       isPositive ? 'bg-[#00E699]/15 text-[#00E699]' : 'bg-[#FF3B56]/15 text-[#FF3B56]'
                     }`}>
                       {isPositive ? '+' : ''}{tick.change24h.toFixed(1)}%
@@ -315,9 +315,9 @@ export default function Header() {
                     <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${isOpen ? 'rotate-180 text-[#2962FF]' : ''}`} />
                   </button>
 
-                  {/* Dropdown Menu */}
+                  {/* Dropdown Menu - 100% Opaque Solid Dark Background (No Text Bleed) */}
                   {isOpen && (
-                    <div className="absolute top-full left-0 mt-2 w-80 rounded-2xl border border-[var(--border)] bg-[var(--background)]/95 backdrop-blur-2xl p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute top-full left-0 mt-2 w-84 rounded-2xl border border-[#232E42] bg-[#0C111C] p-2.5 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] z-50 animate-in fade-in zoom-in-95 duration-150">
                       <div className="space-y-1">
                         {group.items.map((item) => {
                           const ItemIcon = item.icon;
@@ -329,19 +329,19 @@ export default function Header() {
                               onClick={() => setActiveDropdown(null)}
                               className={`flex items-start gap-3 rounded-xl p-3 transition-all ${
                                 isItemActive
-                                  ? 'bg-[#2962FF]/10 border border-[#2962FF]/30'
-                                  : 'hover:bg-[var(--card)]'
+                                  ? 'bg-[#2962FF]/15 border border-[#2962FF]/35'
+                                  : 'hover:bg-[#161F30]'
                               }`}
                             >
-                              <div className={`mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--card)] border border-[var(--border)] ${item.color}`}>
-                                <ItemIcon className="h-4 w-4" />
+                              <div className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#121826] border border-[#232E42] ${item.color}`}>
+                                <ItemIcon className="h-4.5 w-4.5" />
                               </div>
                               <div className="flex-1">
-                                <div className="text-xs font-bold text-[var(--foreground)] flex items-center justify-between">
+                                <div className="text-sm font-bold text-white flex items-center justify-between">
                                   <span>{item.label}</span>
-                                  {isItemActive && <span className="h-1.5 w-1.5 rounded-full bg-[#2962FF]" />}
+                                  {isItemActive && <span className="h-2 w-2 rounded-full bg-[#2962FF]" />}
                                 </div>
-                                <p className="text-[11px] text-[var(--card-muted)] leading-tight mt-0.5 font-sans">
+                                <p className="text-xs text-[#9AA7BC] leading-relaxed mt-1 font-sans">
                                   {item.desc}
                                 </p>
                               </div>

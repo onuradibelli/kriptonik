@@ -46,6 +46,24 @@
   <url><loc>https://kriptonik.com/kripto/ada/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
   <url><loc>https://kriptonik.com/kripto/avalanche/</loc><lastmod>2026-11-06</lastmod><priority>0.85</priority><changefreq>always</changefreq></url>
   <url><loc>https://kriptonik.com/kripto/avax/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/pepe/</loc><lastmod>2026-11-06</lastmod><priority>0.85</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/shiba-inu/</loc><lastmod>2026-11-06</lastmod><priority>0.85</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/shib/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/near/</loc><lastmod>2026-11-06</lastmod><priority>0.85</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/aptos/</loc><lastmod>2026-11-06</lastmod><priority>0.85</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/apt/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/polkadot/</loc><lastmod>2026-11-06</lastmod><priority>0.85</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/dot/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/litecoin/</loc><lastmod>2026-11-06</lastmod><priority>0.85</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/ltc/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/bittensor/</loc><lastmod>2026-11-06</lastmod><priority>0.85</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/tao/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/uniswap/</loc><lastmod>2026-11-06</lastmod><priority>0.85</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/uni/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/arbitrum/</loc><lastmod>2026-11-06</lastmod><priority>0.85</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/arb/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/celestia/</loc><lastmod>2026-11-06</lastmod><priority>0.85</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/kripto/tia/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
 
   <!-- Liquidation Heatmaps (/likidasyon/[slug]/) -->
   <url><loc>https://kriptonik.com/likidasyon/bitcoin/</loc><lastmod>2026-11-06</lastmod><priority>0.85</priority><changefreq>always</changefreq></url>
@@ -67,6 +85,16 @@
   <url><loc>https://kriptonik.com/likidasyon/ada/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
   <url><loc>https://kriptonik.com/likidasyon/avalanche/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
   <url><loc>https://kriptonik.com/likidasyon/avax/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/likidasyon/pepe/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/likidasyon/shiba-inu/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/likidasyon/near/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/likidasyon/aptos/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/likidasyon/polkadot/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/likidasyon/litecoin/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/likidasyon/bittensor/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/likidasyon/uniswap/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/likidasyon/arbitrum/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
+  <url><loc>https://kriptonik.com/likidasyon/celestia/</loc><lastmod>2026-11-06</lastmod><priority>0.80</priority><changefreq>always</changefreq></url>
 
   <!-- Funding Rates (/fonlama-oranlari/[slug]/) -->
   <url><loc>https://kriptonik.com/fonlama-oranlari/bitcoin/</loc><lastmod>2026-11-06</lastmod><priority>0.85</priority><changefreq>always</changefreq></url>
