@@ -15,7 +15,7 @@ export const currencies: Record<string, CurrencyInfo> = {
 		pluralName: 'Amerikan Doları',
 		symbol: '$',
 		kind: 'fiat',
-		tryRate: 38.52,
+		tryRate: 50.05,
 		usdRate: 1.0
 	},
 	EUR: {
@@ -24,8 +24,8 @@ export const currencies: Record<string, CurrencyInfo> = {
 		pluralName: 'Euro',
 		symbol: '€',
 		kind: 'fiat',
-		tryRate: 41.60,
-		usdRate: 1.08
+		tryRate: 56.20,
+		usdRate: 1.123
 	},
 	BTC: {
 		code: 'BTC',
@@ -33,8 +33,8 @@ export const currencies: Record<string, CurrencyInfo> = {
 		pluralName: 'Bitcoin',
 		symbol: '₿',
 		kind: 'crypto',
-		tryRate: 3538062,
-		usdRate: 91850
+		tryRate: 3811808,
+		usdRate: 76160
 	},
 	ETH: {
 		code: 'ETH',
@@ -42,8 +42,8 @@ export const currencies: Record<string, CurrencyInfo> = {
 		pluralName: 'Ethereum',
 		symbol: 'Ξ',
 		kind: 'crypto',
-		tryRate: 131738,
-		usdRate: 3420
+		tryRate: 112262,
+		usdRate: 2243
 	},
 	USDT: {
 		code: 'USDT',
@@ -51,8 +51,8 @@ export const currencies: Record<string, CurrencyInfo> = {
 		pluralName: 'Tether USD',
 		symbol: '₮',
 		kind: 'crypto',
-		tryRate: 38.65,
-		usdRate: 1.0002
+		tryRate: 50.12,
+		usdRate: 1.0001
 	},
 	SOL: {
 		code: 'SOL',
@@ -60,8 +60,8 @@ export const currencies: Record<string, CurrencyInfo> = {
 		pluralName: 'Solana',
 		symbol: '◎',
 		kind: 'crypto',
-		tryRate: 7646,
-		usdRate: 198.5
+		tryRate: 4529,
+		usdRate: 90.50
 	},
 	TRY: {
 		code: 'TRY',
@@ -70,7 +70,7 @@ export const currencies: Record<string, CurrencyInfo> = {
 		symbol: '₺',
 		kind: 'fiat',
 		tryRate: 1.0,
-		usdRate: 1 / 38.52
+		usdRate: 1 / 50.05
 	}
 };
 

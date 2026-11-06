@@ -135,22 +135,27 @@ import tr from '../i18n/tr.json';
 			<div class="ticker-track">
 				<div class="ticker-metric">
 					<span class="metric-sym">BTC</span>
-					<span class="metric-val mono-text" id="live-btc">$91,850</span>
+					<span class="metric-val mono-text" id="live-btc">$76,160</span>
 				</div>
 				<div class="ticker-sep"></div>
 				<div class="ticker-metric">
 					<span class="metric-sym">ETH</span>
-					<span class="metric-val mono-text" id="live-eth">$3,420</span>
+					<span class="metric-val mono-text" id="live-eth">$2,243</span>
+				</div>
+				<div class="ticker-sep"></div>
+				<div class="ticker-metric">
+					<span class="metric-sym">USD/TRY</span>
+					<span class="metric-val mono-text" id="live-usd">₺50.05</span>
 				</div>
 				<div class="ticker-sep"></div>
 				<div class="ticker-metric">
 					<span class="metric-sym">USDT/TRY</span>
-					<span class="metric-val mono-text val-up" id="live-usdt">₺38.52</span>
+					<span class="metric-val mono-text val-up" id="live-usdt">₺50.12</span>
 				</div>
 				<div class="ticker-sep"></div>
 				<div class="ticker-metric">
 					<span class="metric-sym">ETH Gas</span>
-					<span class="metric-val mono-text">16 Gwei</span>
+					<span class="metric-val mono-text">14 Gwei</span>
 				</div>
 				<div class="ticker-sep"></div>
 				<div class="ticker-metric">
@@ -664,10 +669,12 @@ import tr from '../i18n/tr.json';
 
 			const btcEl = document.getElementById('live-btc');
 			const ethEl = document.getElementById('live-eth');
+			const usdEl = document.getElementById('live-usd');
 			const usdtEl = document.getElementById('live-usdt');
 
 			if (btcEl && json.data.btc) btcEl.innerText = `$${json.data.btc.usd.toLocaleString()}`;
 			if (ethEl && json.data.eth) ethEl.innerText = `$${json.data.eth.usd.toLocaleString()}`;
+			if (usdEl && (json.data as any).usd) usdEl.innerText = `₺${(json.data as any).usd.try.toFixed(2)}`;
 			if (usdtEl && json.data.usdt) usdtEl.innerText = `₺${json.data.usdt.try.toFixed(2)}`;
 		} catch {
 			// graceful fallback
