@@ -17,36 +17,36 @@ export interface CoinData {
   maxSupply: number | null;
   openInterestUsd: number;
   openInterestChange24h: number;
-  longShortRatio: number; // e.g. 1.25
-  longPercentage: number; // e.g. 55.6%
-  shortPercentage: number; // e.g. 44.4%
+  longShortRatio: number;
+  longPercentage: number;
+  shortPercentage: number;
   totalLiquidation24hUsd: number;
   longLiquidation24hUsd: number;
   shortLiquidation24hUsd: number;
-  dominantLiquidationLevel: number; // Price with max liquidation pool
+  dominantLiquidationLevel: number;
   dominantSide: 'LONG' | 'SHORT';
   fundingRates: {
-    binance: number; // % e.g. 0.0100
+    binance: number;
     bybit: number;
     okx: number;
     predicted: number;
     nextFundingTime: string;
   };
   tokenUnlock?: {
-    nextUnlockDate: string; // ISO string
+    nextUnlockDate: string;
     unlockedTokens: number;
-    unlockedPercent: number; // % of circ supply
+    unlockedPercent: number;
     unlockValueUsd: number;
     unlockType: 'CLIFF' | 'LINEAR';
     targetAudience: string;
-    riskScore: number; // 1 - 100
+    riskScore: number;
   };
   liquidationClusters: Array<{
     price: number;
-    leverage: string; // "100x", "50x", "25x", "10x"
+    leverage: string;
     volumeUsd: number;
     side: 'LONG' | 'SHORT';
-    intensity: number; // 0 to 1
+    intensity: number;
   }>;
 }
 
@@ -66,8 +66,46 @@ export interface WhaleTransaction {
 
 export interface FearAndGreedData {
   value: number;
-  classification: 'Aşırı Korku' | 'Korku' | 'Nötr' | 'Açgözlülük' | 'Aşırı Açgözlülük';
+  classification: string;
   yesterday: number;
   lastWeek: number;
   lastMonth: number;
+  history30Days: Array<{
+    date: string;
+    value: number;
+    classification: string;
+  }>;
+}
+
+export interface EtfFundData {
+  ticker: string;
+  fundName: string;
+  issuer: string;
+  netFlowUsd24h: number; // e.g. +142.5M
+  totalAumUsd: number; // AUM
+  feePercent: number;
+  holdingsCoins: number;
+}
+
+export interface EtfSummaryData {
+  type: 'BTC' | 'ETH';
+  assetName: string;
+  totalAumUsd: number;
+  cumulativeNetInflowUsd: number;
+  lastDayNetFlowUsd: number;
+  funds: EtfFundData[];
+  recentDailyFlows: Array<{
+    date: string;
+    netInflowUsd: number; // in millions
+    btcPriceAtDate: number;
+  }>;
+}
+
+export interface CurrencyRate {
+  pair: string;
+  rate: number;
+  change24h: number;
+  updatedAt: string;
+  tcmbRate: number;
+  binanceTrRate: number;
 }

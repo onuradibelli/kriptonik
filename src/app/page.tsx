@@ -9,6 +9,8 @@ import TokenUnlockCalendar from '../components/TokenUnlockCalendar';
 import WhaleTracker from '../components/WhaleTracker';
 import FearGreedWidget from '../components/FearGreedWidget';
 import OpenInterestRadar from '../components/OpenInterestRadar';
+import EtfTracker from '../components/EtfTracker';
+import KacTlConverter from '../components/KacTlConverter';
 import { Flame, DollarSign, Calendar, Compass, ShieldAlert, ArrowUpRight, Zap, TrendingUp } from 'lucide-react';
 
 export default function HomePage() {
@@ -107,16 +109,26 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 4. Token Unlock 30-Day Calendar */}
+      {/* 4. Spot ETF Daily Institutional Flows */}
+      <section>
+        <EtfTracker />
+      </section>
+
+      {/* 5. Token Unlock 30-Day Calendar */}
       <section>
         <TokenUnlockCalendar coins={COINS_DATA} />
       </section>
 
-      {/* 5. Open Interest Radar & Whale Transactions */}
+      {/* 6. Open Interest Radar & Whale Transactions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <OpenInterestRadar coins={COINS_DATA} />
         <WhaleTracker transactions={WHALE_TRANSACTIONS} />
       </div>
+
+      {/* 7. Kaç TL? Canlı Kur ve Kripto Çevirici */}
+      <section>
+        <KacTlConverter />
+      </section>
 
       {/* 6. Programmatic 360 Coin Directory (pSEO Master Section) */}
       <section className="panel-card p-6 space-y-4">

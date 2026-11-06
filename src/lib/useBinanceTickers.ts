@@ -20,8 +20,8 @@ export function useBinanceTickers(defaultTickers: Record<string, { price: number
         symbol: sym,
         price: data.price,
         change24h: data.change24h,
-        high24h: data.price * 1.03,
-        low24h: data.price * 0.97,
+        high24h: data.price * 1.02,
+        low24h: data.price * 0.98,
         volumeUsd: 1000000000,
         updatedAt: Date.now()
       };
@@ -59,7 +59,7 @@ export function useBinanceTickers(defaultTickers: Record<string, { price: number
               let changed = false;
 
               for (const item of data) {
-                const s = item.s; // e.g. "BTCUSDT"
+                const s = item.s;
                 if (s && (s.endsWith('USDT') || s.endsWith('BUSD'))) {
                   const currentPrice = parseFloat(item.c);
                   const openPrice = parseFloat(item.o);
@@ -90,7 +90,7 @@ export function useBinanceTickers(defaultTickers: Record<string, { price: number
       };
 
       ws.onerror = () => {
-        // will trigger onclose
+        // triggers onclose
       };
 
       ws.onclose = () => {

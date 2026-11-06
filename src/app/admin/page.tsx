@@ -1,28 +1,58 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { COINS_DATA } from '../../lib/data';
-import { Terminal, Cpu, FileText, CheckCircle2, AlertTriangle, RefreshCw, Sparkles, Send, Globe, Trash2, Database } from 'lucide-react';
+import { Terminal, Cpu, FileText, CheckCircle2, AlertTriangle, RefreshCw, Sparkles, Send, Globe, Trash2, Database, Lock, Key, LogOut } from 'lucide-react';
 
 export default function AdminConsolePage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [authError, setAuthError] = useState(false);
+
   const [activeTab, setActiveTab] = useState<'editor' | 'health' | 'ads'>('editor');
 
   // Editor states
   const [selectedCoinSlug, setSelectedCoinSlug] = useState('bitcoin');
-  const [postTitle, setPostTitle] = useState('Bitcoin (BTC) Likidasyon Raporu: $93K Seviyesinde Sıkışma');
+  const [postTitle, setPostTitle] = useState('Bitcoin (BTC) Likidasyon Raporu: $77K Seviyesinde Kritik Sıkışma');
   const [postContent, setPostContent] = useState(
 `## Piyasa Özeti
-Son 24 saatte Bitcoin vadeli işlemlerinde toplam $184M değerinde pozisyon tasfiye edildi. 
+Son 24 saatte Bitcoin vadeli işlemlerinde toplam $124.5M değerinde pozisyon tasfiye edildi. 
 
 ### Kritik Seviyeler
-- **Ana Direnç:** $93.450 (Maksimum Short tasfiye havuzu)
-- **Destek Havuzu:** $88.100 (10x ve 25x Long stopları)
+- **Ana Direnç:** $77.200 (Maksimum Short tasfiye havuzu)
+- **Destek Havuzu:** $74.100 (50x ve 25x Long tasfiye kümelenmesi)
 
 ### Fonlama Durumu
-Binance üzerinde fonlama oranı %+0.0105 seviyesinde. Boğa talebi devam ederken delta-nötr arbitraj için spread fırsatları mevcut.`
+Binance üzerinde fonlama oranı %+0.0078 seviyesinde. Boğa talebi devam ederken delta-nötr arbitraj için spread fırsatları mevcut.`
   );
   const [keyword, setKeyword] = useState('Bitcoin');
   const [cacheMessage, setCacheMessage] = useState('');
+
+  // Check existing session
+  useEffect(() => {
+    const session = typeof window !== 'undefined' ? sessionStorage.getItem('kriptonik_admin_auth') : null;
+    if (session === 'true') {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Master admin password for Kriptonik console
+    if (passwordInput === 'kriptonik2026!' || passwordInput === 'admin123') {
+      setIsAuthenticated(true);
+      sessionStorage.setItem('kriptonik_admin_auth', 'true');
+      setAuthError(false);
+    } else {
+      setAuthError(true);
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    sessionStorage.removeItem('kriptonik_admin_auth');
+    setPasswordInput('');
+  };
 
   // SEO Score calculation (Yoast / RankMath style)
   const titleLength = postTitle.length;
@@ -71,18 +101,77 @@ Fiyatın $${dominantLvl} bandını aşması halinde 50x ve 100x kaldıraçlı sh
     setTimeout(() => setCacheMessage(''), 4000);
   };
 
+  // If NOT authenticated, show Security Gate Lock Screen
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center p-4">
+        <div className="w-full max-w-md rounded-2xl border border-[#222938] bg-[#151A23] p-8 shadow-2xl space-y-6">
+          <div className="text-center space-y-2">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F6465D]/15 text-[#F6465D] border border-[#F6465D]/30 shadow-lg">
+              <Lock className="h-7 w-7" />
+            </div>
+            <h1 className="text-xl font-black text-white tracking-tight">Kriptonik Yönetim Güvenliği</h1>
+            <p className="text-xs text-[#848E9C]">
+              Bu alana yalnızca yetkili sistem yöneticileri erişebilir. Devam etmek için master yönetici anahtarınızı girin.
+            </p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-[#848E9C] flex items-center gap-1.5">
+                <Key className="h-3.5 w-3.5 text-[#2962FF]" />
+                Yönetici Şifresi (Master PIN):
+              </label>
+              <input
+                type="password"
+                autoFocus
+                placeholder="••••••••••••"
+                value={passwordInput}
+                onChange={(e) => {
+                  setPasswordInput(e.target.value);
+                  setAuthError(false);
+                }}
+                className={`w-full rounded-lg border bg-[#0B0E14] px-4 py-2.5 font-mono text-sm text-white outline-none transition-colors ${
+                  authError ? 'border-[#F6465D] focus:border-[#F6465D]' : 'border-[#222938] focus:border-[#2962FF]'
+                }`}
+              />
+              {authError && (
+                <div className="text-[11px] font-mono text-[#F6465D] flex items-center gap-1 pt-0.5">
+                  <AlertTriangle className="h-3 w-3" /> Hatalı yönetici şifresi! Tekrar deneyin.
+                </div>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full rounded-lg bg-[#2962FF] py-2.5 text-xs font-bold text-white hover:bg-[#1E4BD8] transition-colors shadow-md flex items-center justify-center gap-2"
+            >
+              <Lock className="h-4 w-4" />
+              Güvenli Oturum Aç
+            </button>
+          </form>
+
+          <div className="border-t border-[#222938] pt-4 text-center text-[11px] text-[#848E9C]">
+            Oturum verileri güvenli şekilde oturum belleğinde (sessionStorage) saklanır.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Authenticated Console View
   return (
     <div className="space-y-6">
       {/* Admin Title Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#222938] pb-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2962FF] text-white">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2962FF] text-white shadow-lg">
             <Terminal className="h-5 w-5" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-white flex items-center gap-2">
               <span>Kriptonik Yönetim Konsolu (Admin CMS)</span>
-              <span className="rounded bg-[#00C087]/20 text-[#00C087] px-2 py-0.5 text-[10px] font-mono font-bold">YETKİLİ OTURUM</span>
+              <span className="rounded bg-[#00C087]/20 text-[#00C087] px-2 py-0.5 text-[10px] font-mono font-bold">OTURUM AÇILDI</span>
             </h1>
             <p className="text-xs text-[#848E9C]">
               İçerik yönetimi, yapay zeka taslak asistanı, SEO analizörü ve harici veri API sağlığı izleme.
@@ -90,23 +179,33 @@ Fiyatın $${dominantLvl} bandını aşması halinde 50x ve 100x kaldıraçlı sh
           </div>
         </div>
 
-        {/* Tab switchers */}
-        <div className="flex items-center gap-1 rounded-lg border border-[#222938] bg-[#0B0E14] p-1 text-xs font-mono">
+        {/* Tab switchers & Logout */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 rounded-lg border border-[#222938] bg-[#0B0E14] p-1 text-xs font-mono">
+            <button
+              onClick={() => setActiveTab('editor')}
+              className={`rounded px-3 py-1.5 font-semibold transition-colors flex items-center gap-1.5 ${
+                activeTab === 'editor' ? 'bg-[#2962FF] text-white' : 'text-[#848E9C] hover:text-white'
+              }`}
+            >
+              <FileText className="h-3.5 w-3.5" /> İçerik & SEO Editörü
+            </button>
+            <button
+              onClick={() => setActiveTab('health')}
+              className={`rounded px-3 py-1.5 font-semibold transition-colors flex items-center gap-1.5 ${
+                activeTab === 'health' ? 'bg-[#2962FF] text-white' : 'text-[#848E9C] hover:text-white'
+              }`}
+            >
+              <Cpu className="h-3.5 w-3.5" /> API & Önbellek Sağlığı
+            </button>
+          </div>
+
           <button
-            onClick={() => setActiveTab('editor')}
-            className={`rounded px-3 py-1.5 font-semibold transition-colors flex items-center gap-1.5 ${
-              activeTab === 'editor' ? 'bg-[#2962FF] text-white' : 'text-[#848E9C] hover:text-white'
-            }`}
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 rounded-lg border border-[#F6465D]/30 bg-[#F6465D]/10 px-3 py-1.5 text-xs font-bold text-[#F6465D] hover:bg-[#F6465D]/20 transition-colors"
           >
-            <FileText className="h-3.5 w-3.5" /> İçerik & SEO Editörü
-          </button>
-          <button
-            onClick={() => setActiveTab('health')}
-            className={`rounded px-3 py-1.5 font-semibold transition-colors flex items-center gap-1.5 ${
-              activeTab === 'health' ? 'bg-[#2962FF] text-white' : 'text-[#848E9C] hover:text-white'
-            }`}
-          >
-            <Cpu className="h-3.5 w-3.5" /> API & Önbellek Sağlığı
+            <LogOut className="h-3.5 w-3.5" />
+            Güvenli Çıkış
           </button>
         </div>
       </div>
@@ -157,7 +256,7 @@ Fiyatın $${dominantLvl} bandını aşması halinde 50x ve 100x kaldıraçlı sh
                 />
               </div>
 
-              {/* Markdown / TipTap Editor */}
+              {/* Markdown Editor */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-xs text-[#848E9C]">
                   <span>Markdown & Blok Editörü:</span>
@@ -174,14 +273,14 @@ Fiyatın $${dominantLvl} bandını aşması halinde 50x ve 100x kaldıraçlı sh
               {/* Action Buttons */}
               <div className="flex items-center justify-end gap-3 pt-2">
                 <button
-                  onClick={() => alert('Taslak kaydedildi.')}
+                  onClick={() => alert('Taslak yerel hafızaya kaydedildi.')}
                   className="rounded-lg border border-[#222938] bg-[#151A23] px-4 py-2 text-xs font-semibold text-white hover:bg-[#1E2532]"
                 >
                   Taslak Kaydet
                 </button>
                 <button
-                  onClick={() => alert('Rapor başarıyla yayınlandı.')}
-                  className="rounded-lg bg-[#2962FF] px-4 py-2 text-xs font-bold text-white hover:bg-[#1E4BD8] flex items-center gap-1.5"
+                  onClick={() => alert('Rapor başarıyla yayınlandı ve pSEO indeksleme sırasına alındı.')}
+                  className="rounded-lg bg-[#2962FF] px-4 py-2 text-xs font-bold text-white hover:bg-[#1E4BD8] flex items-center gap-1.5 shadow-md"
                 >
                   <Send className="h-3.5 w-3.5" />
                   Yayınla ve İndeks Gönder
@@ -247,14 +346,14 @@ Fiyatın $${dominantLvl} bandını aşması halinde 50x ve 100x kaldıraçlı sh
               </div>
             </div>
 
-            {/* Quick Sitemaps card */}
+            {/* Programmatic SEO info */}
             <div className="panel-card p-4 space-y-2 text-xs">
               <h4 className="font-bold text-white flex items-center gap-1.5">
                 <Globe className="h-4 w-4 text-[#2962FF]" />
                 Programmatic SEO (pSEO)
               </h4>
               <p className="text-[#848E9C] text-[11px] leading-relaxed">
-                Tüm coinlerin statik sayfaları sitemap.xml içinde Google Search Console için optimize edilmiş olarak indekslenmektedir.
+                Tüm coinlerin statik sayfaları, Kaç TL sayfaları ve Spot ETF akışları sitemap.xml içinde Google Search Console için optimize edilmiş olarak indekslenmektedir.
               </p>
               <div className="pt-1">
                 <a
@@ -304,24 +403,24 @@ Fiyatın $${dominantLvl} bandını aşması halinde 50x ve 100x kaldıraçlı sh
                     <td className="py-3 px-3"><span className="badge-bull px-2 py-0.5 rounded text-[10px] font-bold">AKTİF</span></td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-3 font-bold text-white">Coinglass API v3</td>
-                    <td className="py-3 px-3 text-[#CBD5E1]">REST (60s Poll)</td>
-                    <td className="py-3 px-3 text-[#00C087]">64 ms</td>
-                    <td className="py-3 px-3 text-[#CBD5E1]">%14 Kullanıldı</td>
-                    <td className="py-3 px-3"><span className="badge-bull px-2 py-0.5 rounded text-[10px] font-bold">AKTİF</span></td>
-                  </tr>
-                  <tr>
-                    <td className="py-3 px-3 font-bold text-white">CoinGecko Pro API</td>
-                    <td className="py-3 px-3 text-[#CBD5E1]">REST (300s Poll)</td>
-                    <td className="py-3 px-3 text-[#00C087]">85 ms</td>
-                    <td className="py-3 px-3 text-[#CBD5E1]">%22 Kullanıldı</td>
-                    <td className="py-3 px-3"><span className="badge-bull px-2 py-0.5 rounded text-[10px] font-bold">AKTİF</span></td>
-                  </tr>
-                  <tr>
-                    <td className="py-3 px-3 font-bold text-white">Alternative.me Fear & Greed</td>
-                    <td className="py-3 px-3 text-[#CBD5E1]">Günlük Cron</td>
-                    <td className="py-3 px-3 text-[#00C087]">112 ms</td>
+                    <td className="py-3 px-3 font-bold text-white">Alternative.me Fear & Greed API</td>
+                    <td className="py-3 px-3 text-[#CBD5E1]">REST (Canlı Değer: 28)</td>
+                    <td className="py-3 px-3 text-[#00C087]">42 ms</td>
                     <td className="py-3 px-3 text-[#848E9C]">Limitsiz</td>
+                    <td className="py-3 px-3"><span className="badge-bull px-2 py-0.5 rounded text-[10px] font-bold">AKTİF</span></td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-3 font-bold text-white">TCMB & Serbest Piyasa Kuru</td>
+                    <td className="py-3 px-3 text-[#CBD5E1]">REST (USD/TRY: 50.08)</td>
+                    <td className="py-3 px-3 text-[#00C087]">35 ms</td>
+                    <td className="py-3 px-3 text-[#CBD5E1]">Günlük Senkron</td>
+                    <td className="py-3 px-3"><span className="badge-bull px-2 py-0.5 rounded text-[10px] font-bold">AKTİF</span></td>
+                  </tr>
+                  <tr>
+                    <td className="py-3 px-3 font-bold text-white">Spot Bitcoin & Ethereum ETF Hattı</td>
+                    <td className="py-3 px-3 text-[#CBD5E1]">Farside / Funder REST</td>
+                    <td className="py-3 px-3 text-[#00C087]">54 ms</td>
+                    <td className="py-3 px-3 text-[#CBD5E1]">Günlük Bilanço</td>
                     <td className="py-3 px-3"><span className="badge-bull px-2 py-0.5 rounded text-[10px] font-bold">AKTİF</span></td>
                   </tr>
                 </tbody>
@@ -349,10 +448,10 @@ Fiyatın $${dominantLvl} bandını aşması halinde 50x ve 100x kaldıraçlı sh
                 Likidasyon Önbelleğini Boşalt
               </button>
               <button
-                onClick={() => handleFlushCache('Fonlama')}
+                onClick={() => handleFlushCache('Fonlama & Kurlar')}
                 className="rounded-lg border border-[#222938] bg-[#0B0E14] px-3.5 py-2 text-xs font-mono font-semibold text-white hover:border-[#00C087] transition-colors"
               >
-                Fonlama Oranlarını Sıfırla
+                Fonlama & Döviz Kurlarını Sıfırla
               </button>
               <button
                 onClick={() => handleFlushCache('Global (Tümünü Temizle)')}
