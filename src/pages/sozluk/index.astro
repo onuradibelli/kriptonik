@@ -1,265 +1,298 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { termsData } from '../../data/terms';
 
-const pageTitle = "Kripto Terimleri Sözlüğü (Sade Türkçe) | Kriptonik";
-const pageDesc = "Karmaşık teknik terimleri herkesin anlayacağı dille açıklayan Kriptonik Kripto Sözlüğü. Gas, Nonce, Mempool, Seed Phrase, Slippage ve daha fazlası.";
+const pageTitle = "Kripto Para Terimleri Sözlüğü (100 Temel Kavram) | Kriptonik";
+const pageDesc = "Kripto dünyasındaki teknik terimler, blokzincir kavramları, güvenlik ve DeFi terminolojisi sade ve anlaşılır Türkçe ile.";
 
-const terms = [
-	{
-		id: "seed-phrase",
-		term: "Seed Phrase (Kurtarma Kelimeleri)",
-		category: "Güvenlik",
-		definition: "Kripto para cüzdanınızı sıfırdan yeniden oluşturmanızı sağlayan 12 veya 24 adet İngilizce kelimedir. Bu kelimeleri bilen herkes cüzdanın tek ve mutlak sahibidir. Kimseyle paylaşılamaz ve internete bağlanabilen hiçbir cihaza yazılmamalıdır.",
-		relatedTool: "/yardim"
-	},
-	{
-		id: "gas-fee",
-		term: "Gas Ücreti (Gas Fee & Gwei)",
-		category: "Blokzincir",
-		definition: "Ethereum ve EVM blokzincirlerinde transferlerin madenciler tarafından işlenip bloğa yazılması için ödenen yakıt / işlem bedelidir. Gwei cinsinden ölçülür (1 Gwei = 0.000000001 ETH). Ağ yoğun olduğunda gas ücretleri yükselir.",
-		relatedTool: "/piyasa"
-	},
-	{
-		id: "mempool",
-		term: "Mempool (Bellek Havuzu / Bekleme Odası)",
-		category: "Blokzincir",
-		definition: "Gönderilen ancak madenciler veya doğrulayıcılar tarafından henüz bir bloğa dahil edilmemiş, onay bekleyen tüm transferlerin tutulduğu geçici bekleme alanıdır. Ücreti yetersiz olan transferler mempool'da takılır.",
-		relatedTool: "/araclar/takilan-islem"
-	},
-	{
-		id: "nonce",
-		term: "Nonce (Sayısal İşlem Sırası)",
-		category: "EVM",
-		definition: "Bir Ethereum adresinden gönderilen transferlerin sayısını belirten sıfırdan başlayan sıra numarasıdır (0, 1, 2, ...). 5 numaralı Nonce onaylanmadan 6 numaralı işlem çalışamaz. Takılan bir işlemi iptal etmek için aynı nonce numarasıyla yeni işlem gönderilir.",
-		relatedTool: "/araclar/takilan-islem"
-	},
-	{
-		id: "rbf",
-		term: "RBF (Replace-by-Fee)",
-		category: "Bitcoin",
-		definition: "Bitcoin ağında henüz onaylanmamış bir transferin, daha yüksek madenci ücreti teklif edilerek yeni bir işlemle güncellenmesini sağlayan protokoldür.",
-		relatedTool: "/araclar/takilan-islem"
-	},
-	{
-		id: "cpfp",
-		term: "CPFP (Child Pays for Parent)",
-		category: "Bitcoin",
-		definition: "Takılan bir transferin alıcısının, onay bekleyen bakiyeyi çok yüksek ücretli yeni bir transfere bağlayarak madencileri her iki işlemi birlikte onaylamaya zorladığı kurtarma yöntemidir.",
-		relatedTool: "/araclar/takilan-islem"
-	},
-	{
-		id: "slippage",
-		term: "Slippage (Fiyat Kayması)",
-		category: "DeFi",
-		definition: "Merkeziyetsiz borsalarda (Uniswap, PancakeSwap) işlem emri verdiğiniz andaki fiyat ile işlemin blokta gerçekleştiği an arasındaki fiyat farkı yüzdesidir.",
-		relatedTool: "/araclar/maliyet-karsilastirici"
-	},
-	{
-		id: "depeg",
-		term: "Depeg (Sabit Fiyat Çözülmesi)",
-		category: "Piyasa",
-		definition: "USDT veya USDC gibi 1 ABD Dolarına sabitlenmiş stablecoinlerin bu 1$ çıpasından aşağı veya yukarı doğru sapması durumudur. Aşırı likidite çıkışlarında risk sinyali üretir.",
-		relatedTool: "/piyasa"
-	},
-	{
-		id: "rug-pull",
-		term: "Rug Pull (Halı Çekme Dolandırıcılığı)",
-		category: "Güvenlik",
-		definition: "Bir kripto projesini oluşturan geliştiricilerin, yatırımcılar token satın aldıktan sonra havuzdaki likiditeyi (ETH/BNB) çekip kaçması durumudur.",
-		relatedTool: "/yardim"
-	},
-	{
-		id: "smart-contract",
-		term: "Akıllı Sözleşme (Smart Contract)",
-		category: "Blokzincir",
-		definition: "Önceden belirlenen şartlar sağlandığında otomatik olarak çalışan, üçüncü bir aracıya ihtiyaç duymayan blokzincir üzerindeki program kodudur.",
-		relatedTool: "/araclar/yanlis-aga-gonderdim"
-	},
-	{
-		id: "evm",
-		term: "EVM (Ethereum Virtual Machine)",
-		category: "Teknoloji",
-		definition: "Ethereum akıllı sözleşmelerini çalıştıran sanal motordur. BNB Chain, Polygon, Arbitrum gibi ağlar da EVM uyumludur; bu yüzden adres formatları ortaktır (0x ile başlar).",
-		relatedTool: "/araclar/adres-ag-eslestirici"
-	},
-	{
-		id: "dca",
-		term: "DCA (Dollar Cost Averaging)",
-		category: "Strateji",
-		definition: "Piyasanın düşüş veya yükseliş zamanını tahmin etmeye çalışmadan, haftalık veya aylık periyotlarla sabit bütçeli alım yapma disiplinidir.",
-		relatedTool: "/araclar/dca-simulator"
-	},
-	{
-		id: "private-key",
-		term: "Private Key (Özel Anahtar)",
-		category: "Güvenlik",
-		definition: "Kripto cüzdanınızdan harcama yapabilmenizi ve transferleri imzalamanızı sağlayan gizli matematiksel koddur. Asla başkasıyla paylaşılmamalıdır.",
-		relatedTool: "/yardim"
-	},
-	{
-		id: "tvl",
-		term: "TVL (Total Value Locked)",
-		category: "DeFi",
-		definition: "Bir DeFi protokolüne kullanıcılar tarafından yatırılmış ve kilitlenmiş toplam varlık değeridir. Protokolün güvenilirlik ve büyüklük göstergesidir.",
-		relatedTool: "/piyasa"
-	},
-	{
-		id: "halving",
-		term: "Halving (Yarılanma)",
-		category: "Bitcoin",
-		definition: "Bitcoin ağında yaklaşık 4 yılda bir (her 210.000 blokta bir) madencilere verilen blok ödülünün yarı yarıya azalması olayıdır. Enflasyonu sınırlar.",
-		relatedTool: "/araclar/dca-simulator"
-	},
-	{
-		id: "impermanent-loss",
-		term: "Impermanent Loss (Geçici Kayıp)",
-		category: "DeFi",
-		definition: "Bir likidite havuzuna token yatıran bir kullanıcının, token fiyatlarındaki oynaklık nedeniyle varlıkları sadece cüzdanında tutsaydı elde edeceği kâr ile arasındaki farktır.",
-		relatedTool: "/piyasa"
-	}
-];
+// Categories list
+const categories = Array.from(new Set(termsData.map(t => t.category)));
 ---
 
 <Layout title={pageTitle} description={pageDesc}>
 	<div class="container glossary-page">
-		<div class="section-header">
+		<nav class="breadcrumb">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<span class="current">Sözlük</span>
+		</nav>
+
+		<div class="page-header">
 			<div class="badge-pill">
 				<span>📚</span>
-				<span>Sade Türkçe Kripto Sözlüğü</span>
+				<span>100 Kapsamlı Terim</span>
 			</div>
-			<h1 class="section-title">Kripto Terimleri Sözlüğü</h1>
-			<p class="section-desc">
-				Kripto dünyasında her gün karşılaştığınız teknik jargonları, kısaltmaları ve kavramları sade, anlaşılır ve somut örneklerle öğrenin.
+			<h1 class="page-title">Kripto Para & Blokzincir Sözlüğü</h1>
+			<p class="page-subtitle">
+				Karmaşık teknik terimleri herkesin anlayacağı sade bir dille açıklıyoruz. Arama kutusunu kullanarak terim bulun veya kategorilere göre filtreleyin.
 			</p>
 		</div>
 
-		<!-- Search Bar -->
-		<div class="search-bar card">
-			<span class="s-icon">🔍</span>
-			<input type="text" id="glossary-search" class="form-input" placeholder="Terim ara (Örn: Nonce, Seed phrase, Gas, RBF, Depeg...)" />
+		<!-- Search & Category Filter Controls -->
+		<div class="filter-bar">
+			<div class="search-wrap">
+				<input 
+					type="text" 
+					id="glossary-search" 
+					class="search-input" 
+					placeholder="Terim veya açıklama ara (Örn: Nonce, RBF, Likidasyon, Seed...)" 
+					autocomplete="off"
+				/>
+			</div>
+
+			<div class="category-pills" id="category-pills">
+				<button class="cat-pill active" data-cat="ALL">Tümü ({termsData.length})</button>
+				{categories.map(cat => (
+					<button class="cat-pill" data-cat={cat}>{cat}</button>
+				))}
+			</div>
 		</div>
 
 		<!-- Terms Grid -->
-		<div class="terms-grid" id="terms-container">
-			{terms.map(item => (
-				<div class="term-card" data-term={item.term.toLowerCase()} data-def={item.definition.toLowerCase()}>
-					<div class="term-top">
-						<span class="term-cat">{item.category}</span>
-						<h3 class="term-title">{item.term}</h3>
+		<div class="terms-grid" id="terms-grid">
+			{termsData.map(term => (
+				<div class="term-card" data-slug={term.slug} data-cat={term.category} data-title={term.title.toLowerCase()} data-desc={term.definition.toLowerCase()}>
+					<div class="card-head">
+						<span class="term-cat-badge">{term.category}</span>
+						<a href={`/sozluk/${term.slug}`} class="term-link-arrow" title="Detaylı İncele">➔</a>
 					</div>
-					<p class="term-def">{item.definition}</p>
-					{item.relatedTool && (
-						<div class="term-footer">
-							<a href={item.relatedTool} class="related-link">İlgili Aracı Gör →</a>
-						</div>
-					)}
+					<h3 class="term-card-title">
+						<a href={`/sozluk/${term.slug}`}>{term.title}</a>
+					</h3>
+					<p class="term-card-desc">{term.definition}</p>
+					<div class="card-footer">
+						<span class="example-preview">💡 {term.example.slice(0, 75)}...</span>
+					</div>
 				</div>
 			))}
+		</div>
+
+		<div id="no-results" class="no-results-box" style="display: none;">
+			<p>Aradığınız kriterlere uygun terim bulunamadı.</p>
 		</div>
 	</div>
 </Layout>
 
+<style>
+.glossary-page {
+	padding-top: var(--space-8);
+	padding-bottom: var(--space-16);
+}
+.breadcrumb {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+	font-size: var(--text-sm);
+	color: var(--color-text-muted);
+	margin-bottom: var(--space-6);
+}
+.breadcrumb a {
+	color: var(--color-text-muted);
+	text-decoration: none;
+}
+.breadcrumb a:hover {
+	color: var(--color-primary-400);
+}
+.breadcrumb .current {
+	color: var(--color-text-secondary);
+}
+
+.page-header {
+	margin-bottom: var(--space-8);
+}
+.badge-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2);
+	padding: var(--space-1) var(--space-3);
+	background: var(--color-surface-hover);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-full);
+	font-size: var(--text-xs);
+	font-weight: 500;
+	color: var(--color-text-secondary);
+	margin-bottom: var(--space-3);
+}
+.page-title {
+	font-size: var(--text-3xl);
+	font-weight: 800;
+	margin-bottom: var(--space-2);
+	letter-spacing: -0.02em;
+}
+.page-subtitle {
+	font-size: var(--text-base);
+	color: var(--color-text-secondary);
+	max-width: 700px;
+	line-height: 1.6;
+}
+
+.filter-bar {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+	margin-bottom: var(--space-8);
+}
+.search-input {
+	width: 100%;
+	padding: var(--space-3) var(--space-4);
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	font-size: var(--text-sm);
+	color: var(--color-text-primary);
+	outline: none;
+	transition: border-color var(--transition-fast);
+}
+.search-input:focus {
+	border-color: var(--color-primary-500);
+}
+.category-pills {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-2);
+}
+.cat-pill {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	padding: var(--space-1) var(--space-3);
+	border-radius: var(--radius-full);
+	font-size: var(--text-xs);
+	font-weight: 600;
+	color: var(--color-text-secondary);
+	cursor: pointer;
+	transition: all var(--transition-fast);
+}
+.cat-pill.active, .cat-pill:hover {
+	background: var(--color-primary-500);
+	border-color: var(--color-primary-500);
+	color: white;
+}
+
+.terms-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	gap: var(--space-4);
+}
+.term-card {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius-lg);
+	padding: var(--space-5);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	transition: all var(--transition-fast);
+}
+.term-card:hover {
+	transform: translateY(-2px);
+	border-color: var(--color-primary-500);
+}
+.card-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: var(--space-2);
+}
+.term-cat-badge {
+	font-size: 10px;
+	font-weight: 700;
+	background: var(--color-surface-hover);
+	padding: 2px 6px;
+	border-radius: var(--radius-sm);
+	color: var(--color-text-muted);
+}
+.term-link-arrow {
+	font-size: var(--text-sm);
+	color: var(--color-text-muted);
+	text-decoration: none;
+}
+.term-link-arrow:hover {
+	color: var(--color-primary-400);
+}
+.term-card-title {
+	font-size: var(--text-base);
+	font-weight: 700;
+	margin-bottom: var(--space-2);
+}
+.term-card-title a {
+	color: var(--color-text-primary);
+	text-decoration: none;
+}
+.term-card-title a:hover {
+	color: var(--color-primary-400);
+}
+.term-card-desc {
+	font-size: var(--text-xs);
+	color: var(--color-text-secondary);
+	line-height: 1.6;
+	margin-bottom: var(--space-4);
+	display: -webkit-box;
+	-webkit-line-clamp: 4;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+.card-footer {
+	border-top: 1px solid var(--color-border);
+	padding-top: var(--space-2);
+}
+.example-preview {
+	font-size: 11px;
+	color: var(--color-text-muted);
+	font-style: italic;
+}
+
+.no-results-box {
+	text-align: center;
+	padding: var(--space-12);
+	color: var(--color-text-muted);
+}
+</style>
+
 <script>
-	const search = document.getElementById('glossary-search') as HTMLInputElement;
-	const termCards = document.querySelectorAll('.term-card');
+document.addEventListener('DOMContentLoaded', () => {
+	const searchInput = document.getElementById('glossary-search') as HTMLInputElement;
+	const catBtns = document.querySelectorAll<HTMLButtonElement>('.cat-pill');
+	const cards = document.querySelectorAll<HTMLElement>('.term-card');
+	const noResults = document.getElementById('no-results');
 
-	search?.addEventListener('input', () => {
-		const q = search.value.toLowerCase().trim();
+	let activeCat = 'ALL';
+	let query = '';
 
-		termCards.forEach(card => {
-			const el = card as HTMLElement;
-			const term = el.getAttribute('data-term') || '';
-			const def = el.getAttribute('data-def') || '';
+	function filter() {
+		let visibleCount = 0;
+		cards.forEach(card => {
+			const cardCat = card.dataset.cat || '';
+			const cardTitle = card.dataset.title || '';
+			const cardDesc = card.dataset.desc || '';
 
-			if (q === '' || term.includes(q) || def.includes(q)) {
-				el.style.display = 'flex';
+			const matchesCat = activeCat === 'ALL' || cardCat === activeCat;
+			const matchesQuery = query === '' || cardTitle.includes(query) || cardDesc.includes(query);
+
+			if (matchesCat && matchesQuery) {
+				card.style.display = 'flex';
+				visibleCount++;
 			} else {
-				el.style.display = 'none';
+				card.style.display = 'none';
 			}
 		});
+
+		if (noResults) {
+			noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+		}
+	}
+
+	searchInput?.addEventListener('input', (e) => {
+		query = (e.target as HTMLInputElement).value.toLowerCase().trim();
+		filter();
 	});
+
+	catBtns.forEach(btn => {
+		btn.addEventListener('click', () => {
+			catBtns.forEach(b => b.classList.remove('active'));
+			btn.classList.add('active');
+			activeCat = btn.dataset.cat || 'ALL';
+			filter();
+		});
+	});
+});
 </script>
-
-<style>
-	.glossary-page {
-		padding: 48px 24px 80px;
-	}
-
-	.search-bar {
-		margin-bottom: 36px;
-		display: flex;
-		align-items: center;
-		position: relative;
-		padding: 12px;
-	}
-
-	.s-icon {
-		position: absolute;
-		left: 24px;
-		color: var(--text-dim);
-		font-size: 16px;
-	}
-
-	.search-bar input {
-		padding-left: 44px;
-	}
-
-	.terms-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-		gap: 20px;
-	}
-
-	.term-card {
-		background: var(--surface-dark);
-		border: 1px solid var(--surface-border);
-		border-radius: 12px;
-		padding: 24px;
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		transition: border-color 0.2s, transform 0.2s;
-	}
-
-	.term-card:hover {
-		border-color: var(--accent-cyan);
-		transform: translateY(-2px);
-	}
-
-	.term-cat {
-		display: inline-block;
-		font-size: 11px;
-		font-family: var(--font-mono);
-		color: var(--accent-cyan);
-		background: rgba(34, 211, 238, 0.1);
-		padding: 2px 8px;
-		border-radius: 4px;
-		margin-bottom: 8px;
-	}
-
-	.term-title {
-		font-size: 18px;
-		font-weight: 700;
-		color: #F8FAFC;
-		margin-bottom: 10px;
-	}
-
-	.term-def {
-		font-size: 14px;
-		line-height: 1.6;
-		color: var(--text-muted);
-		margin-bottom: 16px;
-		flex-grow: 1;
-	}
-
-	.term-footer {
-		padding-top: 12px;
-		border-top: 1px solid rgba(255, 255, 255, 0.05);
-	}
-
-	.related-link {
-		font-size: 13px;
-		font-weight: 600;
-		color: var(--accent-cyan);
-	}
-</style>
