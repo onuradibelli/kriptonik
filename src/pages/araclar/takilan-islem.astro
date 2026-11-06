@@ -1,0 +1,570 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = "Takılan İşlem & Gas Teşhisi (Pending Tx) | Kriptonik";
+const pageDesc = "Kripto para transferiniz 'Pending' kaldı ve onaylanmıyor mu? İşlemin neden takıldığını teşhis edin, RBF, CPFP veya Nonce iptaliyle işlemi hızlandırın.";
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container tool-page">
+		<!-- Breadcrumb -->
+		<nav class="breadcrumb">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<a href="/araclar">Araçlar</a>
+			<span>/</span>
+			<span class="current">Takılan İşlem Teşhisi</span>
+		</nav>
+
+		<!-- Tool Header -->
+		<div class="tool-header">
+			<div class="badge-pill">
+				<span>⏱️</span>
+				<span>İşlem Kurtarma & Hızlandırma</span>
+			</div>
+			<h1 class="tool-title">Takılan İşlem Teşhisi (Pending Tx)</h1>
+			<p class="tool-subtitle">
+				Transferiniz saatlerdir veya günlerdir onaylanmıyor mu? Blokzincir mempool kuyruğundaki durumunu analiz edin, RBF, CPFP ve Nonce hızlandırma çözümlerini öğrenin.
+			</p>
+		</div>
+
+		<!-- Tool Interface -->
+		<div class="tool-card">
+			<div class="tool-card-head">
+				<div class="step-indicator">
+					<span class="step-badge">TEŞHİS</span>
+					<span class="step-title">İşlem Bilgilerini Belirtin</span>
+				</div>
+				<span class="privacy-note">🔒 Gizlilik Garantili: Veriler hiçbir sunucuya iletilmez</span>
+			</div>
+
+			<div class="tool-form-grid">
+				<div class="form-group">
+					<label class="form-label" for="network-select">İşlem Yapılan Blokzincir Ağı:</label>
+					<select id="network-select" class="form-select">
+						<option value="BITCOIN" selected>Bitcoin (BTC - UTXO Mempool)</option>
+						<option value="ETHEREUM">Ethereum Mainnet (ETH - EVM)</option>
+						<option value="BSC">BNB Smart Chain (BEP-20)</option>
+						<option value="POLYGON">Polygon PoS</option>
+						<option value="ARBITRUM">Arbitrum One</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label" for="issue-type">Yaşadığınız Belirti:</label>
+					<select id="issue-type" class="form-select">
+						<option value="LOW_FEE" selected>Saatlerdir 'Pending / Bekliyor' yazıyor</option>
+						<option value="DROPPED">İşlem cüzdanda görünüyor ama explorera düşmedi</option>
+						<option value="QUEUE">Önceki işlemim takıldığı için sonraki işlemler de bekliyor</option>
+						<option value="HIGH_GAS">Ağda anlık gas patlaması oldu, transferim geride kaldı</option>
+					</select>
+				</div>
+
+				<div class="form-group full-width">
+					<label class="form-label" for="txhash-input">İşlem Kodu (TXID / Hash) (Opsiyonel):</label>
+					<input type="text" id="txhash-input" class="form-input mono-text" placeholder="Örn: 0x4f8a... veya btc txid" />
+				</div>
+			</div>
+
+			<!-- Dynamic Verdict Box -->
+			<div class="verdict-container">
+				<div class="verdict-header">
+					<div class="verdict-status" id="tx-status-badge">
+						<span class="status-icon">⚠️</span>
+						<span class="status-title">TEŞHİS RAPORU</span>
+					</div>
+					<div class="score-pill" id="action-type-pill">RBF / Nonce Çözümü</div>
+				</div>
+
+				<div class="verdict-body">
+					<div class="verdict-summary" id="tx-summary-text"></div>
+
+					<!-- Solution Modules -->
+					<div class="solutions-grid">
+						<div class="solution-card">
+							<div class="sol-badge">1. YÖNTEM (EN ETKİLİ)</div>
+							<h3 class="sol-title" id="method1-title">MetaMask Aynı Nonce ile Hızlandırma</h3>
+							<p class="sol-desc" id="method1-desc"></p>
+							<div class="code-box" id="method1-code"></div>
+						</div>
+
+						<div class="solution-card">
+							<div class="sol-badge">2. YÖNTEM (İPTAL ETME)</div>
+							<h3 class="sol-title" id="method2-title">İşlemi Sıfır Değerle Ezerek İptal Etme</h3>
+							<p class="sol-desc" id="method2-desc"></p>
+						</div>
+					</div>
+
+					<!-- Explorer Link Button -->
+					<div class="explorer-action" id="explorer-action"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Technical Guide Accordion -->
+		<div class="info-accordion">
+			<details class="accordion-item" open>
+				<summary class="accordion-summary">
+					<span>🧠 Blokzincirde İşlemler Neden Takılır? (Mempool Mantığı)</span>
+					<span class="arrow">↓</span>
+				</summary>
+				<div class="accordion-content">
+					<p>
+						Blokzincir madencileri veya doğrulayıcıları (validators), yeni bir bloğa işlem eklerken en yüksek işlem ücretini (Gas / sat/vB) ödeyen transferleri önceliklendirir. Transfer gönderdiğiniz anda ağ trafiği aniden yükselirse, ödediğiniz ücret taban fiyatın altında kalır ve işleminiz <strong>Mempool (Bekleme Odası)</strong> kuyruğunda bekletilir.
+					</p>
+					<p>
+						EVM ağlarında (Ethereum, BSC, Polygon) işlemler <strong>Nonce</strong> adı verilen sıralı bir sayaç ile işlenir. Eğer 5 numaralı Nonce takılırsa, arkasından gönderdiğiniz 6, 7 ve 8 numaralı transferler de 5 onaylanana kadar kilitli kalır.
+					</p>
+				</div>
+			</details>
+
+			<details class="accordion-item">
+				<summary class="accordion-summary">
+					<span>❓ Sıkça Sorulan Sorular (SSS)</span>
+					<span class="arrow">↓</span>
+				</summary>
+				<div class="accordion-content faq-list">
+					<div class="faq-item">
+						<h4>Takılan işlemimdeki para kaybolur mu?</h4>
+						<p>Kesinlikle hayır. İşlem henüz bloğa yazılmadığı için varlıklarınız teknik olarak hala cüzdanınızdadır. Ya daha yüksek ücret ödenerek onaylanır ya da zaman aşımına uğrayarak (Dropped) bakiye cüzdanınızda serbest kalır.</p>
+					</div>
+					<div class="faq-item">
+						<h4>Borsadan çektiğim işlem 'Pending' kaldıysa ne yapmalıyım?</h4>
+						<p>Eğer gönderici borsa ise (Binance, BtcTurk vb.), cüzdanın özel anahtarı borsadadır. Borsanın kendi çekim kuyruğu veya hot-wallet ücretlendirmesi söz konusudur. Borsa desteğine başvurmanız gerekir.</p>
+					</div>
+					<div class="faq-item">
+						<h4>RBF (Replace-by-Fee) nedir?</h4>
+						<p>Bitcoin ağında işleminizin henüz onaylanmadığı durumlarda aynı girdileri kullanarak daha yüksek bir ücret ile yeni bir işlem yayınlama protokolüdür.</p>
+					</div>
+				</div>
+			</details>
+		</div>
+
+		<!-- Related Tools -->
+		<div class="related-tools">
+			<h3 class="related-title">İlgili Diğer Araçlar:</h3>
+			<div class="related-grid">
+				<a href="/araclar/yanlis-aga-gonderdim" class="related-card">
+					<span class="r-icon">🧭</span>
+					<div>
+						<strong>Yanlış Ağa Gönderdim Sihirbazı</strong>
+						<p>Yanlış ağa giden fonların kurtarılabilirlik durumunu inceleyin.</p>
+					</div>
+				</a>
+				<a href="/piyasa" class="related-card">
+					<span class="r-icon">⚡</span>
+					<div>
+						<strong>Canlı Gas & Ağ Yoğunluğu</strong>
+						<p>Güncel gwei ve mempool yoğunluk pencerelerini takip edin.</p>
+					</div>
+				</a>
+			</div>
+		</div>
+	</div>
+</Layout>
+
+<script>
+	const netSelect = document.getElementById('network-select') as HTMLSelectElement;
+	const issueSelect = document.getElementById('issue-type') as HTMLSelectElement;
+	const txInput = document.getElementById('txhash-input') as HTMLInputElement;
+
+	const statusBadge = document.getElementById('tx-status-badge');
+	const actionPill = document.getElementById('action-type-pill');
+	const summaryText = document.getElementById('tx-summary-text');
+	const m1Title = document.getElementById('method1-title');
+	const m1Desc = document.getElementById('method1-desc');
+	const m1Code = document.getElementById('method1-code');
+	const m2Title = document.getElementById('method2-title');
+	const m2Desc = document.getElementById('method2-desc');
+	const explorerAction = document.getElementById('explorer-action');
+
+	function updateTxDiagnosis() {
+		if (!netSelect || !issueSelect || !statusBadge || !actionPill || !summaryText || !m1Title || !m1Desc || !m1Code || !m2Title || !m2Desc || !explorerAction) return;
+
+		const net = netSelect.value;
+		const issue = issueSelect.value;
+		const txHash = txInput.value.trim();
+
+		if (net === 'BITCOIN') {
+			statusBadge.className = 'verdict-status badge-warning';
+			statusBadge.innerHTML = `<span class="status-icon">₿</span> <span class="status-title">BITCOIN MEMPOOL KUYRUĞUNDA</span>`;
+			actionPill.className = 'score-pill score-warning';
+			actionPill.innerText = 'RBF veya CPFP Gerekli';
+
+			summaryText.innerHTML = `
+				<p>Bitcoin ağında madenciler transferleri <strong>sat/vB (bayt başına satoshi)</strong> ücretine göre dizer. Ödediğiniz ücret son blokların ortalamasının altında kaldığı için işlem onay almayı bekliyor.</p>
+			`;
+
+			m1Title.innerText = "1. Yöntem: RBF (Replace-by-Fee) ile Ücret Artırma";
+			m1Desc.innerText = "Kullandığınız cüzdanda (Electrum, Sparrow, BlueWallet vb.) işleme sağ tıklayıp 'Increase Fee / Ücreti Artır' seçeneğini seçin. Ağın önerdiği güncel sat/vB ücretini vererek işlemi yeniden imzalayın.";
+			m1Code.innerHTML = `<span class="mono-text">Örnek: 15 sat/vB yerine 45 sat/vB girilerek yeni işlem aynı mempool girdileriyle ezilir.</span>`;
+
+			m2Title.innerText = "2. Yöntem: CPFP (Child Pays for Parent) veya Bekleme";
+			m2Desc.innerText = "Eğer alıcı sizseniz, henüz onaylanmamış gelen bakiyeden çok yüksek ücretli yeni bir transfer (Child) başlatarak madencilerin her iki işlemi birlikte onaylamasını sağlayabilirsiniz. Aksi takdirde işlem 72 saat - 14 gün içinde mempooldan düşer ve bakiye geri döner.";
+
+			if (txHash) {
+				explorerAction.innerHTML = `
+					<a href="https://mempool.space/tx/${txHash}" target="_blank" rel="noopener" class="btn btn-secondary">
+						<span>Mempool.space Üzerinde TX Durumunu İncele →</span>
+					</a>
+				`;
+			} else {
+				explorerAction.innerHTML = `
+					<a href="https://mempool.space" target="_blank" rel="noopener" class="btn btn-secondary">
+						<span>Canlı Bitcoin Mempool Yoğunluğunu Aç →</span>
+					</a>
+				`;
+			}
+		} else {
+			// EVM Networks
+			statusBadge.className = 'verdict-status badge-warning';
+			statusBadge.innerHTML = `<span class="status-icon">⚡</span> <span class="status-title">EVM NONCE / GAS TIKANIKLIĞI</span>`;
+			actionPill.className = 'score-pill score-warning';
+			actionPill.innerText = 'Aynı Nonce ile Çözülür';
+
+			summaryText.innerHTML = `
+				<p>${net} ağında işlem onaylanmıyor çünkü teklif edilen Base Fee veya Priority Fee yetersiz kaldı ya da önceki bir transfer sırayı tıkadı.</p>
+			`;
+
+			m1Title.innerText = "1. Yöntem: MetaMask Cüzdanında 'Hızlandır' (Speed Up)";
+			m1Desc.innerText = "MetaMask aktivite sekmesinde takılan işlemin altında yer alan mavi 'Hızlandır' butonuna tıklayın. Açılan pencerede Gas ayarını 'Agresif' olarak seçin.";
+			m1Code.innerHTML = `<span class="mono-text">Ayarlar > Gelişmiş > 'Gelişmiş Gas Kontrollerini Göster' seçeneğini açarak Max Gwei değerini manuel 1.5 katına çıkarabilirsiniz.</span>`;
+
+			m2Title.innerText = "2. Yöntem: Kendinize 0 ETH Göndererek İptal Etme (Kesin Çözüm)";
+			m2Desc.innerText = "Takılan işlemin 'Nonce' değerini (örn: 14) not edin. Cüzdandan kendinize 0 ETH transfer edin. Gönderim ekranında Nonce kısmına aynı sayıyı (14) yazın ve yüksek bir gas ücreti verin. Bu yeni transfer eski takılan işlemi tamamen iptal eder!";
+
+			let explorerUrl = "https://etherscan.io";
+			if (net === 'BSC') explorerUrl = "https://bscscan.com";
+			if (net === 'POLYGON') explorerUrl = "https://polygonscan.com";
+			if (net === 'ARBITRUM') explorerUrl = "https://arbiscan.io";
+
+			if (txHash) {
+				explorerAction.innerHTML = `
+					<a href="${explorerUrl}/tx/${txHash}" target="_blank" rel="noopener" class="btn btn-secondary">
+						<span>${net} Explorer Üzerinde Kontrol Et →</span>
+					</a>
+				`;
+			} else {
+				explorerAction.innerHTML = `
+					<a href="${explorerUrl}" target="_blank" rel="noopener" class="btn btn-secondary">
+						<span>Blokzincir Explorer Sayfasını Aç →</span>
+					</a>
+				`;
+			}
+		}
+	}
+
+	netSelect?.addEventListener('change', updateTxDiagnosis);
+	issueSelect?.addEventListener('change', updateTxDiagnosis);
+	txInput?.addEventListener('input', updateTxDiagnosis);
+
+	updateTxDiagnosis();
+</script>
+
+<style>
+	.tool-page {
+		padding: 32px 24px 80px;
+	}
+
+	.breadcrumb {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 13px;
+		color: var(--text-dim);
+		margin-bottom: 24px;
+	}
+
+	.breadcrumb a {
+		color: var(--text-muted);
+	}
+
+	.breadcrumb .current {
+		color: #CBD5E1;
+	}
+
+	.tool-header {
+		margin-bottom: 32px;
+	}
+
+	.tool-title {
+		font-size: 38px;
+		font-weight: 700;
+		margin: 12px 0 8px;
+		letter-spacing: -0.5px;
+	}
+
+	.tool-subtitle {
+		font-size: 17px;
+		color: var(--text-muted);
+		max-width: 760px;
+		line-height: 1.6;
+	}
+
+	.tool-card {
+		background: var(--surface-dark);
+		border: 1px solid var(--surface-border);
+		border-radius: 16px;
+		overflow: hidden;
+		box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+		margin-bottom: 40px;
+	}
+
+	.tool-card-head {
+		background: #0E1322;
+		border-bottom: 1px solid var(--surface-border);
+		padding: 16px 24px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	.step-indicator {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.step-badge {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 700;
+		background: var(--accent-cyan);
+		color: #0B0F1A;
+		padding: 3px 8px;
+		border-radius: 4px;
+	}
+
+	.step-title {
+		font-weight: 600;
+		font-size: 15px;
+		color: #F8FAFC;
+	}
+
+	.privacy-note {
+		font-size: 12px;
+		color: var(--text-dim);
+	}
+
+	.tool-form-grid {
+		padding: 28px 24px;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 20px;
+	}
+
+	.full-width {
+		grid-column: span 2;
+	}
+
+	.verdict-container {
+		background: #0B0F1A;
+		border-top: 1px solid var(--surface-border);
+		padding: 28px 24px;
+	}
+
+	.verdict-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 20px;
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	.verdict-status {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 16px;
+		border-radius: 8px;
+		font-family: var(--font-heading);
+		font-weight: 700;
+		font-size: 16px;
+	}
+
+	.score-pill {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		font-weight: 700;
+		padding: 6px 14px;
+		border-radius: 999px;
+	}
+
+	.score-warning {
+		background: rgba(245, 158, 11, 0.15);
+		border: 1px solid rgba(245, 158, 11, 0.4);
+		color: #FBBF24;
+	}
+
+	.verdict-summary {
+		font-size: 15px;
+		line-height: 1.6;
+		color: #E2E8F0;
+		margin-bottom: 24px;
+	}
+
+	.solutions-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 20px;
+		margin-bottom: 24px;
+	}
+
+	.solution-card {
+		background: var(--surface-dark);
+		border: 1px solid var(--surface-border);
+		border-radius: 12px;
+		padding: 20px;
+	}
+
+	.sol-badge {
+		font-family: var(--font-mono);
+		font-size: 10px;
+		font-weight: 700;
+		color: var(--accent-cyan);
+		letter-spacing: 1px;
+		margin-bottom: 8px;
+	}
+
+	.sol-title {
+		font-size: 16px;
+		font-weight: 700;
+		color: #F8FAFC;
+		margin-bottom: 10px;
+	}
+
+	.sol-desc {
+		font-size: 13px;
+		color: #94A3B8;
+		line-height: 1.6;
+		margin-bottom: 12px;
+	}
+
+	.code-box {
+		background: #080B13;
+		border: 1px solid #1E293B;
+		border-radius: 6px;
+		padding: 10px;
+		font-size: 12px;
+		color: #A5B4FC;
+	}
+
+	.explorer-action {
+		margin-top: 16px;
+	}
+
+	.info-accordion {
+		margin-bottom: 32px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.accordion-item {
+		background: var(--surface-dark);
+		border: 1px solid var(--surface-border);
+		border-radius: 12px;
+		overflow: hidden;
+	}
+
+	.accordion-summary {
+		padding: 18px 24px;
+		font-weight: 600;
+		font-size: 16px;
+		cursor: pointer;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		user-select: none;
+	}
+
+	.accordion-content {
+		padding: 0 24px 20px;
+		font-size: 14px;
+		color: #CBD5E1;
+		line-height: 1.7;
+	}
+
+	.faq-list {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.faq-item h4 {
+		font-size: 15px;
+		color: var(--accent-cyan);
+		margin-bottom: 6px;
+	}
+
+	.faq-item p {
+		font-size: 14px;
+		color: #94A3B8;
+		margin: 0;
+	}
+
+	.related-tools {
+		margin-top: 48px;
+	}
+
+	.related-title {
+		font-size: 20px;
+		font-weight: 700;
+		margin-bottom: 16px;
+	}
+
+	.related-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 16px;
+	}
+
+	.related-card {
+		background: var(--surface-dark);
+		border: 1px solid var(--surface-border);
+		border-radius: 12px;
+		padding: 18px;
+		display: flex;
+		align-items: flex-start;
+		gap: 14px;
+		text-decoration: none;
+		transition: border-color 0.2s, transform 0.2s;
+	}
+
+	.related-card:hover {
+		border-color: var(--accent-cyan);
+		transform: translateY(-2px);
+	}
+
+	.r-icon {
+		font-size: 24px;
+	}
+
+	.related-card strong {
+		display: block;
+		font-size: 15px;
+		color: #F8FAFC;
+		margin-bottom: 4px;
+	}
+
+	.related-card p {
+		font-size: 13px;
+		color: var(--text-muted);
+		margin: 0;
+	}
+
+	@media (max-width: 768px) {
+		.tool-form-grid, .solutions-grid, .related-grid {
+			grid-template-columns: 1fr;
+		}
+		.full-width {
+			grid-column: span 1;
+		}
+		.tool-title {
+			font-size: 28px;
+		}
+	}
+</style>

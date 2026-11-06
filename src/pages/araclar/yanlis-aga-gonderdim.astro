@@ -1,0 +1,666 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = "Yanlış Ağa Gönderdim Sihirbazı | Kriptonik";
+const pageDesc = "Kripto paranız yanlış ağa mı gitti? Kurtarılabilirlik durumunu anında öğrenin, adım adım çözüm yönergelerini ve borsa destek mesaj şablonunu alın.";
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container tool-page">
+		<!-- Breadcrumb -->
+		<nav class="breadcrumb">
+			<a href="/">Ana Sayfa</a>
+			<span>/</span>
+			<a href="/araclar">Araçlar</a>
+			<span>/</span>
+			<span class="current">Yanlış Ağa Gönderdim Sihirbazı</span>
+		</nav>
+
+		<!-- Tool Header -->
+		<div class="tool-header">
+			<div class="badge-pill">
+				<span>🧭</span>
+				<span>Acil Sorun Teşhisi</span>
+			</div>
+			<h1 class="tool-title">Yanlış Ağa Gönderdim Sihirbazı</h1>
+			<p class="tool-subtitle">
+				Para yanlış ağa transfer edildiğinde panik yapmayın. Varlıkların nerede olduğunu, kurtarılabilirlik şansını ve atmanız gereken adımları saniyeler içinde öğrenin.
+			</p>
+		</div>
+
+		<!-- Main Tool Interface -->
+		<div class="tool-card">
+			<div class="tool-card-head">
+				<div class="step-indicator">
+					<span class="step-badge">ADIM 1</span>
+					<span class="step-title">Transfer Detaylarını Girin</span>
+				</div>
+				<span class="privacy-note">🔒 Verileriniz cihazınızda işlenir, sunucuya kaydedilmez</span>
+			</div>
+
+			<div class="tool-form-grid">
+				<div class="form-group">
+					<label class="form-label" for="coin">Gönderilen Kripto Para:</label>
+					<select id="coin" class="form-select">
+						<option value="USDT" selected>USDT (Tether USD)</option>
+						<option value="USDC">USDC (USD Coin)</option>
+						<option value="ETH">ETH (Ethereum)</option>
+						<option value="BNB">BNB (Binance Coin)</option>
+						<option value="BTC">BTC (Bitcoin)</option>
+						<option value="MATIC">POL / MATIC (Polygon)</option>
+						<option value="AVAX">AVAX (Avalanche)</option>
+						<option value="SOL">SOL (Solana)</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label" for="network">Gönderim Yapılan Ağ (Kaynak / Çıkış Ağı):</label>
+					<select id="network" class="form-select">
+						<option value="BEP20" selected>BNB Smart Chain (BEP-20 / BSC)</option>
+						<option value="ERC20">Ethereum Mainnet (ERC-20)</option>
+						<option value="TRC20">Tron Ağı (TRC-20)</option>
+						<option value="ARBITRUM">Arbitrum One</option>
+						<option value="POLYGON">Polygon PoS</option>
+						<option value="OPTIMISM">Optimism (OP Mainnet)</option>
+						<option value="AVAXC">Avalanche C-Chain</option>
+						<option value="SOLANA">Solana Ağı</option>
+						<option value="BTC_LEGACY">Bitcoin Ağı</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label" for="destination">Alıcı Cüzdan Türü (Nereye Gönderildi?):</label>
+					<select id="destination" class="form-select">
+						<option value="PERSONAL" selected>Kişisel Cüzdanım (MetaMask, Trust Wallet, Phantom vb.)</option>
+						<option value="EXCHANGE_GLOBAL">Küresel Borsa (Binance, Gate.io, MEXC, OKX, KuCoin vb.)</option>
+						<option value="EXCHANGE_LOCAL">Türk Borsası (BtcTurk, Paribu, Binance TR vb.)</option>
+						<option value="UNKNOWN">Emin Değilim</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label" for="exchange-name">Alıcı Borsa Adı (Borsa ise):</label>
+					<input type="text" id="exchange-name" class="form-input" placeholder="Örn: BtcTurk, Paribu, Binance" value="BtcTurk" />
+				</div>
+
+				<div class="form-group full-width">
+					<label class="form-label" for="txhash">İşlem Kodu (TXID / Hash) (İsteğe bağlı):</label>
+					<input type="text" id="txhash" class="form-input mono-text" placeholder="0x... veya işlem kodu" />
+					<span class="input-hint">İşlem hash'i destek talebi oluştururken şablona otomatik eklenecektir.</span>
+				</div>
+			</div>
+
+			<!-- Dynamic Verdict Box -->
+			<div class="verdict-container" id="verdict-container">
+				<div class="verdict-header">
+					<div class="verdict-status" id="verdict-badge">
+						<span class="status-icon">✓</span>
+						<span class="status-title">TEŞHİS YAPILIYOR...</span>
+					</div>
+					<div class="score-pill" id="score-pill">%100 Çözülebilir</div>
+				</div>
+
+				<div class="verdict-body">
+					<div class="verdict-summary" id="verdict-summary"></div>
+
+					<!-- Action Steps Box -->
+					<div class="action-steps" id="action-steps">
+						<h3 class="steps-heading">📌 Adım Adım Çözüm Yolu:</h3>
+						<ol class="steps-list" id="steps-list"></ol>
+					</div>
+
+					<!-- Support Message Generator (For Exchanges) -->
+					<div class="support-ticket-box" id="support-ticket-box">
+						<div class="ticket-header">
+							<h4>📋 Borsaya Gönderilecek Destek Talebi Şablonu:</h4>
+							<button class="copy-btn" id="copy-ticket-btn">
+								<span>Kopyala</span>
+							</button>
+						</div>
+						<pre class="ticket-text" id="ticket-text"></pre>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Methodology & How It Works -->
+		<div class="info-accordion">
+			<details class="accordion-item" open>
+				<summary class="accordion-summary">
+					<span>💡 Bu Teşhis Nasıl Çalışır? (Teknik Açıklama)</span>
+					<span class="arrow">↓</span>
+				</summary>
+				<div class="accordion-content">
+					<p>
+						EVM (Ethereum Virtual Machine) uyumlu ağlar (Ethereum, BNB Chain, Polygon, Arbitrum, Avalanche C-Chain) <strong>aynı özel anahtar ve adres matematiksel algoritmasını</strong> (ECDSA secp256k1) kullanır. Bu nedenle bir MetaMask veya Trust Wallet adresine BEP-20 yerine ERC-20 veya Arbitrum gönderdiğinizde, paranız kaybolmaz; aynı adresin diğer ağdaki kopyasında bekler.
+					</p>
+					<p>
+						Ancak merkezi borsalarda cüzdanların özel anahtarları (Private Key) borsanın elindedir. Eğer borsa o coini o ağda listelemiyorsa, otomatik algılayamaz. Bu durumda borsanın teknik destek ekibinin güvenlik prosedürüyle fonları manuel olarak kurtarması gerekir.
+					</p>
+					<div class="meta-row">
+						<span>Veri Kaynağı: EVM & Blockchain Standartları (EIP-55, BIP-44)</span>
+						<span>•</span>
+						<span>Son Güncelleme: 2026</span>
+					</div>
+				</div>
+			</details>
+
+			<details class="accordion-item">
+				<summary class="accordion-summary">
+					<span>❓ Sıkça Sorulan Sorular (SSS)</span>
+					<span class="arrow">↓</span>
+				</summary>
+				<div class="accordion-content faq-list">
+					<div class="faq-item">
+						<h4>Paribu veya BtcTurk'e BEP-20 (BSC) ile USDT gönderdim, ne yapmalıyım?</h4>
+						<p>Yerli borsalar genellikle USDT yatırma işlemi için TRC-20 veya ERC-20 kullanır. Eğer BEP-20 ile gönderdiyseniz para borsanın cüzdanına ulaşmıştır. Borsanın destek merkezinden "Hatalı Ağ Yatırma İadesi" talebi açıp TXID numaranızı ilettiğinizde, işlem ücreti karşılığında parayı kaynak cüzdanınıza iade edebilirler.</p>
+					</div>
+					<div class="faq-item">
+						<h4>MetaMask cüzdanıma para geldi görünüyor ama bakiye sıfır, neden?</h4>
+						<p>MetaMask varsayılan olarak her token'ı otomatik listelemez. Cüzdanınızın en altına inip "Tokenleri İçe Aktar" (Import Tokens) butonuna basarak o coin'in o ağdaki resmi sözleşme (contract) adresini eklemeniz gerekir.</p>
+					</div>
+					<div class="faq-item">
+						<h4>Bitcoin adresine yanlışlıkla Ethereum gönderdim, kurtarılabilir mi?</h4>
+						<p>Bitcoin ve Ethereum tamamen farklı kriptografik adres yapılarına sahiptir. Bu tür çapraz mimari gönderimler çoğu zaman geri döndürülemezdir.</p>
+					</div>
+				</div>
+			</details>
+		</div>
+
+		<!-- Risk Warning -->
+		<div class="disclaimer-banner">
+			<strong>Dikkat:</strong> Kriptonik kimlik, özel anahtar veya şifre talep etmez. Sosyal medyada "Paranızı ben kurtarırım" diyerek cüzdan şifrenizi isteyen dolandırıcılara asla inanmayın.
+		</div>
+
+		<!-- Related Tools -->
+		<div class="related-tools">
+			<h3 class="related-title">İlgili Diğer Araçlar:</h3>
+			<div class="related-grid">
+				<a href="/araclar/adres-ag-eslestirici" class="related-card">
+					<span class="r-icon">🔍</span>
+					<div>
+						<strong>Adres Ağ Eşleştirici</strong>
+						<p>Transfer öncesi adresin hangi ağları desteklediğini doğrulayın.</p>
+					</div>
+				</a>
+				<a href="/araclar/takilan-islem" class="related-card">
+					<span class="r-icon">⏱️</span>
+					<div>
+						<strong>Takılan İşlem Teşhisi</strong>
+						<p>Transferiniz onaylanmıyorsa mempool durumunu inceleyin.</p>
+					</div>
+				</a>
+			</div>
+		</div>
+	</div>
+</Layout>
+
+<script>
+	const coinInput = document.getElementById('coin') as HTMLSelectElement;
+	const netInput = document.getElementById('network') as HTMLSelectElement;
+	const destInput = document.getElementById('destination') as HTMLSelectElement;
+	const exchInput = document.getElementById('exchange-name') as HTMLInputElement;
+	const txInput = document.getElementById('txhash') as HTMLInputElement;
+
+	const verdictBadge = document.getElementById('verdict-badge');
+	const scorePill = document.getElementById('score-pill');
+	const verdictSummary = document.getElementById('verdict-summary');
+	const stepsList = document.getElementById('steps-list');
+	const supportTicketBox = document.getElementById('support-ticket-box');
+	const ticketText = document.getElementById('ticket-text');
+	const copyTicketBtn = document.getElementById('copy-ticket-btn');
+
+	function calculateVerdict() {
+		if (!coinInput || !netInput || !destInput || !verdictBadge || !scorePill || !verdictSummary || !stepsList || !supportTicketBox || !ticketText) return;
+
+		const coin = coinInput.value;
+		const net = netInput.value;
+		const dest = destInput.value;
+		const exchName = exchInput.value.trim() || 'İlgili Borsa';
+		const txHash = txInput.value.trim() || '[BURAYA_TXID_KODUNUZU_YAZIN]';
+
+		const isEVMNetwork = ['ERC20', 'BEP20', 'ARBITRUM', 'POLYGON', 'OPTIMISM', 'AVAXC'].includes(net);
+
+		if (dest === 'PERSONAL') {
+			supportTicketBox.style.display = 'none';
+
+			if (isEVMNetwork) {
+				verdictBadge.className = 'verdict-status badge-success';
+				verdictBadge.innerHTML = `<span class="status-icon">✓</span> <span class="status-title">%100 KURTARILABİLİR (ÖZEL ANAHTAR SİZDE)</span>`;
+				scorePill.className = 'score-pill score-success';
+				scorePill.innerText = '%100 Güvenli';
+
+				verdictSummary.innerHTML = `
+					<p><strong>Mükemmel Haber:</strong> Gönderdiğiniz adres kişisel cüzdanınıza ait olduğu için özel anahtar (Private Key / Seed Phrase) kontrolü tamamen sizdedir. EVM uyumlu ağlarda adresler ortaktır, dolayısıyla <strong>paranız kaybolmadı</strong>.</p>
+				`;
+
+				stepsList.innerHTML = `
+					<li><strong>Ağı Cüzdana Ekleyin:</strong> MetaMask veya kullandığınız cüzdanı açın. Ağ seçiciden <strong>${net}</strong> ağını seçin veya Chainlist.org üzerinden ağı bağlayın.</li>
+					<li><strong>Doğru Adreste Olduğunuzu Onaylayın:</strong> Transferi yaptığınız cüzdan hesabını seçin.</li>
+					<li><strong>Token'ı Cüzdana Tanıtın:</strong> Cüzdanda en alttaki <em>"Tokenleri İçe Aktar (Import Tokens)"</em> seçeneğine tıklayın ve resmi <strong>${coin}</strong> (${net}) akıllı sözleşme adresini yapıştırın.</li>
+					<li><strong>Sonuç:</strong> Bakiyeniz anında ekranınızda belirecektir. Fonlarınızı istediğiniz yere artık geri gönderebilirsiniz.</li>
+				`;
+			} else {
+				verdictBadge.className = 'verdict-status badge-warning';
+				verdictBadge.innerHTML = `<span class="status-icon">⚡</span> <span class="status-title">ÖZEL CÜZDAN İÇE AKTARMA GEREKLİ</span>`;
+				scorePill.className = 'score-pill score-warning';
+				scorePill.innerText = 'Orta / Çözülebilir';
+
+				verdictSummary.innerHTML = `
+					<p>Kişisel cüzdanınıza (${net}) ağından gönderim yaptınız. Cüzdan uygulamanız bu ağı varsayılan olarak göstermiyorsa, seed kelimelerinizi bu ağı destekleyen çoklu zincir cüzdanına (örn. Trust Wallet veya SafePal) girerek erişebilirsiniz.</p>
+				`;
+
+				stepsList.innerHTML = `
+					<li>Gönderim yaptığınız cüzdanın gizli kurtarma kelimelerini (Seed Phrase) güvenli bir şekilde yedekleyin.</li>
+					<li>Bu ağı (${net}) doğal olarak destekleyen bir cüzdana kelimelerinizi aktarın.</li>
+					<li>Bakiyenizi kontrol edin.</li>
+				`;
+			}
+		} else {
+			// Exchange destination
+			supportTicketBox.style.display = 'block';
+
+			verdictBadge.className = 'verdict-status badge-warning';
+			verdictBadge.innerHTML = `<span class="status-icon">⚠️</span> <span class="status-title">BORSA DESTEK BAŞVURUSU GEREKLİ</span>`;
+			scorePill.className = 'score-pill score-warning';
+			scorePill.innerText = 'Borsa İnsiyatifinde';
+
+			verdictSummary.innerHTML = `
+				<p><strong>Önemli Durum:</strong> Transfer bir merkezi borsaya (${exchName}) yapılmıştır. Merkezi borsalarda cüzdanların özel anahtarları borsanın sistemindedir. Kullanıcı olarak doğrudan müdahale edemezsiniz; ancak borsa teknik ekibi fonu manuel olarak kurtarıp iade edebilir.</p>
+			`;
+
+			stepsList.innerHTML = `
+				<li><strong>Borsaya Giriş Yapın:</strong> ${exchName} hesabınıza giriş yapın.</li>
+				<li><strong>Hatalı Yatırma Başvurusu:</strong> Destek Merkezi veya "Yatırma Sorunları / Hatalı Ağ Kurtarma" formunu açın.</li>
+				<li><strong>Aşağıdaki Hazır Şablonu Kopyalayın:</strong> Sizin için hazırladığımız destek mesajını borsa yetkilisine iletin.</li>
+				<li><strong>İade Ücreti:</strong> Çoğu borsa manuel kurtarma için küçük bir işlem ücreti (örn. 10-30 USDT) kesebilir veya bir sonraki güncellemeye kadar bekletebilir.</li>
+			`;
+
+			ticketText.innerText = 
+`Sayın ${exchName} Destek Ekibi,
+
+Hesabıma yapacağım transfer sırasında yanlışlıkla hatalı ağ üzerinden gönderim gerçekleştirdim. Detaylar aşağıdadır:
+
+- Gönderilen Kripto Para: ${coin}
+- Gönderilen Ağ (Kullanılan Ağ): ${net}
+- Alıcı Adresim: [Hesabınızdaki İlgili Yatırma Adresi]
+- İşlem Kodu (TXID / Hash): ${txHash}
+
+Fonların ilgili cüzdan adresinize ulaştığı blokzincir tarayıcısında açıkça görülmektedir. Yanlış ağ üzerinden ulaşan bu fonların, işlem ücreti tarafımdan karşılanmak üzere kaynak cüzdan adresime iade edilmesini veya hesabıma manuel yansıtılmasını rica ederim.
+
+Gereken desteğiniz için şimdiden teşekkür ederim.`;
+		}
+	}
+
+	coinInput?.addEventListener('change', calculateVerdict);
+	netInput?.addEventListener('change', calculateVerdict);
+	destInput?.addEventListener('change', calculateVerdict);
+	exchInput?.addEventListener('input', calculateVerdict);
+	txInput?.addEventListener('input', calculateVerdict);
+
+	copyTicketBtn?.addEventListener('click', () => {
+		if (ticketText) {
+			navigator.clipboard.writeText(ticketText.innerText).then(() => {
+				copyTicketBtn.innerHTML = '<span>✓ Kopyalandı!</span>';
+				setTimeout(() => {
+					copyTicketBtn.innerHTML = '<span>Kopyala</span>';
+				}, 2000);
+			});
+		}
+	});
+
+	// Run initially
+	calculateVerdict();
+</script>
+
+<style>
+	.tool-page {
+		padding: 32px 24px 80px;
+	}
+
+	.breadcrumb {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 13px;
+		color: var(--text-dim);
+		margin-bottom: 24px;
+	}
+
+	.breadcrumb a {
+		color: var(--text-muted);
+	}
+
+	.breadcrumb a:hover {
+		color: var(--accent-cyan);
+	}
+
+	.breadcrumb .current {
+		color: #CBD5E1;
+	}
+
+	.tool-header {
+		margin-bottom: 32px;
+	}
+
+	.tool-title {
+		font-size: 38px;
+		font-weight: 700;
+		margin: 12px 0 8px;
+		letter-spacing: -0.5px;
+	}
+
+	.tool-subtitle {
+		font-size: 17px;
+		color: var(--text-muted);
+		max-width: 760px;
+		line-height: 1.6;
+	}
+
+	.tool-card {
+		background: var(--surface-dark);
+		border: 1px solid var(--surface-border);
+		border-radius: 16px;
+		overflow: hidden;
+		box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+		margin-bottom: 40px;
+	}
+
+	.tool-card-head {
+		background: #0E1322;
+		border-bottom: 1px solid var(--surface-border);
+		padding: 16px 24px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	.step-indicator {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.step-badge {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		font-weight: 700;
+		background: var(--accent-cyan);
+		color: #0B0F1A;
+		padding: 3px 8px;
+		border-radius: 4px;
+	}
+
+	.step-title {
+		font-weight: 600;
+		font-size: 15px;
+		color: #F8FAFC;
+	}
+
+	.privacy-note {
+		font-size: 12px;
+		color: var(--text-dim);
+	}
+
+	.tool-form-grid {
+		padding: 28px 24px;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 20px;
+	}
+
+	.full-width {
+		grid-column: span 2;
+	}
+
+	.input-hint {
+		display: block;
+		font-size: 12px;
+		color: var(--text-dim);
+		margin-top: 6px;
+	}
+
+	.verdict-container {
+		background: #0B0F1A;
+		border-top: 1px solid var(--surface-border);
+		padding: 28px 24px;
+	}
+
+	.verdict-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 20px;
+		flex-wrap: wrap;
+		gap: 12px;
+	}
+
+	.verdict-status {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 16px;
+		border-radius: 8px;
+		font-family: var(--font-heading);
+		font-weight: 700;
+		font-size: 16px;
+		letter-spacing: 0.5px;
+	}
+
+	.score-pill {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		font-weight: 700;
+		padding: 6px 14px;
+		border-radius: 999px;
+	}
+
+	.score-success {
+		background: rgba(16, 185, 129, 0.15);
+		border: 1px solid rgba(16, 185, 129, 0.4);
+		color: #34D399;
+	}
+
+	.score-warning {
+		background: rgba(245, 158, 11, 0.15);
+		border: 1px solid rgba(245, 158, 11, 0.4);
+		color: #FBBF24;
+	}
+
+	.verdict-summary {
+		font-size: 15px;
+		line-height: 1.6;
+		color: #E2E8F0;
+		margin-bottom: 24px;
+	}
+
+	.action-steps {
+		background: var(--surface-dark);
+		border: 1px solid var(--surface-border);
+		border-radius: 12px;
+		padding: 20px 24px;
+		margin-bottom: 24px;
+	}
+
+	.steps-heading {
+		font-size: 16px;
+		font-weight: 700;
+		color: var(--accent-cyan);
+		margin-bottom: 14px;
+	}
+
+	.steps-list {
+		padding-left: 20px;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		font-size: 14px;
+		color: #CBD5E1;
+		line-height: 1.6;
+	}
+
+	.support-ticket-box {
+		background: #070A12;
+		border: 1px solid #1E293B;
+		border-radius: 10px;
+		padding: 18px 20px;
+		margin-top: 20px;
+	}
+
+	.ticket-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 12px;
+	}
+
+	.ticket-header h4 {
+		font-size: 14px;
+		font-weight: 600;
+		color: #F1F5F9;
+	}
+
+	.ticket-text {
+		background: #0B0F1A;
+		border: 1px solid #1E293B;
+		border-radius: 8px;
+		padding: 16px;
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.6;
+		color: #94A3B8;
+		white-space: pre-wrap;
+		word-break: break-word;
+	}
+
+	.info-accordion {
+		margin-bottom: 32px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.accordion-item {
+		background: var(--surface-dark);
+		border: 1px solid var(--surface-border);
+		border-radius: 12px;
+		overflow: hidden;
+	}
+
+	.accordion-summary {
+		padding: 18px 24px;
+		font-weight: 600;
+		font-size: 16px;
+		cursor: pointer;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		user-select: none;
+	}
+
+	.accordion-content {
+		padding: 0 24px 20px;
+		font-size: 14px;
+		color: #CBD5E1;
+		line-height: 1.7;
+	}
+
+	.accordion-content p {
+		margin-bottom: 12px;
+	}
+
+	.meta-row {
+		display: flex;
+		gap: 12px;
+		font-size: 12px;
+		color: var(--text-dim);
+		margin-top: 16px;
+		padding-top: 12px;
+		border-top: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.faq-list {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.faq-item h4 {
+		font-size: 15px;
+		color: var(--accent-cyan);
+		margin-bottom: 6px;
+	}
+
+	.faq-item p {
+		font-size: 14px;
+		color: #94A3B8;
+		margin: 0;
+	}
+
+	.related-tools {
+		margin-top: 48px;
+	}
+
+	.related-title {
+		font-size: 20px;
+		font-weight: 700;
+		margin-bottom: 16px;
+	}
+
+	.related-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 16px;
+	}
+
+	.related-card {
+		background: var(--surface-dark);
+		border: 1px solid var(--surface-border);
+		border-radius: 12px;
+		padding: 18px;
+		display: flex;
+		align-items: flex-start;
+		gap: 14px;
+		text-decoration: none;
+		transition: border-color 0.2s, transform 0.2s;
+	}
+
+	.related-card:hover {
+		border-color: var(--accent-cyan);
+		transform: translateY(-2px);
+	}
+
+	.r-icon {
+		font-size: 24px;
+	}
+
+	.related-card strong {
+		display: block;
+		font-size: 15px;
+		color: #F8FAFC;
+		margin-bottom: 4px;
+	}
+
+	.related-card p {
+		font-size: 13px;
+		color: var(--text-muted);
+		margin: 0;
+	}
+
+	@media (max-width: 768px) {
+		.tool-form-grid {
+			grid-template-columns: 1fr;
+		}
+		.full-width {
+			grid-column: span 1;
+		}
+		.related-grid {
+			grid-template-columns: 1fr;
+		}
+		.tool-title {
+			font-size: 28px;
+		}
+	}
+</style>

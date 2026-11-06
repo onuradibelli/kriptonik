@@ -1,0 +1,136 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = "Kripto Rehberleri & Çözüm Kılavuzları | Kriptonik";
+const pageDesc = "Kripto para problemlerinde adım adım çözüm kılavuzları, cüzdan kurtarma teknikleri ve güvenlik yönergeleri.";
+
+const guides = [
+	{
+		id: "yanlis-ag-kurtarma",
+		title: "Yanlış Ağa Gönderilen Kripto Para Nasıl Kurtarılır?",
+		readTime: "4 dk okuma",
+		category: "Kurtarma",
+		desc: "BEP-20 yerine ERC-20 veya Arbitrum ağına gönderilen fonların cüzdan ve borsa tarafındaki kurtarma adımları.",
+		link: "/araclar/yanlis-aga-gonderdim"
+	},
+	{
+		id: "nonce-hizlandirma",
+		title: "MetaMask'ta Takılan İşlem Nasıl İptal Edilir veya Hızlandırılır?",
+		readTime: "3 dk okuma",
+		category: "İşlem",
+		desc: "Aynı Nonce numarası ile sıfır değerli transfer göndererek pending kuyruğundaki işlemleri anında temizleme rehberi.",
+		link: "/araclar/takilan-islem"
+	},
+	{
+		id: "cuzdan-guvenlik",
+		title: "Kripto Cüzdan Güvenlik Kontrol Listesi: Drainer Tuzaklarından Korunma",
+		readTime: "5 dk okuma",
+		category: "Güvenlik",
+		desc: "Sınırsız harcama yetkileri (Token Approval), şüpheli airdroplar ve cüzdan boşaltıcı scriptlere karşı savunma rehberi.",
+		link: "/yardim"
+	},
+	{
+		id: "en-ucuz-transfer",
+		title: "Borsalar Arasında En Ucuz ve Hızlı Kripto Transferi Nasıl Yapılır?",
+		readTime: "4 dk okuma",
+		category: "Maliyet",
+		desc: "TRC-20, Arbitrum ve BEP-20 ağları arasındaki komisyon ve hız kıyaslamalarıyla maliyet tasarrufu sağlama yöntemi.",
+		link: "/araclar/maliyet-karsilastirici"
+	}
+];
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container guides-page">
+		<div class="section-header">
+			<div class="badge-pill">
+				<span>📖</span>
+				<span>Adım Adım Kılavuzlar</span>
+			</div>
+			<h1 class="section-title">Kripto Çözüm Rehberleri</h1>
+			<p class="section-desc">
+				Karşılaştığınız teknik aksaklıkları ve karmaşık durumları en basit haliyle çözen detaylı rehber serimiz.
+			</p>
+		</div>
+
+		<div class="guides-grid">
+			{guides.map(g => (
+				<article class="guide-card">
+					<div class="g-meta">
+						<span class="g-cat">{g.category}</span>
+						<span class="g-time">{g.readTime}</span>
+					</div>
+					<h2 class="g-title">{g.title}</h2>
+					<p class="g-desc">{g.desc}</p>
+					<div class="g-action">
+						<a href={g.link} class="btn btn-secondary btn-sm">
+							<span>Rehberi ve Aracı İncele →</span>
+						</a>
+					</div>
+				</article>
+			))}
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.guides-page {
+		padding: 48px 24px 80px;
+	}
+
+	.guides-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+		gap: 24px;
+	}
+
+	.guide-card {
+		background: var(--surface-dark);
+		border: 1px solid var(--surface-border);
+		border-radius: 14px;
+		padding: 24px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		transition: border-color 0.2s, transform 0.2s;
+	}
+
+	.guide-card:hover {
+		border-color: var(--accent-cyan);
+		transform: translateY(-2px);
+	}
+
+	.g-meta {
+		display: flex;
+		justify-content: space-between;
+		font-size: 12px;
+		color: var(--text-dim);
+		margin-bottom: 12px;
+	}
+
+	.g-cat {
+		color: var(--accent-cyan);
+		font-weight: 600;
+	}
+
+	.g-title {
+		font-size: 19px;
+		font-weight: 700;
+		color: #F8FAFC;
+		margin-bottom: 10px;
+		line-height: 1.35;
+	}
+
+	.g-desc {
+		font-size: 14px;
+		line-height: 1.6;
+		color: var(--text-muted);
+		margin-bottom: 20px;
+		flex-grow: 1;
+	}
+
+	.g-action {
+		padding-top: 14px;
+		border-top: 1px solid rgba(255, 255, 255, 0.05);
+	}
+</style>

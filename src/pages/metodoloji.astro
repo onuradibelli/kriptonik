@@ -1,0 +1,91 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pageTitle = "Metodoloji & Veri Kaynakları | Kriptonik";
+const pageDesc = "Kriptonik araçlarındaki hesaplamaların, formüllerin ve veri akışlarının arkasındaki şeffaf metodoloji.";
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container container-narrow page-content">
+		<div class="section-header">
+			<div class="badge-pill">
+				<span>⚖️</span>
+				<span>Şeffaflık İlkesi</span>
+			</div>
+			<h1 class="section-title">Metodoloji & Veri Kaynakları</h1>
+		</div>
+
+		<div class="content-body card">
+			<p>
+				Kriptonik'te sunulan tüm simülasyonlar, maliyet karşılaştırmaları ve teşhis araçları açık, doğrulanabilir ve tarafsız metodolojilerle çalışır.
+			</p>
+
+			<h3>1. Veri Kaynakları</h3>
+			<ul>
+				<li><strong>Kripto Fiyatları & Değişimler:</strong> CoinGecko ve CoinPaprika açık API uç noktaları.</li>
+				<li><strong>Bitcoin Mempool & Blok Yoğunluğu:</strong> Mempool.space açık kaynaklı mempool verileri.</li>
+				<li><strong>EVM Gas & Sözleşme Bilgileri:</strong> Etherscan, BscScan, Polygonscan ve ilgili ağların RPC doğrulayıcıları.</li>
+				<li><strong>Stablecoin Peg Durumu:</strong> DefiLlama ve merkeziyetsiz likidite havuzları verisi.</li>
+			</ul>
+
+			<h3>2. Maliyet Karşılaştırma Hesaplama Formülü</h3>
+			<p>
+				Maliyet karşılaştırmalarında borsaların yalnızca ilan ettikleri alım komisyonu değil; <strong>Net Ele Geçen Tutar</strong> formülü esas alınır:
+			</p>
+			<div class="formula-box mono-text">
+				Toplam Maliyet = (İşlem Tutarı × Komisyon Oranı) + (İşlem Tutarı × Tahmini Spread) + Blokzincir Çekim Ücreti
+			</div>
+
+			<h3>3. Adres Formatı & Checksum Algoritmaları</h3>
+			<p>
+				Adres Ağ Eşleştirici aracımızda adresler sunucuya aktarılmadan doğrudan tarayıcı içinde EIP-55 (Ethereum), Base58Check (TRON, Bitcoin Legacy) ve Bech32 (SegWit) kriptografik regex ve hash kontrolüyle doğrulanır.
+			</p>
+
+			<h3>4. Güncelleme ve Hata Düzeltme</h3>
+			<p>
+				Borsaların komisyon veya çekim ücreti değişiklikleri düzenli olarak kontrol edilip güncellenir. Bir veride hata fark ederseniz lütfen bizimle iletişime geçiniz.
+			</p>
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.page-content {
+		padding: 48px 24px 80px;
+	}
+
+	.content-body {
+		padding: 36px 32px;
+		line-height: 1.8;
+		color: #CBD5E1;
+	}
+
+	.content-body h3 {
+		font-size: 20px;
+		color: #F8FAFC;
+		margin: 28px 0 12px;
+	}
+
+	.content-body h3:first-child {
+		margin-top: 0;
+	}
+
+	.content-body ul {
+		padding-left: 20px;
+		margin-bottom: 20px;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		font-size: 14px;
+	}
+
+	.formula-box {
+		background: #0B0F1A;
+		border: 1px solid var(--surface-border);
+		border-radius: 8px;
+		padding: 16px;
+		font-size: 13px;
+		color: var(--accent-cyan);
+		margin: 16px 0;
+	}
+</style>

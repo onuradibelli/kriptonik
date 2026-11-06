@@ -1,0 +1,108 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pageTitle = "Hakkımızda & Vizyon | Kriptonik";
+const pageDesc = "Kriptonik nedir? Kripto kullanıcılarının sıkıştığı anlarda tarafsız, hesapsız ve gizlilik öncelikli araçlar sunan Cloudflare tabanlı modern web platformu.";
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container container-narrow page-content">
+		<div class="section-header">
+			<div class="badge-pill">
+				<span>◈</span>
+				<span>Hakkımızda</span>
+			</div>
+			<h1 class="section-title">Kripto'da Takıldığın An, Çözüm Burada.</h1>
+		</div>
+
+		<div class="content-body card">
+			<h3>Biz Kimiz?</h3>
+			<p>
+				Kriptonik (<strong>kriptonik.com</strong>), kripto para ekosistemindeki kullanıcıların en çok zorlandığı, para kaybettiği veya kafa karışıklığı yaşadığı anlarda anında teknik çözüm ve rehberlik sağlamak amacıyla kurulmuş bağımsız bir problem çözücü araç platformudur.
+			</p>
+
+			<h3>Neden Kurulduk?</h3>
+			<p>
+				Bugün internetteki çoğu kripto platformu sadece borsa fiyatlarına, magazinel haberlere ve alım-satım yönlendirmelerine odaklanır. Ancak bir kullanıcının transferi yanlış ağa gittiğinde, işlemi saatlerce mempool'da beklediğinde veya transfer maliyetlerini kıyaslamak istediğinde başvurabileceği tek bir derli toplu, tarafsız ve anlaşılır adres bulunmamaktadır.
+			</p>
+			<p>
+				Kriptonik tam bu boşluğu doldurur: <strong>Problem odaklı, çözüm üreten ve sade dille çalışan dijital ilk yardım çantasıdır.</strong>
+			</p>
+
+			<h3>3 Temel İlkemiz</h3>
+			<div class="principles-grid">
+				<div class="p-card">
+					<h4>1. Hesap Yok</h4>
+					<p>Sitedeki araçları kullanmak için üye olmak, e-posta vermek veya giriş yapmak gerekmez. Tek tıkla hemen çalışır.</p>
+				</div>
+				<div class="p-card">
+					<h4>2. Gizlilik Öncelikli</h4>
+					<p>Hesaplamalar ve adres kontrolleri tarayıcınızda veya Cloudflare Edge ağında gerçekleşir. Verileriniz hiçbir sunucuya kaydedilmez.</p>
+				</div>
+				<div class="p-card">
+					<h4>3. Sade Dil</h4>
+					<p>Anlamsız kripto jargonları yerine herkesin anlayabileceği günlük Türkçe ile rehberlik sunulur.</p>
+				</div>
+			</div>
+
+			<h3>Teknoloji & Altyapı</h3>
+			<p>
+				Kriptonik, <strong>Cloudflare Workers, Pages ve Global Edge Network</strong> mimarisi üzerine kurulmuştur. Dünya genelinde 300'den fazla şehirde sıfır gecikme, ultra hızlı sayfa yüklenmesi ve kurumsal düzeyde DDoS ve bot korumasıyla hizmet verir.
+			</p>
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.page-content {
+		padding: 48px 24px 80px;
+	}
+
+	.content-body {
+		padding: 36px 32px;
+		line-height: 1.8;
+		color: #CBD5E1;
+	}
+
+	.content-body h3 {
+		font-size: 22px;
+		color: #F8FAFC;
+		margin: 28px 0 12px;
+	}
+
+	.content-body h3:first-child {
+		margin-top: 0;
+	}
+
+	.content-body p {
+		margin-bottom: 16px;
+		font-size: 15px;
+	}
+
+	.principles-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+		gap: 16px;
+		margin: 24px 0;
+	}
+
+	.p-card {
+		background: #0B0F1A;
+		border: 1px solid var(--surface-border);
+		border-radius: 10px;
+		padding: 20px;
+	}
+
+	.p-card h4 {
+		color: var(--accent-cyan);
+		font-size: 16px;
+		margin-bottom: 8px;
+	}
+
+	.p-card p {
+		font-size: 13px;
+		color: var(--text-muted);
+		margin: 0;
+		line-height: 1.6;
+	}
+</style>

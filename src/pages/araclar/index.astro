@@ -1,0 +1,407 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const pageTitle = "Kripto Araçları Dizini (12 Problem Çözücü) | Kriptonik";
+const pageDesc = "Hesapsız, anında ve güvenilir kripto problem çözücü araçlar. Yanlış ağ, takılan işlem, maliyet kıyası, adres eşleştirici ve güvenlik denetimi.";
+
+const tools = [
+	{
+		id: "yanlis-ag",
+		title: "Yanlış Ağa Gönderdim Sihirbazı",
+		category: "urgent",
+		categoryName: "Acil Sorun Çözücü",
+		badge: "Çok Popüler",
+		icon: "🧭",
+		slug: "/araclar/yanlis-aga-gonderdim",
+		desc: "Para yanlış ağa transfer edildiğinde kurtarılabilirlik durumunu anında öğrenin, adım adım çözüm ve hazır borsa destek metnini alın.",
+		status: "active"
+	},
+	{
+		id: "takilan-islem",
+		title: "Takılan İşlem Teşhisi (Pending Tx)",
+		category: "urgent",
+		categoryName: "Acil Sorun Çözücü",
+		badge: "Sık Aranan",
+		icon: "⏱️",
+		slug: "/araclar/takilan-islem",
+		desc: "İşleminiz saatlerdir onaylanmıyor mu? Mempool durumunu analiz edin, RBF, CPFP veya Nonce sıfırlama ile işlemi hızlandırın.",
+		status: "active"
+	},
+	{
+		id: "adres-ag",
+		title: "Adres Ağ Eşleştirici & Format Doğrulayıcı",
+		category: "security",
+		categoryName: "Güvenlik & Doğrulama",
+		badge: "Temel Güvenlik",
+		icon: "🔍",
+		slug: "/araclar/adres-ag-eslestirici",
+		desc: "Cüzdan adresinin formatından hangi blokzincir ağlarını desteklediğini doğrulayın, çapraz ağ kaybı riskini sıfırlayın.",
+		status: "active"
+	},
+	{
+		id: "dca-sim",
+		title: "DCA Geri Test Simülatörü",
+		category: "calc",
+		categoryName: "Hesaplama & Simülasyon",
+		badge: "Yatırım Aracı",
+		icon: "📈",
+		slug: "/araclar/dca-simulator",
+		desc: "Geçmişten bugüne her ay düzenli Bitcoin veya Ethereum alsaydınız bugünkü portföy büyüklüğünüz ve kârınız ne olurdu?",
+		status: "active"
+	},
+	{
+		id: "maliyet-kiyas",
+		title: "Gerçek Maliyet Karşılaştırıcı",
+		category: "calc",
+		categoryName: "Maliyet & Arbitraj",
+		badge: "Tasarruf Sağlar",
+		icon: "⚖️",
+		slug: "/araclar/maliyet-karsilastirici",
+		desc: "TL ile kripto alırken veya satarken borsa komisyonu, spread ve ağ çekim ücreti dahil gerçek net maliyeti hesaplayın.",
+		status: "active"
+	},
+	{
+		id: "islem-cevirmen",
+		title: "İşlem Çevirmeni (Workers AI Destekli)",
+		category: "urgent",
+		categoryName: "Acil Sorun Çözücü",
+		badge: "AI Destekli",
+		icon: "🤖",
+		slug: "/yardim",
+		desc: "Karmaşık kontrat işlemlerini ve transfer hash kodlarını sade Türkçe ile açıklar: kimden kime, ne kadar, ne yaptı?",
+		status: "preview"
+	},
+	{
+		id: "guvenlik-kontrol",
+		title: "Güvenlik Kontrolü (Adres / URL / Token)",
+		category: "security",
+		categoryName: "Güvenlik & Doğrulama",
+		badge: "Anti-Scam",
+		icon: "🛡️",
+		slug: "/yardim",
+		desc: "Şüpheli web siteleri, cüzdan adresleri ve rug-pull token kontratları için bilinen kara liste ve risk sinyalleri taraması.",
+		status: "preview"
+	},
+	{
+		id: "depeg-monitor",
+		title: "Stablecoin Depeg Monitörü",
+		category: "market",
+		categoryName: "Piyasa & Veri",
+		badge: "Risk Takibi",
+		icon: "⚡",
+		slug: "/piyasa",
+		desc: "USDT, USDC ve popüler sabit coinlerin 1$ çıpasından sapma oranlarını ve likidite risklerini anlık izleyin.",
+		status: "preview"
+	},
+	{
+		id: "cuzdan-checkup",
+		title: "Cüzdan Güvenlik Check-up'ı",
+		category: "security",
+		categoryName: "Güvenlik & Doğrulama",
+		badge: "Gizlilik Öncelikli",
+		icon: "🔐",
+		slug: "/yardim",
+		desc: "Tarayıcıda işaretlenen kontrol listesiyle kişisel cüzdanınızın güvenlik açığı skorunu ve eksiklerinizi öğrenin.",
+		status: "preview"
+	},
+	{
+		id: "token-approval",
+		title: "Token Yetki (Approval) Kontrolü",
+		category: "security",
+		categoryName: "Güvenlik & Doğrulama",
+		badge: "Varlık Koruma",
+		icon: "🔑",
+		slug: "/yardim",
+		desc: "Cüzdanınızın geçmişte hangi DeFi platformlarına sınırsız harcama izni verdiğini görün ve yetkileri iptal edin.",
+		status: "preview"
+	},
+	{
+		id: "unlock-calendar",
+		title: "Token Unlock Takvimi",
+		category: "market",
+		categoryName: "Piyasa & Veri",
+		badge: "Fiyat Riski",
+		icon: "📅",
+		slug: "/piyasa",
+		desc: "Büyük miktarda kilitli token açılışlarını (vesting) ve dolaşımdaki arza baskı yapacak tarihleri takip edin.",
+		status: "preview"
+	},
+	{
+		id: "airdrop-rehberi",
+		title: "Airdrop Güvenlik Rehberi",
+		category: "security",
+		categoryName: "Güvenlik & Doğrulama",
+		badge: "Doğrulama",
+		icon: "🪂",
+		slug: "/rehber",
+		desc: "Karşılaştığınız airdrop duyurusu gerçek mi yoksa cüzdan boşaltıcı (drainer) dolandırıcılığı mı olduğunu test edin.",
+		status: "preview"
+	}
+];
+---
+
+<Layout title={pageTitle} description={pageDesc}>
+	<div class="container directory-page">
+		<div class="section-header">
+			<div class="badge-pill">
+				<span>◈</span>
+				<span>12 Problem Çözücü Araç</span>
+			</div>
+			<h1 class="section-title">Kriptonik Araçlar Dizini</h1>
+			<p class="section-desc">
+				Üyelik istemeyen, verilerinizi sunucuya kaydetmeyen ve sade Türkçe ile çalışan kripto problem çözücü araç seti.
+			</p>
+		</div>
+
+		<!-- Live Filter & Search Bar -->
+		<div class="filter-bar">
+			<div class="search-box">
+				<span class="search-icon">🔍</span>
+				<input type="text" id="tool-search" class="search-input" placeholder="Araç veya problem ara (Örn: yanlış ağ, gas, dca, maliyet, güvenlik...)" />
+			</div>
+
+			<div class="category-pills">
+				<button class="cat-pill active" data-cat="all">Tümü (12)</button>
+				<button class="cat-pill" data-cat="urgent">Acil Sorunlar</button>
+				<button class="cat-pill" data-cat="calc">Hesaplayıcılar</button>
+				<button class="cat-pill" data-cat="security">Güvenlik</button>
+				<button class="cat-pill" data-cat="market">Piyasa & Veri</button>
+			</div>
+		</div>
+
+		<!-- Tools Grid -->
+		<div class="tools-grid" id="tools-container">
+			{tools.map(tool => (
+				<a href={tool.slug} class="tool-card-item" data-category={tool.category} data-title={tool.title.toLowerCase()} data-desc={tool.desc.toLowerCase()}>
+					<div class="card-item-top">
+						<span class="tool-emoji">{tool.icon}</span>
+						<div class="badge-group">
+							<span class="cat-label">{tool.categoryName}</span>
+							{tool.status === 'active' ? (
+								<span class="status-live">Canlı</span>
+							) : (
+								<span class="status-preview">Faz 2 Önizleme</span>
+							)}
+						</div>
+					</div>
+					<h3 class="tool-item-title">{tool.title}</h3>
+					<p class="tool-item-desc">{tool.desc}</p>
+					<div class="tool-item-footer">
+						<span class="open-link">Aracı Aç →</span>
+					</div>
+				</a>
+			))}
+		</div>
+	</div>
+</Layout>
+
+<script>
+	const searchInput = document.getElementById('tool-search') as HTMLInputElement;
+	const catPills = document.querySelectorAll('.cat-pill');
+	const toolCards = document.querySelectorAll('.tool-card-item');
+
+	let activeCategory = 'all';
+
+	function filterTools() {
+		const query = searchInput?.value.toLowerCase().trim() || '';
+
+		toolCards.forEach(card => {
+			const cardEl = card as HTMLElement;
+			const cardCat = cardEl.getAttribute('data-category');
+			const title = cardEl.getAttribute('data-title') || '';
+			const desc = cardEl.getAttribute('data-desc') || '';
+
+			const matchesCategory = activeCategory === 'all' || cardCat === activeCategory;
+			const matchesQuery = query === '' || title.includes(query) || desc.includes(query);
+
+			if (matchesCategory && matchesQuery) {
+				cardEl.style.display = 'flex';
+			} else {
+				cardEl.style.display = 'none';
+			}
+		});
+	}
+
+	searchInput?.addEventListener('input', filterTools);
+
+	catPills.forEach(pill => {
+		pill.addEventListener('click', () => {
+			catPills.forEach(p => p.classList.remove('active'));
+			pill.classList.add('active');
+			activeCategory = pill.getAttribute('data-cat') || 'all';
+			filterTools();
+		});
+	});
+</script>
+
+<style>
+	.directory-page {
+		padding: 48px 24px 80px;
+	}
+
+	.filter-bar {
+		background: var(--surface-dark);
+		border: 1px solid var(--surface-border);
+		border-radius: 14px;
+		padding: 20px;
+		margin-bottom: 36px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.search-box {
+		position: relative;
+		display: flex;
+		align-items: center;
+	}
+
+	.search-icon {
+		position: absolute;
+		left: 16px;
+		font-size: 16px;
+		color: var(--text-dim);
+	}
+
+	.search-input {
+		width: 100%;
+		background: #0B0F1A;
+		border: 1px solid #334155;
+		color: var(--text-main);
+		padding: 14px 16px 14px 44px;
+		border-radius: 10px;
+		font-size: 15px;
+		outline: none;
+		transition: border-color 0.2s;
+	}
+
+	.search-input:focus {
+		border-color: var(--accent-cyan);
+		box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.15);
+	}
+
+	.category-pills {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	.cat-pill {
+		background: rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		color: #94A3B8;
+		padding: 8px 16px;
+		border-radius: 999px;
+		font-size: 13px;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.cat-pill:hover {
+		color: #F8FAFC;
+		border-color: rgba(255, 255, 255, 0.2);
+	}
+
+	.cat-pill.active {
+		background: rgba(34, 211, 238, 0.15);
+		border-color: var(--accent-cyan);
+		color: var(--accent-cyan);
+		font-weight: 600;
+	}
+
+	.tools-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+		gap: 24px;
+	}
+
+	.tool-card-item {
+		background: var(--surface-dark);
+		border: 1px solid var(--surface-border);
+		border-radius: 14px;
+		padding: 24px;
+		text-decoration: none;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+	}
+
+	.tool-card-item:hover {
+		transform: translateY(-3px);
+		border-color: var(--surface-border-hover);
+		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+	}
+
+	.card-item-top {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 16px;
+	}
+
+	.tool-emoji {
+		font-size: 32px;
+	}
+
+	.badge-group {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.cat-label {
+		font-size: 11px;
+		color: var(--text-dim);
+		background: rgba(255, 255, 255, 0.04);
+		padding: 3px 8px;
+		border-radius: 4px;
+	}
+
+	.status-live {
+		font-family: var(--font-mono);
+		font-size: 10px;
+		font-weight: 700;
+		color: #34D399;
+		background: rgba(16, 185, 129, 0.15);
+		padding: 3px 7px;
+		border-radius: 4px;
+	}
+
+	.status-preview {
+		font-family: var(--font-mono);
+		font-size: 10px;
+		font-weight: 600;
+		color: #94A3B8;
+		background: rgba(255, 255, 255, 0.06);
+		padding: 3px 7px;
+		border-radius: 4px;
+	}
+
+	.tool-item-title {
+		font-size: 18px;
+		font-weight: 700;
+		color: #F8FAFC;
+		margin-bottom: 8px;
+	}
+
+	.tool-item-desc {
+		font-size: 13px;
+		line-height: 1.6;
+		color: var(--text-muted);
+		margin-bottom: 20px;
+		flex-grow: 1;
+	}
+
+	.tool-item-footer {
+		padding-top: 14px;
+		border-top: 1px solid rgba(255, 255, 255, 0.05);
+	}
+
+	.open-link {
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--accent-cyan);
+	}
+</style>
