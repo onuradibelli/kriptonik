@@ -18,8 +18,8 @@ export default function BreakingNewsTicker() {
     {
       id: 1,
       tag: 'SPOT ETF',
-      title: "Bitcoin ve Ethereum Spot ETF'lerine dünün toplam net kurumsal girişi +$361.0M oldu.",
-      highlight: 'BlackRock (IBIT) +$198.5M ile lider.',
+      title: "Bitcoin ve Ethereum Spot ETF'lerinden dünkü işlem seansında -$506.8M net kurumsal çıkış kaydedildi.",
+      highlight: 'Fidelity (FBTC) ve Grayscale çıkışları baskın.',
       time: '15 dk önce',
       link: '/etf/'
     },
@@ -96,23 +96,25 @@ export default function BreakingNewsTicker() {
           </span>
         </div>
 
-        {/* Center Animated News Text */}
-        <div className="flex-1 overflow-hidden">
-          <Link
-            href={activeNews.link}
-            className="group flex items-center gap-2 truncate transition-colors hover:text-[#2962FF]"
-          >
-            <span className="font-medium text-[var(--foreground)] group-hover:underline truncate">
-              {activeNews.title}
-            </span>
-            <span className="hidden md:inline text-[var(--card-muted)] text-[11px] truncate">
-              {activeNews.highlight}
-            </span>
-            <span className="hidden lg:inline text-[10px] font-mono text-[var(--card-muted)] opacity-70">
-              ({activeNews.time})
-            </span>
-            <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-[#2962FF] flex-shrink-0" />
-          </Link>
+        {/* Center Animated News Text with Slick Slide & Fade Transition */}
+        <div className="flex-1 overflow-hidden min-h-[22px]">
+          <div key={activeNews.id} className="animate-in fade-in slide-in-from-bottom-2 duration-300 ease-out">
+            <Link
+              href={activeNews.link}
+              className="group flex items-center gap-2 truncate transition-colors hover:text-[#2962FF]"
+            >
+              <span className="font-semibold text-xs text-[var(--foreground)] group-hover:underline truncate">
+                {activeNews.title}
+              </span>
+              <span className="hidden md:inline text-[var(--card-muted)] text-xs truncate">
+                {activeNews.highlight}
+              </span>
+              <span className="hidden lg:inline text-xs font-mono text-[var(--card-muted)] opacity-75">
+                ({activeNews.time})
+              </span>
+              <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-[#2962FF] shrink-0" />
+            </Link>
+          </div>
         </div>
 
         {/* Right Controls */}

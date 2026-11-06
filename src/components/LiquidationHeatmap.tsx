@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { CoinData } from '../lib/types';
+import { useBinanceTickers } from '../lib/useBinanceTickers';
 import {
   Flame,
   Layers,
@@ -118,7 +119,9 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
     };
   }, [coin.price, soundEnabled]);
 
-  const currentPrice = coin.price;
+  const { tickers } = useBinanceTickers();
+  const liveTick = tickers[coin.binanceSymbol];
+  const currentPrice = liveTick?.price || coin.price;
   const tfMultiplier = timeframe === '12h' ? 0.6 : timeframe === '24h' ? 1.0 : timeframe === '3d' ? 2.1 : timeframe === '7d' ? 3.4 : 8.2;
   const exMultiplier = exchange === 'ALL' ? 1.0 : exchange === 'BINANCE' ? 0.58 : exchange === 'BYBIT' ? 0.28 : 0.14;
 

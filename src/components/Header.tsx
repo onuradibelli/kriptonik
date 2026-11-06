@@ -116,7 +116,7 @@ export default function Header() {
         {
           label: 'Spot ETF Akışları',
           href: '/etf/',
-          desc: 'BlackRock, Fidelity ve Grayscale günlük net sermaye akışı (SoSoValue)',
+          desc: 'BlackRock, Fidelity ve Grayscale günlük net sermaye akışı',
           icon: BarChart3,
           color: 'text-[#FF8A00]'
         },
@@ -167,101 +167,10 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[var(--background)]/90 backdrop-blur-xl transition-colors">
-      {/* 1. REAL-TIME TELEMETRY TOP BAR (Ferah, Genişletilmiş ve Ayrıştırılmış) */}
-      <div className="border-b border-[var(--border)] bg-[var(--ticker-bg)] px-3 sm:px-6 py-2 text-xs transition-colors">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-          {/* Left: WS Status & Live Telemetry Tickers */}
-          <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-0.5">
-            {/* Live WS Status Badge */}
-            <span className="flex items-center gap-1.5 rounded-lg bg-[var(--card)] px-2.5 py-1 font-mono text-[10px] font-bold text-[var(--card-muted)] border border-[var(--border)] shrink-0 shadow-xs">
-              <span className={`h-2 w-2 rounded-full ${isConnected ? 'bg-[#00E699] pulse-bull' : 'bg-[#00E699]'}`} />
-              <span>{isConnected ? 'CANLI WS' : 'CANLI API'}</span>
-            </span>
-
-            {/* Currency Badges */}
-            <div className="flex items-center gap-2 shrink-0">
-              <Link
-                href="/kac-tl/1-dolar-kac-tl/"
-                className="flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--card)]/70 px-2.5 py-1 transition-all hover:border-[#2962FF]"
-              >
-                <span className="font-semibold text-[var(--card-muted)] text-[11px]">USD/TRY:</span>
-                <span className="font-mono font-bold text-[var(--foreground)]">₺{LIVE_CURRENCY_RATES.USD_TRY.toFixed(2)}</span>
-              </Link>
-
-              <Link
-                href="/kac-tl/1-usdt-kac-tl/"
-                className="flex items-center gap-1.5 rounded-lg border border-[#00E699]/30 bg-[#00E699]/10 px-2.5 py-1 transition-all hover:bg-[#00E699]/15"
-              >
-                <span className="font-semibold text-[var(--card-muted)] text-[11px]">USDT/TRY:</span>
-                <span className="font-mono font-bold text-[#00E699]">₺{LIVE_CURRENCY_RATES.USDT_TRY.toFixed(2)}</span>
-              </Link>
-            </div>
-
-            <div className="h-4 w-px bg-[var(--border)] shrink-0 hidden sm:block" />
-
-            {/* Featured Crypto Coins */}
-            <div className="flex items-center gap-2">
-              {featuredSymbols.map(({ sym, name, slug }) => {
-                const tick = tickers[sym] || defaultTickers[sym as keyof typeof defaultTickers];
-                if (!tick) return null;
-                const isPositive = tick.change24h >= 0;
-                const flash = (tick as any).flashDirection;
-                return (
-                  <Link
-                    key={sym}
-                    href={`/kripto/${slug}/`}
-                    title={`${name} Canlı Kripto Terminali ve Verileri`}
-                    className="flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--card)]/60 hover:bg-[var(--card)] hover:border-[#2962FF]/50 px-2.5 py-1 transition-all shrink-0 group"
-                  >
-                    <span className="font-bold text-xs text-[var(--foreground)] group-hover:text-[#2962FF] transition-colors">{name}</span>
-                    <span className={`font-mono text-xs font-semibold text-[var(--foreground)] px-1 rounded transition-colors ${
-                      flash === 'UP' ? 'tick-flash-up text-[#00E699]' : flash === 'DOWN' ? 'tick-flash-down text-[#FF3B56]' : ''
-                    }`}>
-                      ${tick.price > 10 ? tick.price.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : tick.price.toFixed(4)}
-                    </span>
-                    <span className={`font-mono text-xs font-bold rounded px-1.5 py-0.5 ${
-                      isPositive ? 'bg-[#00E699]/15 text-[#00E699]' : 'bg-[#FF3B56]/15 text-[#FF3B56]'
-                    }`}>
-                      {isPositive ? '+' : ''}{tick.change24h.toFixed(1)}%
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Right: Macro Telemetry Indicators */}
-          <div className="hidden xl:flex items-center gap-4 text-[var(--card-muted)] shrink-0 font-mono text-[11px]">
-            <div className="flex items-center gap-1.5">
-              <span>BTC Dom:</span>
-              <strong className="text-[var(--foreground)]">%58.4</strong>
-            </div>
-            <span>•</span>
-            <div className="flex items-center gap-1.5">
-              <span>ETH Gas:</span>
-              <strong className="text-[#00E699]">8 Gwei</strong>
-            </div>
-            <span>•</span>
-            <div className="flex items-center gap-1.5">
-              <span>Korku/Açgözlülük:</span>
-              <strong className="text-[#FF3B56]">{FEAR_AND_GREED.value} ({FEAR_AND_GREED.classification.split(' ')[0]})</strong>
-            </div>
-            <span>•</span>
-            <div className="flex items-center gap-1.5">
-              <span>Spot ETF:</span>
-              <strong className="text-[#FF3B56] flex items-center gap-0.5">
-                <TrendingDown className="h-3 w-3" />
-                -$506.8M
-              </strong>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. MAIN NAVIGATION BAR (Organize, Dropdown Destekli, Modern) */}
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-3.5" ref={dropdownRef}>
-        <div className="flex items-center gap-8 lg:gap-10">
+    <header className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur-xl transition-colors">
+      {/* MAIN NAVIGATION BAR (Sade, Ferah, Kompakt Dropdown Destekli) */}
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-3" ref={dropdownRef}>
+        <div className="flex items-center gap-6 lg:gap-10">
           {/* Brand Logo & Emblem */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#2962FF] via-[#1E4BD8] to-[#00E699] text-white shadow-lg shadow-[#2962FF]/25 group-hover:scale-105 transition-all">
@@ -315,9 +224,9 @@ export default function Header() {
                     <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${isOpen ? 'rotate-180 text-[#2962FF]' : ''}`} />
                   </button>
 
-                  {/* Dropdown Menu - 100% Opaque Solid Dark Background (No Text Bleed) */}
+                  {/* Dropdown Menu - Sleek, Compact & Fully Responsive */}
                   {isOpen && (
-                    <div className="absolute top-full left-0 mt-2 w-84 rounded-2xl border border-[#232E42] bg-[#0C111C] p-2.5 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute top-full left-0 mt-2 w-[340px] rounded-2xl border border-[#232E42] bg-[#0C111C] p-2 shadow-[0_20px_50px_rgba(0,0,0,0.95)] z-50 animate-in fade-in zoom-in-95 duration-150">
                       <div className="space-y-1">
                         {group.items.map((item) => {
                           const ItemIcon = item.icon;
@@ -327,21 +236,21 @@ export default function Header() {
                               key={item.href}
                               href={item.href}
                               onClick={() => setActiveDropdown(null)}
-                              className={`flex items-start gap-3 rounded-xl p-3 transition-all ${
+                              className={`flex items-center gap-2.5 rounded-xl p-2.5 transition-all ${
                                 isItemActive
                                   ? 'bg-[#2962FF]/15 border border-[#2962FF]/35'
                                   : 'hover:bg-[#161F30]'
                               }`}
                             >
-                              <div className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#121826] border border-[#232E42] ${item.color}`}>
-                                <ItemIcon className="h-4.5 w-4.5" />
+                              <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#121826] border border-[#232E42] ${item.color}`}>
+                                <ItemIcon className="h-4 w-4" />
                               </div>
-                              <div className="flex-1">
-                                <div className="text-sm font-bold text-white flex items-center justify-between">
-                                  <span>{item.label}</span>
-                                  {isItemActive && <span className="h-2 w-2 rounded-full bg-[#2962FF]" />}
+                              <div className="flex-1 min-w-0">
+                                <div className="text-xs sm:text-sm font-bold text-white flex items-center justify-between">
+                                  <span className="truncate">{item.label}</span>
+                                  {isItemActive && <span className="h-1.5 w-1.5 rounded-full bg-[#2962FF] shrink-0" />}
                                 </div>
-                                <p className="text-xs text-[#9AA7BC] leading-relaxed mt-1 font-sans">
+                                <p className="text-[11px] text-[#9AA7BC] truncate mt-0.5 font-sans">
                                   {item.desc}
                                 </p>
                               </div>

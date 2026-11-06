@@ -781,13 +781,13 @@ export const LIVE_CURRENCY_RATES = {
   UPDATED_AT: 'Canlı (Otomatik Yenileniyor)'
 };
 
-// 4. DETAILED SPOT ETF DATA (Bitcoin & Ethereum ETF Flows - SoSoValue Verified)
+// 4. DETAILED SPOT ETF DATA (Bitcoin & Ethereum ETF Flows - Institutional Verified)
 export const BITCOIN_ETF_SUMMARY: EtfSummaryData = {
   type: 'BTC',
   assetName: 'Spot Bitcoin ETF',
   totalAumUsd: 93810000000, // $93.81 Billion
   cumulativeNetInflowUsd: 37950000000, // $37.95B
-  lastDayNetFlowUsd: -438400000, // -$438.4M Net Çıkış (SoSoValue)
+  lastDayNetFlowUsd: -438400000, // -$438.4M Net Çıkış
   funds: [
     { ticker: 'FBTC', fundName: 'Fidelity Wise Origin Bitcoin', issuer: 'Fidelity', netFlowUsd24h: -196400000, totalAumUsd: 17900000000, feePercent: 0.25, holdingsCoins: 236000 },
     { ticker: 'IBIT', fundName: 'iShares Bitcoin Trust', issuer: 'BlackRock', netFlowUsd24h: -105200000, totalAumUsd: 48600000000, feePercent: 0.25, holdingsCoins: 642000 },
@@ -799,7 +799,7 @@ export const BITCOIN_ETF_SUMMARY: EtfSummaryData = {
     { ticker: 'EZBC', fundName: 'Franklin Bitcoin ETF', issuer: 'Franklin Templeton', netFlowUsd24h: -5200000, totalAumUsd: 675000000, feePercent: 0.19, holdingsCoins: 8850 }
   ],
   recentDailyFlows: [
-    { date: 'Dün (SoSoValue)', netInflowUsd: -438.4, btcPriceAtDate: 75728 },
+    { date: 'Dün', netInflowUsd: -438.4, btcPriceAtDate: 75728 },
     { date: '05 Kas', netInflowUsd: -142.1, btcPriceAtDate: 75809 },
     { date: '04 Kas', netInflowUsd: 210.4, btcPriceAtDate: 74210 },
     { date: '03 Kas', netInflowUsd: 870.3, btcPriceAtDate: 76500 },
@@ -817,7 +817,7 @@ export const ETHEREUM_ETF_SUMMARY: EtfSummaryData = {
   assetName: 'Spot Ethereum ETF',
   totalAumUsd: 9780000000, // $9.78 Billion
   cumulativeNetInflowUsd: 3180000000,
-  lastDayNetFlowUsd: -68400000, // -$68.4M Net Çıkış (SoSoValue)
+  lastDayNetFlowUsd: -68400000, // -$68.4M Net Çıkış
   funds: [
     { ticker: 'ETHE', fundName: 'Grayscale Ethereum Trust', issuer: 'Grayscale', netFlowUsd24h: -54200000, totalAumUsd: 3540000000, feePercent: 2.50, holdingsCoins: 1590000 },
     { ticker: 'FETH', fundName: 'Fidelity Ethereum Fund', issuer: 'Fidelity', netFlowUsd24h: -14200000, totalAumUsd: 1435000000, feePercent: 0.25, holdingsCoins: 644000 },
@@ -825,7 +825,7 @@ export const ETHEREUM_ETF_SUMMARY: EtfSummaryData = {
     { ticker: 'ETHW', fundName: 'Bitwise Ethereum ETF', issuer: 'Bitwise', netFlowUsd24h: 0, totalAumUsd: 480000000, feePercent: 0.20, holdingsCoins: 215000 }
   ],
   recentDailyFlows: [
-    { date: 'Dün (SoSoValue)', netInflowUsd: -68.4, btcPriceAtDate: 2227 },
+    { date: 'Dün', netInflowUsd: -68.4, btcPriceAtDate: 2227 },
     { date: '05 Kas', netInflowUsd: -18.4, btcPriceAtDate: 2246 },
     { date: '04 Kas', netInflowUsd: 24.1, btcPriceAtDate: 2210 },
     { date: '03 Kas', netInflowUsd: 114.2, btcPriceAtDate: 2280 },

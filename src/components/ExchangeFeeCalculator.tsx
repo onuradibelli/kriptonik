@@ -24,6 +24,15 @@ const EXCHANGES: ExchangeTier[] = [
     notes: 'BNB ile %25 komisyon indirimi uygulanabilir'
   },
   {
+    id: 'bybittr',
+    name: 'Bybit TR',
+    logoText: 'BYB-TR',
+    makerRate: 0.0004, // %0.04
+    takerRate: 0.0006, // %0.06
+    bnbDiscount: false,
+    notes: 'Yeni TRY çiftlerinde %0.04 maker avantajı ve yerel banka transferi'
+  },
+  {
     id: 'btcturk',
     name: 'BtcTurk Pro',
     logoText: 'BTC-T',

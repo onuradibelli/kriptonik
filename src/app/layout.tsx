@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     'fonlama oranları',
     'funding rate arbitraj',
     'spot etf girişleri',
-    'sosovalue etf',
+    'kripto spot etf verileri',
     'kripto balina takibi',
     'token kilit açılımı',
     'kaldıraç hesaplama',

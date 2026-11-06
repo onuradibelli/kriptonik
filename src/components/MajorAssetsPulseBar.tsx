@@ -113,16 +113,8 @@ export default function MajorAssetsPulseBar({ coins, tickers }: MajorAssetsPulse
                 {/* Mini Sparkline Chart */}
                 <div className="w-20 h-9 shrink-0">
                   <Sparkline
-                    data={[
-                      price * 0.98,
-                      price * 0.985,
-                      price * 0.992,
-                      price * 0.988,
-                      price * 1.005,
-                      price * 0.998,
-                      price
-                    ]}
-                    color={isPos ? '#00E699' : '#FF3B56'}
+                    change24h={change}
+                    width={80}
                     height={36}
                   />
                 </div>

@@ -88,7 +88,7 @@ export default function HomePage() {
     });
   };
 
-  // Telegram / X formatted instant market brief with real live rates & SoSoValue ETF data
+  // Telegram / X formatted instant market brief with real live rates & ETF net flow data
   const handleCopyBrief = () => {
     const btcTick = tickers['BTCUSDT'] || defaultTickers.BTCUSDT;
     const ethTick = tickers['ETHUSDT'] || defaultTickers.ETHUSDT;
@@ -107,7 +107,7 @@ export default function HomePage() {
 🔥 24s Likidasyon: $348.5M (Baskı: %62 Short Tasfiyesi)
 📈 Toplam OI (Açık Pozisyon): $68.4B (+%5.42)
 ⚖️ Ağırlıklı Fonlama Oranı: +%0.0125 (Ilımlı Boğa)
-🏦 Spot ETF Akışı: -$506.8M Net Çıkış (SoSoValue: BTC -$438.4M, ETH -$68.4M)
+🏦 Spot ETF Akışı: -$506.8M Net Çıkış (BTC -$438.4M, ETH -$68.4M)
 💵 USDT/TRY: ₺${usdtTry.toFixed(2)} | USD/TRY: ₺${usdTry.toFixed(2)} (Makas: %-0.22)
 😱 Korku & Açgözlülük: ${FEAR_AND_GREED.value} (${FEAR_AND_GREED.classification.split(' ')[0]})
 
@@ -177,6 +177,9 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
         {/* Major Assets Market Pulse Hero Bar (BTC, ETH, SOL, BNB with Real-Time Ticks) */}
         <MajorAssetsPulseBar coins={COINS_DATA} tickers={tickers} />
 
+        {/* Market Isı Şeması (Hacim Ağırlıklı Yatay Canlı Treemap) */}
+        <CryptoMarketHeatmapGrid coins={COINS_DATA} tickers={tickers} />
+
         {/* 4 Primary High-Impact Visual Cards (Görsel Odak Kartları) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Card 1: Fear & Greed Visual Segmented Gauge */}
@@ -243,12 +246,12 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
             </div>
           </div>
 
-          {/* Card 3: Spot ETF Institutional Outflow (SoSoValue Verified) */}
+          {/* Card 3: Spot ETF Institutional Outflow */}
           <div className="cockpit-card p-4 space-y-3">
             <div className="flex items-center justify-between text-xs">
               <span className="font-semibold text-[var(--card-muted)]">Spot ETF Kurumsal Akış</span>
-              <span className="rounded bg-[#FF3B56]/15 text-[#FF3B56] px-1.5 py-0.2 font-mono text-[9px] font-bold">
-                SoSoValue
+              <span className="rounded bg-[#FF3B56]/15 text-[#FF3B56] px-2 py-0.5 font-mono text-[10px] font-bold">
+                KONSOLİDE RAPOR
               </span>
             </div>
             <div className="flex items-baseline justify-between">
@@ -308,27 +311,14 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
         </div>
       </section>
 
-      {/* 2. REAL-TIME CRYPTO MARKET SCREENER & SQUARE TREEMAP HEATMAP (Coinglass Architecture) */}
+      {/* 2. REAL-TIME CRYPTO MARKET SCREENER TABLE */}
       <section className="space-y-4">
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-stretch">
-          {/* Left 8 cols: Live Screener Table */}
-          <div className="xl:col-span-8">
-            <LiveCryptoMarketTable
-              coins={COINS_DATA}
-              tickers={tickers}
-              watchlist={watchlist}
-              onToggleWatchlist={toggleFavorite}
-            />
-          </div>
-
-          {/* Right 4 cols: Coinglass Treemap Heatmap Square Matrix */}
-          <div className="xl:col-span-4">
-            <CryptoMarketHeatmapGrid
-              coins={COINS_DATA}
-              tickers={tickers}
-            />
-          </div>
-        </div>
+        <LiveCryptoMarketTable
+          coins={COINS_DATA}
+          tickers={tickers}
+          watchlist={watchlist}
+          onToggleWatchlist={toggleFavorite}
+        />
       </section>
 
       {/* 3. SEGMENTED COCKPIT NAVIGATION BAR (Derli Toplu Görsel Sekmeler) */}
@@ -455,7 +445,13 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
               </div>
             </div>
 
-            <LiquidationHeatmap coin={selectedCoin} />
+            <LiquidationHeatmap
+              coin={{
+                ...selectedCoin,
+                price: tickers[selectedCoin.binanceSymbol]?.price || selectedCoin.price,
+                change24h: tickers[selectedCoin.binanceSymbol]?.change24h !== undefined ? tickers[selectedCoin.binanceSymbol].change24h : selectedCoin.change24h
+              }}
+            />
           </div>
         )}
 

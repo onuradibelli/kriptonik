@@ -6,12 +6,12 @@ import { BarChart3, ShieldCheck } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Canlı Spot Bitcoin ve Ethereum ETF Giriş/Çıkış Akışları (Net Flows) | Kriptonik',
-  description: 'BlackRock (IBIT), Fidelity (FBTC), Grayscale ve tüm kurumsal ETF ihraççılarının günlük net sermaye akışları, SoSoValue konsolide giriş/çıkış bilançosu ve AUM rezervleri.',
+  description: 'BlackRock (IBIT), Fidelity (FBTC), Grayscale ve tüm kurumsal ETF ihraççılarının günlük net sermaye akışları, kurumsal konsolide giriş/çıkış bilançosu ve AUM rezervleri.',
   keywords: [
     'spot etf akışları',
     'bitcoin etf girişleri',
     'ethereum spot etf',
-    'sosovalue etf türkçe',
+    'solana etf başvuruları',
     'ibit net flow',
     'fbtc para girişi',
     'kripto etf verileri',
@@ -37,10 +37,10 @@ export default function EtfHubPage() {
       },
       {
         '@type': 'Question',
-        name: 'SoSoValue ETF verileri ne zaman güncellenir?',
+        name: 'Spot ETF akış verileri ne zaman güncellenir?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'ABD spot ETF akışları New York borsa seans kapanışından sonra (TSİ gece yarısı ve sabah saatlerinde) fon ihraççılarının günlük beyanlarıyla konsolide edilir.'
+          text: 'ABD spot ETF akışları New York borsa seans kapanışından sonra (TSİ gece yarısı ve sabah saatlerinde) fon ihraççılarının günlük resmi takas beyanlarıyla konsolide edilir.'
         }
       }
     ]
