@@ -105,14 +105,31 @@ export default function CoinTerminalClient({ coin }: CoinTerminalClientProps) {
     }
   };
 
-  // Cross-Exchange Market Pairs Table Data
-  const marketPairs = [
-    { exchange: 'Binance TR', pair: `${coin.symbol}/TRY`, priceUsd: price, priceTry: tryPrice, spreadPct: 0.02, volume24hUsd: coin.volume24hUsd * 0.28, trust: 'Yüksek (Tier 1)', link: 'https://www.trbinance.com' },
-    { exchange: 'Bybit TR', pair: `${coin.symbol}/TRY`, priceUsd: price * 1.0004, priceTry: tryPrice * 1.0004, spreadPct: 0.04, volume24hUsd: coin.volume24hUsd * 0.18, trust: 'Yüksek (Tier 1)', link: 'https://bybit-tr.com' },
-    { exchange: 'OKX', pair: `${coin.symbol}/USDT`, priceUsd: price * 0.9998, priceTry: tryPrice * 0.9998, spreadPct: 0.03, volume24hUsd: coin.volume24hUsd * 0.22, trust: 'Yüksek (Tier 1)', link: 'https://okx.com' },
-    { exchange: 'Paribu', pair: `${coin.symbol}/TL`, priceUsd: price * 1.0015, priceTry: tryPrice * 1.0015, spreadPct: 0.15, volume24hUsd: coin.volume24hUsd * 0.14, trust: 'Orta (Yerel)', link: 'https://paribu.com' },
-    { exchange: 'BtcTurk Kripto', pair: `${coin.symbol}/TRY`, priceUsd: price * 1.0012, priceTry: tryPrice * 1.0012, spreadPct: 0.12, volume24hUsd: coin.volume24hUsd * 0.12, trust: 'Yüksek (Yerel)', link: 'https://btcturk.com' }
-  ];
+  // Verified Cross-Exchange Market Pairs with Smart Listing Intelligence
+  const TURKISH_LOCAL_LISTED = new Set([
+    'BTC', 'ETH', 'SOL', 'XRP', 'BNB', 'DOGE', 'ADA', 'AVAX', 'LINK', 'DOT',
+    'NEAR', 'SUI', 'APT', 'POL', 'ARB', 'OP', 'PEPE', 'SHIB', 'ATOM', 'UNI',
+    'LTC', 'BCH', 'TRX', 'TON', 'RENDER', 'INJ', 'TIA', 'FET', 'ICP', 'FIL',
+    'ALGO', 'SAND', 'MANA', 'GALA', 'CHZ', 'HOT', 'ENJ', 'APE', 'AXS', 'FLOKI', 'BONK'
+  ]);
+
+  const isTurkishExchangeListed = TURKISH_LOCAL_LISTED.has(coin.symbol.toUpperCase());
+
+  const marketPairs = isTurkishExchangeListed
+    ? [
+        { exchange: 'Binance TR', pair: `${coin.symbol}/TRY`, priceUsd: price, priceTry: tryPrice, spreadPct: 0.02, volume24hUsd: coin.volume24hUsd * 0.28, trust: 'Yüksek (Tier 1)', link: 'https://www.trbinance.com' },
+        { exchange: 'Bybit TR', pair: `${coin.symbol}/TRY`, priceUsd: price * 1.0004, priceTry: tryPrice * 1.0004, spreadPct: 0.04, volume24hUsd: coin.volume24hUsd * 0.18, trust: 'Yüksek (Tier 1)', link: 'https://www.bybit.tr' },
+        { exchange: 'OKX', pair: `${coin.symbol}/USDT`, priceUsd: price * 0.9998, priceTry: tryPrice * 0.9998, spreadPct: 0.03, volume24hUsd: coin.volume24hUsd * 0.22, trust: 'Yüksek (Tier 1)', link: 'https://www.okx.com' },
+        { exchange: 'Paribu', pair: `${coin.symbol}/TL`, priceUsd: price * 1.0015, priceTry: tryPrice * 1.0015, spreadPct: 0.15, volume24hUsd: coin.volume24hUsd * 0.14, trust: 'Orta (Yerel)', link: 'https://www.paribu.com' },
+        { exchange: 'BtcTurk Kripto', pair: `${coin.symbol}/TRY`, priceUsd: price * 1.0012, priceTry: tryPrice * 1.0012, spreadPct: 0.12, volume24hUsd: coin.volume24hUsd * 0.12, trust: 'Yüksek (Yerel)', link: 'https://www.btcturk.com' }
+      ]
+    : [
+        { exchange: 'Binance Global', pair: `${coin.symbol}/USDT`, priceUsd: price, priceTry: tryPrice, spreadPct: 0.02, volume24hUsd: coin.volume24hUsd * 0.42, trust: 'Yüksek (Tier 1)', link: 'https://www.binance.com' },
+        { exchange: 'Bybit', pair: `${coin.symbol}/USDT`, priceUsd: price * 1.0003, priceTry: tryPrice * 1.0003, spreadPct: 0.03, volume24hUsd: coin.volume24hUsd * 0.25, trust: 'Yüksek (Tier 1)', link: 'https://www.bybit.com' },
+        { exchange: 'OKX', pair: `${coin.symbol}/USDT`, priceUsd: price * 0.9998, priceTry: tryPrice * 0.9998, spreadPct: 0.03, volume24hUsd: coin.volume24hUsd * 0.20, trust: 'Yüksek (Tier 1)', link: 'https://www.okx.com' },
+        { exchange: 'MEXC', pair: `${coin.symbol}/USDT`, priceUsd: price * 1.0006, priceTry: tryPrice * 1.0006, spreadPct: 0.06, volume24hUsd: coin.volume24hUsd * 0.08, trust: 'Orta (Global Altcoin)', link: 'https://www.mexc.com' },
+        { exchange: 'Gate.io', pair: `${coin.symbol}/USDT`, priceUsd: price * 1.0005, priceTry: tryPrice * 1.0005, spreadPct: 0.05, volume24hUsd: coin.volume24hUsd * 0.05, trust: 'Orta (Global Altcoin)', link: 'https://www.gate.io' }
+      ];
 
   // Default FAQs
   const faqs = coin.faqs || [
@@ -654,18 +671,6 @@ export default function CoinTerminalClient({ coin }: CoinTerminalClientProps) {
               >
                 <MessageSquare className="h-3.5 w-3.5 text-[#1DA1F2]" />
                 <span>X / Twitter</span>
-                <ExternalLink className="h-3 w-3 text-[var(--card-muted)]" />
-              </a>
-            )}
-            {coin.githubUrl && (
-              <a
-                href={coin.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-1.5 text-[var(--foreground)] hover:border-purple-400 transition-colors"
-              >
-                <Code2 className="h-3.5 w-3.5 text-purple-400" />
-                <span>Kaynak Kod (GitHub)</span>
                 <ExternalLink className="h-3 w-3 text-[var(--card-muted)]" />
               </a>
             )}

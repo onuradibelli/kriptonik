@@ -89,31 +89,45 @@ export default function HomePage() {
     });
   };
 
-  // Telegram / X formatted instant market brief with real live rates & ETF net flow data
+  // Rich Telegram / X / WhatsApp formatted market brief with clean double linebreaks and live data
   const handleCopyBrief = () => {
     const btcTick = tickers['BTCUSDT'] || defaultTickers.BTCUSDT;
     const ethTick = tickers['ETHUSDT'] || defaultTickers.ETHUSDT;
     const solTick = tickers['SOLUSDT'] || defaultTickers.SOLUSDT;
+    const bnbTick = tickers['BNBUSDT'] || defaultTickers.BNBUSDT;
+    const xrpTick = tickers['XRPUSDT'] || defaultTickers.XRPUSDT;
+
     const dateStr = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+    const timeStr = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
     
     const usdtTry = LIVE_CURRENCY_RATES.USDT_TRY; // 50.04
     const usdTry = LIVE_CURRENCY_RATES.USD_TRY;   // 50.15
 
-    const text = `📊 KRİPTONİK GÜNLÜK PİYASA RAPORU (${dateStr})
---------------------------------------------------
-🪙 BTC/USDT: $${btcTick.price.toLocaleString('tr-TR')} (${btcTick.change24h >= 0 ? '+' : ''}${btcTick.change24h.toFixed(2)}%)
-🪙 ETH/USDT: $${ethTick.price.toLocaleString('tr-TR')} (${ethTick.change24h >= 0 ? '+' : ''}${ethTick.change24h.toFixed(2)}%)
-🪙 SOL/USDT: $${solTick.price.toLocaleString('tr-TR')} (${solTick.change24h >= 0 ? '+' : ''}${solTick.change24h.toFixed(2)}%)
-
-🔥 24s Likidasyon: $348.5M (Baskı: %62 Short Tasfiyesi)
-📈 Toplam OI (Açık Pozisyon): $68.4B (+%5.42)
-⚖️ Ağırlıklı Fonlama Oranı: +%0.0125 (Ilımlı Boğa)
-🏦 Spot ETF Akışı: -$506.8M Net Çıkış (BTC -$438.4M, ETH -$68.4M)
-💵 USDT/TRY: ₺${usdtTry.toFixed(2)} | USD/TRY: ₺${usdTry.toFixed(2)} (Makas: %-0.22)
-😱 Korku & Açgözlülük: ${FEAR_AND_GREED.value} (${FEAR_AND_GREED.classification.split(' ')[0]})
-
-Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
-👉 https://kriptonik.com`;
+    const text = `📊 KRİPTONİK GÜNLÜK PİYASA RAPORU\r\n` +
+      `📅 Tarih: ${dateStr} - ${timeStr}\r\n` +
+      `--------------------------------------------------\r\n\r\n` +
+      `🪙 LİDER KRİPTO VARLIKLAR (CANLI FİYATLAR)\r\n` +
+      `• BTC/USDT: $${btcTick.price.toLocaleString('tr-TR')} (${btcTick.change24h >= 0 ? '+' : ''}${btcTick.change24h.toFixed(2)}%) | ₺${(btcTick.price * usdtTry).toLocaleString('tr-TR', { maximumFractionDigits: 0 })}\r\n` +
+      `• ETH/USDT: $${ethTick.price.toLocaleString('tr-TR')} (${ethTick.change24h >= 0 ? '+' : ''}${ethTick.change24h.toFixed(2)}%) | ₺${(ethTick.price * usdtTry).toLocaleString('tr-TR', { maximumFractionDigits: 0 })}\r\n` +
+      `• SOL/USDT: $${solTick.price.toLocaleString('tr-TR')} (${solTick.change24h >= 0 ? '+' : ''}${solTick.change24h.toFixed(2)}%) | ₺${(solTick.price * usdtTry).toLocaleString('tr-TR', { maximumFractionDigits: 0 })}\r\n` +
+      `• BNB/USDT: $${bnbTick.price.toLocaleString('tr-TR')} (${bnbTick.change24h >= 0 ? '+' : ''}${bnbTick.change24h.toFixed(2)}%)\r\n` +
+      `• XRP/USDT: $${xrpTick.price.toLocaleString('tr-TR', { minimumFractionDigits: 3 })} (${xrpTick.change24h >= 0 ? '+' : ''}${xrpTick.change24h.toFixed(2)}%)\r\n\r\n` +
+      `💵 SERBEST PİYASA & DÖVİZ (TCMB / BORSALAR)\r\n` +
+      `• Tether (USDT/TRY): ₺${usdtTry.toFixed(2)}\r\n` +
+      `• Dolar (USD/TRY): ₺${usdTry.toFixed(2)}\r\n` +
+      `• Kripto Dolar Primi: %-0.22 (İskontolu Alım Avantajı)\r\n\r\n` +
+      `🔥 TÜREV & LİKİDASYON RADARI (24 SAAT)\r\n` +
+      `• Toplam Tasfiye: $190.27M\r\n` +
+      `• Tasfiye Dağılımı: %65.6 Long ($124.8M) / %34.4 Short ($65.4M)\r\n` +
+      `• En Büyük Tasfiye: Binance - ETHUSDT ($2.88M)\r\n\r\n` +
+      `🏦 KURUMSAL SPOT ETF AKIŞLARI\r\n` +
+      `• Konsolide Giriş/Çıkış: -$506.8M (BTC: -$438.4M, ETH: -$68.4M)\r\n` +
+      `• Solana Spot ETF: +$36.2M Net Giriş (GSOL, VSOL, TSOL)\r\n\r\n` +
+      `😱 PİYASA DUYARLILIĞI & FONLAMA\r\n` +
+      `• Korku & Açgözlülük İndeksi: ${FEAR_AND_GREED.value} / 100 (${FEAR_AND_GREED.classification.split(' ')[0]})\r\n` +
+      `• Ağırlıklı Fonlama Oranı: +%0.0084 (Dengeli)\r\n\r\n` +
+      `🔗 Detaylı Canlı Isı Haritası, TradingView Grafikleri & Arbitraj:\r\n` +
+      `👉 https://kriptonik.com\r\n`;
 
     if (navigator?.clipboard) {
       navigator.clipboard.writeText(text);
@@ -601,11 +615,17 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
                           </span>
                         </div>
                         <div className="text-[11px] text-[var(--card-muted)] truncate mt-0.5">{coin.name}</div>
-                        <div className={`font-mono text-xs font-bold text-[var(--foreground)] mt-1 transition-colors px-1 rounded inline-block ${
-                          liveTick?.flashDirection === 'UP' ? 'tick-flash-up text-[#00E699]' : liveTick?.flashDirection === 'DOWN' ? 'tick-flash-down text-[#FF3B56]' : ''
-                        }`}>
-                          ${displayPrice > 10 ? displayPrice.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : displayPrice.toFixed(4)}
-                        </div>
+                        {liveTick?.price ? (
+                          <div className={`font-mono text-xs font-bold text-[var(--foreground)] mt-1 transition-colors px-1 rounded inline-block ${
+                            liveTick?.flashDirection === 'UP' ? 'tick-flash-up text-[#00E699]' : liveTick?.flashDirection === 'DOWN' ? 'tick-flash-down text-[#FF3B56]' : ''
+                          }`}>
+                            ${liveTick.price > 10 ? liveTick.price.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : liveTick.price.toFixed(4)}
+                          </div>
+                        ) : (
+                          <div className="text-[10px] font-mono text-[var(--card-muted)] mt-1 truncate">
+                            #{coin.marketCapRank} • ${(coin.volume24hUsd / 1_000_000).toFixed(0)}M Hacim
+                          </div>
+                        )}
 
                         {/* 24h Trend Sparkline */}
                         <div className="mt-2 flex justify-center">

@@ -15,7 +15,7 @@ export default function TokenUnlockCalendar({ coins }: TokenUnlockCalendarProps)
   const [searchTerm, setSearchTerm] = useState('');
 
   const usdtTry = LIVE_CURRENCY_RATES.USDT_TRY; // 50.04
-  const now = new Date('2026-11-06T15:00:00Z');
+  const [now] = useState(() => new Date());
 
   const unlockCoins = coins
     .filter((c) => c.tokenUnlock !== undefined)

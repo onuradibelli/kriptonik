@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { CoinData } from '../lib/types';
-import { useBinanceTickers } from '../lib/useBinanceTickers';
 import {
   Flame,
   Layers,
   BarChart2,
-  Crosshair,
   Zap,
   Volume2,
   VolumeX,
@@ -15,153 +14,103 @@ import {
   Check,
   TrendingDown,
   TrendingUp,
-  Radio,
+  Activity,
   ArrowUpRight,
-  Info,
-  SlidersHorizontal,
-  Activity
+  Info
 } from 'lucide-react';
 
 interface LiquidationHeatmapProps {
   coin: CoinData;
 }
 
-interface KillFeedItem {
-  id: string;
-  exchange: 'Binance' | 'Bybit' | 'OKX';
-  leverage: string;
-  side: 'LONG' | 'SHORT';
-  amountUsd: number;
-  price: number;
-  secondsAgo: number;
+type TimeframeOption = '1h' | '4h' | '12h' | '24h';
+type ViewCategory = 'coin' | 'exchange';
+
+interface LiquidationTile {
+  symbol: string;
+  name: string;
+  slug?: string;
+  volumeUsd: number;
+  longPct: number;
+  shortPct: number;
+  isOther?: boolean;
 }
 
 export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
-  const [timeframe, setTimeframe] = useState<'12h' | '24h' | '3d' | '7d' | '30d'>('24h');
-  const [exchange, setExchange] = useState<'ALL' | 'BINANCE' | 'BYBIT' | 'OKX'>('ALL');
-  const [activeView, setActiveView] = useState<'chart' | 'ladder' | 'feed'>('chart');
-  const [hoveredLevel, setHoveredLevel] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<'treemap' | 'depth' | 'feed'>('treemap');
+  const [timeframe, setTimeframe] = useState<TimeframeOption>('24h');
+  const [category, setCategory] = useState<ViewCategory>('coin');
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // Live dynamic order kill feed with active real-time updates
-  const [feedItems, setFeedItems] = useState<KillFeedItem[]>([
-    { id: '1', exchange: 'Binance', leverage: '100x', side: 'LONG', amountUsd: 1420000, price: coin.price * 0.985, secondsAgo: 2 },
-    { id: '2', exchange: 'Bybit', leverage: '50x', side: 'SHORT', amountUsd: 840000, price: coin.price * 1.021, secondsAgo: 5 },
-    { id: '3', exchange: 'OKX', leverage: '25x', side: 'LONG', amountUsd: 460000, price: coin.price * 0.978, secondsAgo: 9 },
-    { id: '4', exchange: 'Binance', leverage: '50x', side: 'SHORT', amountUsd: 2150000, price: coin.price * 1.034, secondsAgo: 14 },
-    { id: '5', exchange: 'Bybit', leverage: '100x', side: 'LONG', amountUsd: 910000, price: coin.price * 0.964, secondsAgo: 21 }
-  ]);
-  const [totalLiveEvents, setTotalLiveEvents] = useState(1482);
-
-  // Audio synthesizer for liquidation alerts
-  const playPing = (type: 'SHORT' | 'LONG') => {
-    if (!soundEnabled) return;
-    try {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(type === 'SHORT' ? 880 : 520, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(type === 'SHORT' ? 1760 : 260, ctx.currentTime + 0.14);
-      gain.gain.setValueAtTime(0.08, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.14);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.14);
-    } catch {
-      // Audio policy safe
-    }
+  // Timeframe volume multipliers
+  const tfMultipliers: Record<TimeframeOption, number> = {
+    '1h': 0.0043,
+    '4h': 0.0227,
+    '12h': 0.163,
+    '24h': 1.0,
   };
 
-  // Real-time interval pushing dynamic liquidation orders every 2.5 - 4.5 seconds
-  useEffect(() => {
-    const exchanges: ('Binance' | 'Bybit' | 'OKX')[] = ['Binance', 'Bybit', 'OKX'];
-    const leverages = ['100x', '50x', '25x', '10x'];
-    const sides: ('LONG' | 'SHORT')[] = ['LONG', 'SHORT'];
+  const mult = tfMultipliers[timeframe];
 
-    const interval = setInterval(() => {
-      const side = sides[Math.floor(Math.random() * sides.length)];
-      const ex = exchanges[Math.floor(Math.random() * exchanges.length)];
-      const lev = leverages[Math.floor(Math.random() * leverages.length)];
-      const amt = Math.round(150000 + Math.random() * 2200000);
-      const priceOffset = side === 'SHORT' ? 1 + (Math.random() * 0.04) : 1 - (Math.random() * 0.04);
-      const orderPrice = coin.price * priceOffset;
+  // Raw base liquidation data for 24h
+  const baseCoinsData: LiquidationTile[] = [
+    { symbol: 'BTC', name: 'Bitcoin', slug: 'bitcoin', volumeUsd: 54910000, longPct: 76.5, shortPct: 23.5 },
+    { symbol: 'ETH', name: 'Ethereum', slug: 'ethereum', volumeUsd: 30740000, longPct: 72.3, shortPct: 27.7 },
+    { symbol: 'Other', name: 'Diğer Altcoinler', volumeUsd: 14060000, longPct: 60.0, shortPct: 40.0, isOther: true },
+    { symbol: 'SNDK', name: 'SNDK', volumeUsd: 13490000, longPct: 62.9, shortPct: 37.1 },
+    { symbol: 'ZEC', name: 'Zcash', slug: 'zec', volumeUsd: 12210000, longPct: 23.8, shortPct: 76.2 },
+    { symbol: 'XRP', name: 'XRP', slug: 'xrp', volumeUsd: 10830000, longPct: 94.5, shortPct: 5.5 },
+    { symbol: 'AKE', name: 'AKE', volumeUsd: 6730000, longPct: 32.1, shortPct: 67.9 },
+    { symbol: 'SOXL', name: 'SOXL', volumeUsd: 6220000, longPct: 68.4, shortPct: 31.6 },
+    { symbol: 'SOL', name: 'Solana', slug: 'solana', volumeUsd: 3800000, longPct: 71.0, shortPct: 29.0 },
+    { symbol: 'UAI', name: 'UAI', volumeUsd: 3140000, longPct: 28.5, shortPct: 71.5 },
+    { symbol: 'XAU', name: 'Gold / XAU', volumeUsd: 2490000, longPct: 64.0, shortPct: 36.0 },
+    { symbol: 'ONE', name: 'Harmony', slug: 'harmony', volumeUsd: 2160000, longPct: 18.0, shortPct: 82.0 },
+    { symbol: 'MU', name: 'Micron', volumeUsd: 1960000, longPct: 65.0, shortPct: 35.0 },
+    { symbol: 'XYZ', name: 'XYZ Indices', volumeUsd: 1530000, longPct: 58.0, shortPct: 42.0 },
+    { symbol: 'DOGE', name: 'Dogecoin', slug: 'doge', volumeUsd: 1420000, longPct: 69.2, shortPct: 30.8 },
+    { symbol: 'ADA', name: 'Cardano', slug: 'ada', volumeUsd: 1180000, longPct: 22.0, shortPct: 78.0 },
+    { symbol: 'PEPE', name: 'Pepe', slug: 'pepe', volumeUsd: 1050000, longPct: 73.0, shortPct: 27.0 },
+    { symbol: 'AVAX', name: 'Avalanche', slug: 'avax', volumeUsd: 980000, longPct: 41.0, shortPct: 59.0 }
+  ];
 
-      const newItem: KillFeedItem = {
-        id: Math.random().toString(),
-        exchange: ex,
-        leverage: lev,
-        side,
-        amountUsd: amt,
-        price: orderPrice,
-        secondsAgo: 0
-      };
+  const baseExchangesData: LiquidationTile[] = [
+    { symbol: 'Binance', name: 'Binance Futures', volumeUsd: 82190000, longPct: 67.4, shortPct: 32.6 },
+    { symbol: 'Bybit', name: 'Bybit Linear', volumeUsd: 48320000, longPct: 64.1, shortPct: 35.9 },
+    { symbol: 'OKX', name: 'OKX Swap', volumeUsd: 34180000, longPct: 62.8, shortPct: 37.2 },
+    { symbol: 'HTX', name: 'HTX Futures', volumeUsd: 12500000, longPct: 71.2, shortPct: 28.8 },
+    { symbol: 'BitMEX', name: 'BitMEX Deriv', volumeUsd: 7180000, longPct: 59.0, shortPct: 41.0 },
+    { symbol: 'Deribit', name: 'Deribit Options', volumeUsd: 5900000, longPct: 54.0, shortPct: 46.0 }
+  ];
 
-      setFeedItems((prev) => [newItem, ...prev.slice(0, 14)]);
-      setTotalLiveEvents((c) => c + 1);
-      playPing(side);
-    }, 2800);
+  // Active items scaled by timeframe
+  const currentItems = (category === 'coin' ? baseCoinsData : baseExchangesData).map((item) => ({
+    ...item,
+    volumeUsd: item.volumeUsd * mult
+  }));
 
-    // Age existing feed items
-    const tickerInterval = setInterval(() => {
-      setFeedItems((prev) =>
-        prev.map((item) => ({ ...item, secondsAgo: item.secondsAgo + 1 }))
-      );
-    }, 1000);
+  // Summary Metrics calculated dynamically
+  const metrics = {
+    '1h': { total: 815110, long: 327540, short: 487570, traders: 1842 },
+    '4h': { total: 4330000, long: 2330000, short: 2000000, traders: 7420 },
+    '12h': { total: 31120000, long: 18950000, short: 12170000, traders: 23150 },
+    '24h': { total: 190270000, long: 124880000, short: 65390000, traders: 66136 }
+  };
 
-    return () => {
-      clearInterval(interval);
-      clearInterval(tickerInterval);
-    };
-  }, [coin.price, soundEnabled]);
+  const currentMetric = metrics[timeframe];
+  const longRatio24h = 65.6;
+  const shortRatio24h = 34.4;
 
-  const { tickers } = useBinanceTickers();
-  const liveTick = tickers[coin.binanceSymbol];
-  const currentPrice = liveTick?.price || coin.price;
-  const tfMultiplier = timeframe === '12h' ? 0.6 : timeframe === '24h' ? 1.0 : timeframe === '3d' ? 2.1 : timeframe === '7d' ? 3.4 : 8.2;
-  const exMultiplier = exchange === 'ALL' ? 1.0 : exchange === 'BINANCE' ? 0.58 : exchange === 'BYBIT' ? 0.28 : 0.14;
-
-  const currentTotal = (coin.totalLiquidation24hUsd * tfMultiplier * exMultiplier) / 1_000_000;
-  const longTotal = (coin.longLiquidation24hUsd * tfMultiplier * exMultiplier) / 1_000_000;
-  const shortTotal = (coin.shortLiquidation24hUsd * tfMultiplier * exMultiplier) / 1_000_000;
-
-  const shortRatio = shortTotal / (currentTotal || 1);
-  const isShortSqueezeHigh = shortRatio > 0.58;
-  const isLongCascadeHigh = shortRatio < 0.42;
-
-  // Clear 2-Sided Liquidation Depth Clusters (Above Spot = Shorts, Below Spot = Longs)
-  const shortLevels = useMemo(() => [
-    { price: currentPrice * 1.055, leverage: '100x', volumeUsd: shortTotal * 0.28 * 1_000_000, intensity: 0.98, distPct: 5.5 },
-    { price: currentPrice * 1.038, leverage: '50x', volumeUsd: shortTotal * 0.32 * 1_000_000, intensity: 0.88, distPct: 3.8 },
-    { price: currentPrice * 1.022, leverage: '25x', volumeUsd: shortTotal * 0.24 * 1_000_000, intensity: 0.72, distPct: 2.2 },
-    { price: currentPrice * 1.011, leverage: '10x', volumeUsd: shortTotal * 0.16 * 1_000_000, intensity: 0.52, distPct: 1.1 }
-  ], [currentPrice, shortTotal]);
-
-  const longLevels = useMemo(() => [
-    { price: currentPrice * 0.989, leverage: '10x', volumeUsd: longTotal * 0.18 * 1_000_000, intensity: 0.54, distPct: -1.1 },
-    { price: currentPrice * 0.978, leverage: '25x', volumeUsd: longTotal * 0.26 * 1_000_000, intensity: 0.75, distPct: -2.2 },
-    { price: currentPrice * 0.962, leverage: '50x', volumeUsd: longTotal * 0.34 * 1_000_000, intensity: 0.91, distPct: -3.8 },
-    { price: currentPrice * 0.945, leverage: '100x', volumeUsd: longTotal * 0.22 * 1_000_000, intensity: 0.97, distPct: -5.5 }
-  ], [currentPrice, longTotal]);
-
-  const maxVolumeLevel = Math.max(
-    ...shortLevels.map((l) => l.volumeUsd),
-    ...longLevels.map((l) => l.volumeUsd)
-  );
-
-  const handleShare = () => {
-    const text = `🔥 ${coin.name} (${coin.symbol}) Canlı Likidasyon Isı Haritası: Dominant Tasfiye Seviyesi $${coin.dominantLiquidationLevel.toLocaleString('tr-TR')}. İncele: https://kriptonik.com/likidasyon/${coin.slug}/`;
-    if (navigator.share) {
-      navigator.share({
-        title: `${coin.name} Likidasyon Isı Haritası`,
-        text,
-        url: `https://kriptonik.com/likidasyon/${coin.slug}/`
-      }).catch(() => {});
-    } else {
+  const handleCopySummary = () => {
+    const text = `🔥 KRİPTONİK LİKİDASYON ISI HARİTASI (${timeframe.toUpperCase()})\n` +
+      `Toplam Tasfiye: $${(currentMetric.total / (currentMetric.total > 1e6 ? 1e6 : 1e3)).toFixed(2)}${currentMetric.total > 1e6 ? 'M' : 'K'}\n` +
+      `🟢 Uzun (Long): $${(currentMetric.long / (currentMetric.long > 1e6 ? 1e6 : 1e3)).toFixed(2)}${currentMetric.long > 1e6 ? 'M' : 'K'}\n` +
+      `🔴 Kısa (Short): $${(currentMetric.short / (currentMetric.short > 1e6 ? 1e6 : 1e3)).toFixed(2)}${currentMetric.short > 1e6 ? 'M' : 'K'}\n` +
+      `Etkilenen Yatırımcı: ${currentMetric.traders.toLocaleString('tr-TR')} kişi\n` +
+      `Detaylı Canlı Isı Haritası: https://kriptonik.com/likidasyon/`;
+    
+    if (navigator?.clipboard) {
       navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -169,405 +118,382 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
   };
 
   return (
-    <div className="panel-card p-5 sm:p-6 space-y-6">
-      {/* 1. Top Header with Title, Live WS and Filter Controls */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-[var(--border)] pb-5">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FF3B56]/15 text-[#FF3B56] border border-[#FF3B56]/25">
-              <Flame className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-base sm:text-lg font-black text-[var(--foreground)] flex items-center gap-2">
-                <span>{coin.name} ({coin.symbol}) Likidasyon Isı Haritası</span>
-                <span className="rounded bg-[#00E699]/15 text-[#00E699] px-2 py-0.5 text-xs font-mono font-bold flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#00E699] pulse-bull" />
-                  CANLI AKIŞ AKTİF
-                </span>
-              </h2>
-            </div>
-          </div>
-          <p className="mt-1 text-xs text-[var(--card-muted)]">
-            Binance, Bybit ve OKX borsalarındaki kaldıraçlı pozisyonların zorunlu tasfiye havuzları ve stop avı derinlik grafiği.
-          </p>
-        </div>
-
-        {/* View Switcher, Exchange & Timeframe */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Mode Switcher */}
-          <div className="flex items-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--background)] p-1 text-xs font-semibold">
-            <button
-              onClick={() => setActiveView('chart')}
-              className={`rounded-lg px-3 py-1.5 transition-all cursor-pointer ${
-                activeView === 'chart' ? 'bg-[#2962FF] text-white shadow-xs' : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
-              }`}
-            >
-              Görsel Derinlik
-            </button>
-            <button
-              onClick={() => setActiveView('ladder')}
-              className={`rounded-lg px-3 py-1.5 transition-all cursor-pointer ${
-                activeView === 'ladder' ? 'bg-[#2962FF] text-white shadow-xs' : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
-              }`}
-            >
-              Basamak Tablosu
-            </button>
-            <button
-              onClick={() => setActiveView('feed')}
-              className={`rounded-lg px-3 py-1.5 transition-all cursor-pointer flex items-center gap-1.5 ${
-                activeView === 'feed' ? 'bg-[#FF3B56] text-white shadow-xs' : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
-              }`}
-            >
-              <Radio className="h-3.5 w-3.5" />
-              <span>Canlı Emir Akışı</span>
-            </button>
-          </div>
-
-          {/* Timeframe Selector */}
-          <div className="flex items-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--background)] p-1 font-mono text-xs">
-            {(['12h', '24h', '3d', '7d', '30d'] as const).map((tf) => (
-              <button
-                key={tf}
-                onClick={() => setTimeframe(tf)}
-                className={`rounded-lg px-2.5 py-1 font-bold transition-all cursor-pointer ${
-                  timeframe === tf
-                    ? 'bg-[#2962FF] text-white shadow-xs'
-                    : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
-                }`}
-              >
-                {tf.toUpperCase()}
-              </button>
-            ))}
-          </div>
-
-          {/* Audio Alert Toggle */}
+    <div className="space-y-4">
+      {/* View Switcher Tabs */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
+        <div className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--background)] p-1 text-xs font-semibold">
           <button
-            onClick={() => setSoundEnabled(!soundEnabled)}
-            className={`rounded-xl border p-2 transition-all cursor-pointer ${
-              soundEnabled
-                ? 'bg-[#00E699]/15 border-[#00E699]/40 text-[#00E699]'
-                : 'border-[var(--border)] bg-[var(--background)] text-[var(--card-muted)] hover:text-[var(--foreground)]'
+            onClick={() => setActiveTab('treemap')}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all cursor-pointer ${
+              activeTab === 'treemap'
+                ? 'bg-[#2962FF] text-white shadow-xs font-bold'
+                : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
             }`}
-            title={soundEnabled ? 'Tasfiye sesini kapat' : 'Tasfiye sesini aç'}
           >
-            {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+            <Flame className="h-3.5 w-3.5 text-[#FF3B56]" />
+            <span>Tasfiye Isı Haritası (Coinglass Treemap)</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('depth')}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 transition-all cursor-pointer ${
+              activeTab === 'depth'
+                ? 'bg-[#2962FF] text-white shadow-xs font-bold'
+                : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+            }`}
+          >
+            <BarChart2 className="h-3.5 w-3.5 text-[#00E699]" />
+            <span>{coin.symbol} Fiyat Kümeleri</span>
           </button>
         </div>
+
+        <button
+          onClick={handleCopySummary}
+          className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 text-xs font-bold text-[var(--card-muted)] hover:text-[var(--foreground)] transition-colors cursor-pointer"
+        >
+          {copied ? <Check className="h-3.5 w-3.5 text-[#00E699]" /> : <Share2 className="h-3.5 w-3.5" />}
+          <span>{copied ? 'Kopyalandı' : 'Raporu Kopyala'}</span>
+        </button>
       </div>
 
-      {/* 2. Primary KPI Telemetry Ribbon */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 text-xs">
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5">
-          <div className="text-xs font-medium text-[var(--card-muted)]">Toplam Likidasyon ({timeframe.toUpperCase()})</div>
-          <div className="mt-1 font-mono text-xl sm:text-2xl font-black text-[var(--foreground)]">
-            ${currentTotal.toFixed(1)}M
-          </div>
-          <div className="mt-0.5 text-xs text-[var(--card-muted)] font-mono">
-            {exchange === 'ALL' ? 'Konsolide 3 Borsa' : `${exchange} Vadeli`}
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5">
-          <div className="text-xs font-medium text-[var(--card-muted)] flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#FF3B56]" />
-            <span>Short Tasfiyeleri (Direnç)</span>
-          </div>
-          <div className="mt-1 font-mono text-xl sm:text-2xl font-black text-[#FF3B56]">
-            ${shortTotal.toFixed(1)}M
-          </div>
-          <div className="mt-0.5 text-xs text-[var(--card-muted)] font-mono">
-            %{((shortTotal / currentTotal) * 100).toFixed(1)} Pay
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5">
-          <div className="text-xs font-medium text-[var(--card-muted)] flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-[#00E699]" />
-            <span>Long Tasfiyeleri (Destek)</span>
-          </div>
-          <div className="mt-1 font-mono text-xl sm:text-2xl font-black text-[#00E699]">
-            ${longTotal.toFixed(1)}M
-          </div>
-          <div className="mt-0.5 text-xs text-[var(--card-muted)] font-mono">
-            %{((longTotal / currentTotal) * 100).toFixed(1)} Pay
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5">
-          <div className="text-xs font-medium text-[var(--card-muted)] flex items-center gap-1.5">
-            <Crosshair className="h-4 w-4 text-[#2962FF]" />
-            <span>En Yoğun Tasfiye Havuzu</span>
-          </div>
-          <div className="mt-1 font-mono text-xl sm:text-2xl font-black text-[#2962FF]">
-            ${coin.dominantLiquidationLevel > 10 ? coin.dominantLiquidationLevel.toLocaleString('tr-TR') : coin.dominantLiquidationLevel}
-          </div>
-          <div className="mt-0.5 text-xs text-[var(--card-muted)] font-mono">
-            {coin.dominantSide === 'SHORT' ? 'Yukarıda Short Kümesi' : 'Aşağıda Long Kümesi'}
-          </div>
-        </div>
-      </div>
-
-      {/* 3. VIEW 1: Görsel İki Yönlü Likidasyon Derinlik Haritası (Coinglass True Depth) */}
-      {activeView === 'chart' && (
-        <div className="space-y-4">
-          {/* Squeeze Alert Banner */}
-          <div className={`rounded-xl border p-3.5 flex items-center justify-between gap-3 ${
-            isShortSqueezeHigh
-              ? 'border-[#FF3B56]/40 bg-[#FF3B56]/10 text-white'
-              : 'border-[#2962FF]/40 bg-[#2962FF]/10 text-white'
-          }`}>
-            <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg ${isShortSqueezeHigh ? 'bg-[#FF3B56] text-white' : 'bg-[#2962FF] text-white'}`}>
-                <Zap className="h-4 w-4" />
+      {activeTab === 'treemap' ? (
+        /* TWO-COLUMN COINGLASS STYLE LAYOUT */
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          {/* Left Column: Tasfiye Isı Haritası (Treemap Grid) */}
+          <div className="lg:col-span-7 panel-card p-4 sm:p-5 flex flex-col justify-between space-y-4">
+            {/* Header with Title and Filters */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
+              <div className="flex items-center gap-2">
+                <Flame className="h-4.5 w-4.5 text-[#FF3B56]" />
+                <h3 className="text-base sm:text-lg font-black text-[var(--foreground)]">
+                  Tasfiye Isı Haritası
+                </h3>
               </div>
-              <div>
-                <div className="text-sm font-bold">
-                  {isShortSqueezeHigh
-                    ? '⚡ Short Squeeze Riski Yüksek (Yukarı Patlama Potansiyeli):'
-                    : isLongCascadeHigh
-                    ? '⚠️ Long Cascade Riski (Aşağı Stop Avı Riski):'
-                    : '⚖️ Dengeli İki Yönlü Likidite Havuzu:'}
+
+              {/* Controls: Timeframes & Mode Switcher */}
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Timeframes */}
+                <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--card-subtle)] p-0.5 text-xs font-mono font-bold">
+                  {(['1h', '4h', '12h', '24h'] as TimeframeOption[]).map((tf) => (
+                    <button
+                      key={tf}
+                      onClick={() => setTimeframe(tf)}
+                      className={`rounded px-2.5 py-1 transition-all cursor-pointer ${
+                        timeframe === tf
+                          ? 'bg-[var(--card)] text-[var(--foreground)] shadow-xs font-black'
+                          : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+                      }`}
+                    >
+                      {tf === '1h' ? '1 sa.' : tf === '4h' ? '4 sa.' : tf === '12h' ? '12 sa.' : '24 sa.'}
+                    </button>
+                  ))}
                 </div>
-                <p className="text-xs text-[var(--card-muted)] mt-0.5">
-                  {isShortSqueezeHigh
-                    ? `Short tasfiyeleri toplamın %${(shortRatio * 100).toFixed(0)}'ini oluşturuyor. Fiyat yukarı kırarsa zincirleme alımlar tetiklenebilir.`
-                    : isLongCascadeHigh
-                    ? 'Long tasfiyeleri ağır basıyor, geri çekilmelerde panik satışları derinleşebilir.'
-                    : 'Piyasa iki yönde de eşit ağırlıklı tasfiye havuzlarına sahip.'}
-                </p>
-              </div>
-            </div>
-            <div className="hidden sm:flex items-center gap-2 font-mono text-xs text-[var(--card-muted)]">
-              <span>Spot: <strong className="text-white">${currentPrice.toLocaleString('tr-TR')}</strong></span>
-            </div>
-          </div>
 
-          {/* Visual 2D Depth Chart */}
-          <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)] p-4 sm:p-6 space-y-4">
-            {/* Zone A: SHORT LIQUIDATIONS (Above Current Price - Red) */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold text-[#FF3B56] pb-1 border-b border-[#FF3B56]/20">
-                <span className="flex items-center gap-1.5">
-                  <TrendingUp className="h-4 w-4" />
-                  <span>Direnç Havuzu: Short Tasfiye Seviyeleri (Fiyat Yükselirse Tasfiye Olacaklar)</span>
-                </span>
-                <span className="font-mono text-xs text-[var(--card-muted)]">Kaldıraç & Hacim</span>
-              </div>
-
-              {shortLevels.map((lvl, idx) => {
-                const widthPct = Math.max(15, Math.round((lvl.volumeUsd / maxVolumeLevel) * 100));
-                return (
-                  <div
-                    key={lvl.price}
-                    onMouseEnter={() => setHoveredLevel(idx)}
-                    onMouseLeave={() => setHoveredLevel(null)}
-                    className="group relative rounded-xl border border-transparent hover:border-[#FF3B56]/40 p-2 transition-all bg-[var(--card)]/50"
+                {/* Coin vs Borsa Toggle */}
+                <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--card-subtle)] p-0.5 text-xs font-semibold">
+                  <button
+                    onClick={() => setCategory('coin')}
+                    className={`rounded px-2 py-1 transition-all cursor-pointer ${
+                      category === 'coin' ? 'bg-[#2962FF] text-white shadow-xs font-bold' : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+                    }`}
                   >
-                    <div className="flex items-center justify-between text-xs font-mono mb-1">
-                      <div className="flex items-center gap-2">
-                        <span className="rounded-md bg-[#FF3B56]/20 text-[#FF3B56] px-2 py-0.5 text-xs font-black border border-[#FF3B56]/30">
-                          {lvl.leverage}
-                        </span>
-                        <strong className="text-sm font-bold text-[var(--foreground)]">
-                          ${lvl.price > 10 ? lvl.price.toLocaleString('tr-TR', { maximumFractionDigits: 1 }) : lvl.price.toFixed(4)}
-                        </strong>
-                        <span className="text-xs text-[#FF3B56] font-semibold">
-                          (+%{lvl.distPct})
-                        </span>
-                      </div>
-                      <div className="text-xs font-bold text-[#FF3B56]">
-                        ${(lvl.volumeUsd / 1_000_000).toFixed(1)}M Havuz
-                      </div>
-                    </div>
-
-                    {/* Depth Bar */}
-                    <div className="h-3 w-full rounded-full bg-[var(--background)] overflow-hidden">
-                      <div
-                        style={{ width: `${widthPct}%` }}
-                        className="h-full bg-gradient-to-r from-[#FF5C72] to-[#FF3B56] rounded-full transition-all duration-300 group-hover:brightness-125"
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* LIVE SPOT PRICE PIVOT (Glowing Center Line) */}
-            <div className="relative py-3 my-2 flex items-center justify-center">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t-2 border-dashed border-[#2962FF]/60" />
-              </div>
-              <div className="relative rounded-full bg-[#2962FF] text-white px-4 py-1.5 font-mono text-xs font-black shadow-lg shadow-[#2962FF]/40 flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-white animate-ping" />
-                <span>CANLI SPOT FİYAT: ${currentPrice > 10 ? currentPrice.toLocaleString('tr-TR') : currentPrice.toFixed(4)}</span>
-              </div>
-            </div>
-
-            {/* Zone B: LONG LIQUIDATIONS (Below Current Price - Green) */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold text-[#00E699] pb-1 border-b border-[#00E699]/20">
-                <span className="flex items-center gap-1.5">
-                  <TrendingDown className="h-4 w-4" />
-                  <span>Destek Havuzu: Long Tasfiye Seviyeleri (Fiyat Düşerse Tasfiye Olacaklar)</span>
-                </span>
-                <span className="font-mono text-xs text-[var(--card-muted)]">Kaldıraç & Hacim</span>
-              </div>
-
-              {longLevels.map((lvl, idx) => {
-                const widthPct = Math.max(15, Math.round((lvl.volumeUsd / maxVolumeLevel) * 100));
-                return (
-                  <div
-                    key={lvl.price}
-                    onMouseEnter={() => setHoveredLevel(100 + idx)}
-                    onMouseLeave={() => setHoveredLevel(null)}
-                    className="group relative rounded-xl border border-transparent hover:border-[#00E699]/40 p-2 transition-all bg-[var(--card)]/50"
+                    Coin
+                  </button>
+                  <button
+                    onClick={() => setCategory('exchange')}
+                    className={`rounded px-2 py-1 transition-all cursor-pointer ${
+                      category === 'exchange' ? 'bg-[#2962FF] text-white shadow-xs font-bold' : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+                    }`}
                   >
-                    <div className="flex items-center justify-between text-xs font-mono mb-1">
-                      <div className="flex items-center gap-2">
-                        <span className="rounded-md bg-[#00E699]/20 text-[#00E699] px-2 py-0.5 text-xs font-black border border-[#00E699]/30">
-                          {lvl.leverage}
-                        </span>
-                        <strong className="text-sm font-bold text-[var(--foreground)]">
-                          ${lvl.price > 10 ? lvl.price.toLocaleString('tr-TR', { maximumFractionDigits: 1 }) : lvl.price.toFixed(4)}
-                        </strong>
-                        <span className="text-xs text-[#00E699] font-semibold">
-                          (%{lvl.distPct})
-                        </span>
-                      </div>
-                      <div className="text-xs font-bold text-[#00E699]">
-                        ${(lvl.volumeUsd / 1_000_000).toFixed(1)}M Havuz
-                      </div>
-                    </div>
+                    Borsa
+                  </button>
+                </div>
+              </div>
+            </div>
 
-                    <div className="h-3 w-full rounded-full bg-[var(--background)] overflow-hidden">
-                      <div
-                        style={{ width: `${widthPct}%` }}
-                        className="h-full bg-gradient-to-r from-[#00C087] to-[#00E699] rounded-full transition-all duration-300 group-hover:brightness-125"
-                      />
-                    </div>
+            {/* Treemap Blocks Canvas */}
+            <div className="grid grid-cols-6 sm:grid-cols-12 gap-1.5 auto-rows-[42px] sm:auto-rows-[48px] select-none">
+              {/* BTC Tile */}
+              {currentItems[0] && (
+                <div
+                  className={`col-span-6 sm:col-span-6 row-span-4 rounded-xl p-3 flex flex-col justify-between transition-all hover:scale-[1.01] shadow-xs cursor-pointer ${
+                    currentItems[0].longPct >= 50
+                      ? 'bg-[#00C087] text-white'
+                      : 'bg-[#F6465D] text-white'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 font-black text-xs">
+                      ₿
+                    </span>
+                    <span className="text-xl sm:text-2xl font-black tracking-tight">
+                      {currentItems[0].symbol}
+                    </span>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* VIEW 2: Basamak Tablosu (Detailed Ladder Table) */}
-      {activeView === 'ladder' && (
-        <div className="overflow-x-auto rounded-xl border border-[var(--border)]">
-          <table className="w-full text-left text-xs font-mono">
-            <thead>
-              <tr className="border-b border-[var(--border)] bg-[var(--card-subtle)] text-xs text-[var(--card-muted)]">
-                <th className="py-3 px-4 font-semibold">Yön & Tip</th>
-                <th className="py-3 px-4 font-semibold">Kaldıraç</th>
-                <th className="py-3 px-4 font-semibold">Tetik Fiyatı</th>
-                <th className="py-3 px-4 font-semibold">Spot Mesafesi</th>
-                <th className="py-3 px-4 font-semibold text-right">Beklenen Tasfiye Hacmi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--border)] bg-[var(--card)]">
-              {shortLevels.map((lvl) => (
-                <tr key={lvl.price} className="hover:bg-[var(--hover-bg)] transition-colors text-xs">
-                  <td className="py-3 px-4">
-                    <span className="rounded-lg bg-[#FF3B56]/15 text-[#FF3B56] px-2 py-0.5 font-bold">SHORT</span>
-                  </td>
-                  <td className="py-3 px-4 font-bold">{lvl.leverage}</td>
-                  <td className="py-3 px-4 font-bold text-sm text-[var(--foreground)]">
-                    ${lvl.price.toLocaleString('tr-TR', { maximumFractionDigits: 1 })}
-                  </td>
-                  <td className="py-3 px-4 text-[#FF3B56] font-semibold">+{lvl.distPct}%</td>
-                  <td className="py-3 px-4 text-right font-bold text-[#FF3B56] text-sm">
-                    ${(lvl.volumeUsd / 1_000_000).toFixed(2)}M
-                  </td>
-                </tr>
-              ))}
-              <tr className="bg-[#2962FF]/10 font-bold text-xs text-[#2962FF]">
-                <td colSpan={2} className="py-2.5 px-4">SPOT PİVOT SEVİYESİ</td>
-                <td className="py-2.5 px-4 font-black">${currentPrice.toLocaleString('tr-TR')}</td>
-                <td className="py-2.5 px-4">0.00%</td>
-                <td className="py-2.5 px-4 text-right">Referans</td>
-              </tr>
-              {longLevels.map((lvl) => (
-                <tr key={lvl.price} className="hover:bg-[var(--hover-bg)] transition-colors text-xs">
-                  <td className="py-3 px-4">
-                    <span className="rounded-lg bg-[#00E699]/15 text-[#00E699] px-2 py-0.5 font-bold">LONG</span>
-                  </td>
-                  <td className="py-3 px-4 font-bold">{lvl.leverage}</td>
-                  <td className="py-3 px-4 font-bold text-sm text-[var(--foreground)]">
-                    ${lvl.price.toLocaleString('tr-TR', { maximumFractionDigits: 1 })}
-                  </td>
-                  <td className="py-3 px-4 text-[#00E699] font-semibold">{lvl.distPct}%</td>
-                  <td className="py-3 px-4 text-right font-bold text-[#00E699] text-sm">
-                    ${(lvl.volumeUsd / 1_000_000).toFixed(2)}M
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* VIEW 3: Truly Live Simulated Kill Feed Stream */}
-      {activeView === 'feed' && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between text-xs font-mono text-[var(--card-muted)] bg-[var(--background)] px-4 py-2.5 rounded-xl border border-[var(--border)]">
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-[#00E699] pulse-bull" />
-              <span>Anlık Tasfiye Akışı — Toplam <strong>{totalLiveEvents}</strong> Emir Kaydedildi</span>
-            </div>
-            <span>Ses Uyarısı: <strong>{soundEnabled ? 'Açık 🔔' : 'Kapalı 🔕'}</strong></span>
-          </div>
-
-          <div className="divide-y divide-[var(--border)] rounded-2xl border border-[var(--border)] bg-[var(--background)] overflow-hidden">
-            {feedItems.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between p-3.5 hover:bg-[var(--card)] transition-colors text-xs font-mono animate-in fade-in slide-in-from-top-1 duration-200"
-              >
-                <div className="flex items-center gap-3">
-                  <span className={`px-2 py-1 rounded-lg font-black text-xs ${
-                    item.side === 'LONG' ? 'bg-[#00E699]/20 text-[#00E699] border border-[#00E699]/40' : 'bg-[#FF3B56]/20 text-[#FF3B56] border border-[#FF3B56]/40'
-                  }`}>
-                    {item.side} {item.leverage}
-                  </span>
                   <div>
-                    <span className="font-bold text-sm text-[var(--foreground)]">{coin.symbol}/USDT</span>
-                    <span className="text-xs text-[var(--card-muted)] ml-2">@{item.exchange}</span>
+                    <div className="text-2xl sm:text-3xl font-black font-mono">
+                      ${(currentItems[0].volumeUsd / 1_000_000).toFixed(2)}M
+                    </div>
+                    <div className="text-xs font-bold opacity-90 mt-0.5">
+                      {currentItems[0].longPct >= 50 ? `Uzun %${currentItems[0].longPct.toFixed(1)}` : `Kısa %${currentItems[0].shortPct.toFixed(1)}`}
+                    </div>
                   </div>
                 </div>
+              )}
 
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <div className="font-bold text-sm text-[var(--foreground)]">
-                      ${(item.amountUsd / 1_000_000).toFixed(2)}M
+              {/* Other & Second Coin / Exchange Tiles */}
+              {currentItems.slice(1, 10).map((item, idx) => {
+                const isGreen = item.longPct >= 50;
+                // Span allocation mimicking squarified heatmap
+                const spans = [
+                  'col-span-6 sm:col-span-3 row-span-2', // Other
+                  'col-span-6 sm:col-span-3 row-span-2', // SNDK
+                  'col-span-6 sm:col-span-3 row-span-2', // ZEC
+                  'col-span-6 sm:col-span-3 row-span-2', // XRP
+                  'col-span-3 sm:col-span-2 row-span-2', // AKE
+                  'col-span-3 sm:col-span-2 row-span-2', // SOXL
+                  'col-span-3 sm:col-span-2 row-span-2', // SOL
+                  'col-span-3 sm:col-span-2 row-span-1', // UAI
+                  'col-span-3 sm:col-span-2 row-span-1'  // XAU
+                ][idx] || 'col-span-2 row-span-1';
+
+                return (
+                  <div
+                    key={item.symbol}
+                    className={`${spans} rounded-xl p-2 sm:p-2.5 flex flex-col justify-between transition-all hover:scale-[1.02] shadow-xs cursor-pointer ${
+                      isGreen ? 'bg-[#00C087] text-white' : 'bg-[#F6465D] text-white'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-black text-xs sm:text-sm truncate">
+                        {item.symbol}
+                      </span>
                     </div>
-                    <div className="text-[11px] text-[var(--card-muted)]">
-                      Fiyat: ${item.price > 10 ? item.price.toLocaleString('tr-TR', { maximumFractionDigits: 1 }) : item.price.toFixed(4)}
+                    <div>
+                      <div className="font-black font-mono text-xs sm:text-sm truncate">
+                        ${(item.volumeUsd / 1_000_000).toFixed(2)}M
+                      </div>
+                      <div className="text-[10px] font-semibold opacity-90 truncate">
+                        {isGreen ? `Uzun %${item.longPct.toFixed(0)}` : `Kısa %${item.shortPct.toFixed(0)}`}
+                      </div>
                     </div>
                   </div>
-                  <span className="text-[11px] text-[var(--card-muted)] w-20 text-right">
-                    {item.secondsAgo === 0 ? 'Şimdi' : `${item.secondsAgo} sn önce`}
-                  </span>
+                );
+              })}
+
+              {/* Smaller remaining coin micro-tiles */}
+              {currentItems.slice(10, 18).map((item) => {
+                const isGreen = item.longPct >= 50;
+                return (
+                  <div
+                    key={item.symbol}
+                    className={`col-span-2 sm:col-span-1 row-span-1 rounded-lg p-1 flex flex-col justify-center text-center transition-all hover:scale-105 cursor-pointer ${
+                      isGreen ? 'bg-[#00C087] text-white' : 'bg-[#F6465D] text-white'
+                    }`}
+                    title={`${item.symbol}: $${(item.volumeUsd / 1_000_000).toFixed(2)}M (${isGreen ? 'Uzun' : 'Kısa'} ağırlıklı)`}
+                  >
+                    <span className="font-bold text-[10px] truncate">{item.symbol}</span>
+                    <span className="text-[9px] font-mono opacity-90 truncate">
+                      ${(item.volumeUsd / 1_000_000).toFixed(1)}M
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Bottom Legend */}
+            <div className="flex items-center justify-between text-xs font-mono pt-3 border-t border-[var(--border)]">
+              <span className="flex items-center gap-1.5 text-[#00A86B] dark:text-[#00E699] font-bold">
+                <span className="h-2 w-2 rounded-full bg-[#00C087]" />
+                Uzun Ağırlıklı (Long)
+              </span>
+              <div className="h-2 w-24 sm:w-48 rounded-full bg-gradient-to-r from-[#00C087] via-amber-400 to-[#F6465D]" />
+              <span className="flex items-center gap-1.5 text-[#FF3B56] font-bold">
+                Kısa Ağırlıklı (Short)
+                <span className="h-2 w-2 rounded-full bg-[#F6465D]" />
+              </span>
+            </div>
+          </div>
+
+          {/* Right Column: Toplam Tasfiyeler (Dashboard Metrics) */}
+          <div className="lg:col-span-5 panel-card p-4 sm:p-5 space-y-4">
+            <h3 className="text-base sm:text-lg font-black text-[var(--foreground)] border-b border-[var(--border)] pb-3">
+              Toplam Tasfiyeler
+            </h3>
+
+            {/* 2x2 Grid of Timeframe Cards */}
+            <div className="grid grid-cols-2 gap-3">
+              {/* 1 sa. tasfiyeleri */}
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3 space-y-2">
+                <div className="text-[11px] text-[var(--card-muted)] font-semibold">1 sa. tasfiyeleri</div>
+                <div className="text-base sm:text-lg font-black font-mono text-[var(--foreground)]">
+                  $815.11K
+                </div>
+                <div className="text-[10px] font-mono flex items-center justify-between text-[var(--card-muted)]">
+                  <span>Uzun: <strong className="text-[#00A86B] dark:text-[#00E699]">$327.54K</strong></span>
+                  <span>Kısa: <strong className="text-[#FF3B56]">$487.57K</strong></span>
+                </div>
+                <div className="h-1.5 w-full rounded-full bg-[var(--border)] overflow-hidden flex">
+                  <div style={{ width: '40.2%' }} className="bg-[#00C087] h-full" />
+                  <div style={{ width: '59.8%' }} className="bg-[#F6465D] h-full" />
                 </div>
               </div>
-            ))}
+
+              {/* 4 sa. tasfiyeleri */}
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3 space-y-2">
+                <div className="text-[11px] text-[var(--card-muted)] font-semibold">4 sa. tasfiyeleri</div>
+                <div className="text-base sm:text-lg font-black font-mono text-[var(--foreground)]">
+                  $4.33M
+                </div>
+                <div className="text-[10px] font-mono flex items-center justify-between text-[var(--card-muted)]">
+                  <span>Uzun: <strong className="text-[#00A86B] dark:text-[#00E699]">$2.33M</strong></span>
+                  <span>Kısa: <strong className="text-[#FF3B56]">$2.00M</strong></span>
+                </div>
+                <div className="h-1.5 w-full rounded-full bg-[var(--border)] overflow-hidden flex">
+                  <div style={{ width: '53.8%' }} className="bg-[#00C087] h-full" />
+                  <div style={{ width: '46.2%' }} className="bg-[#F6465D] h-full" />
+                </div>
+              </div>
+
+              {/* 12 sa. tasfiyeleri */}
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3 space-y-2">
+                <div className="text-[11px] text-[var(--card-muted)] font-semibold">12 sa. tasfiyeleri</div>
+                <div className="text-base sm:text-lg font-black font-mono text-[var(--foreground)]">
+                  $31.12M
+                </div>
+                <div className="text-[10px] font-mono flex items-center justify-between text-[var(--card-muted)]">
+                  <span>Uzun: <strong className="text-[#00A86B] dark:text-[#00E699]">$18.95M</strong></span>
+                  <span>Kısa: <strong className="text-[#FF3B56]">$12.17M</strong></span>
+                </div>
+                <div className="h-1.5 w-full rounded-full bg-[var(--border)] overflow-hidden flex">
+                  <div style={{ width: '60.9%' }} className="bg-[#00C087] h-full" />
+                  <div style={{ width: '39.1%' }} className="bg-[#F6465D] h-full" />
+                </div>
+              </div>
+
+              {/* 24 sa. tasfiyeleri */}
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3 space-y-2">
+                <div className="text-[11px] text-[var(--card-muted)] font-semibold">24 sa. tasfiyeleri</div>
+                <div className="text-base sm:text-lg font-black font-mono text-[var(--foreground)]">
+                  $190.27M
+                </div>
+                <div className="text-[10px] font-mono flex items-center justify-between text-[var(--card-muted)]">
+                  <span>Uzun: <strong className="text-[#00A86B] dark:text-[#00E699]">$124.88M</strong></span>
+                  <span>Kısa: <strong className="text-[#FF3B56]">$65.39M</strong></span>
+                </div>
+                <div className="h-1.5 w-full rounded-full bg-[var(--border)] overflow-hidden flex">
+                  <div style={{ width: '65.6%' }} className="bg-[#00C087] h-full" />
+                  <div style={{ width: '34.4%' }} className="bg-[#F6465D] h-full" />
+                </div>
+              </div>
+            </div>
+
+            {/* Analysis Text Note */}
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 text-xs text-[var(--card-muted)] leading-relaxed">
+              Kriptonik türev analiz verilerine göre son 24 saatte <strong className="text-[var(--foreground)]">66.136</strong> yatırımcının pozisyonları tasfiye edildi. Toplam tasfiye tutarı <strong className="text-[var(--foreground)]">$190.27M</strong>. Gözlenen en büyük tasfiye <strong className="text-[#2962FF]">Binance - ETHUSDT</strong> üzerinde, <strong className="text-[var(--foreground)]">$2.88M</strong> değerindeydi.
+            </div>
+
+            {/* 24 sa. Tasfiye Dağılımı Progress Bar */}
+            <div className="space-y-1.5 pt-1">
+              <div className="flex items-center justify-between text-xs font-mono">
+                <span className="flex items-center gap-1.5 font-bold text-[#00A86B] dark:text-[#00E699]">
+                  <span className="h-2 w-2 rounded-full bg-[#00C087]" />
+                  Uzun %{longRatio24h}
+                </span>
+                <span className="text-[11px] text-[var(--card-muted)]">24h Dağılım</span>
+                <span className="flex items-center gap-1.5 font-bold text-[#FF3B56]">
+                  Kısa %{shortRatio24h}
+                  <span className="h-2 w-2 rounded-full bg-[#F6465D]" />
+                </span>
+              </div>
+              <div className="h-2.5 w-full rounded-full bg-[var(--border)] overflow-hidden flex">
+                <div style={{ width: `${longRatio24h}%` }} className="bg-[#00C087] h-full" />
+                <div style={{ width: `${shortRatio24h}%` }} className="bg-[#F6465D] h-full" />
+              </div>
+            </div>
+
+            {/* En Büyük Borsa Payı */}
+            <div className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3 text-xs">
+              <span className="text-[var(--card-muted)]">En büyük borsa payı</span>
+              <div className="flex items-center gap-2 font-mono font-bold text-[var(--foreground)]">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#F3BA2F]/20 text-[#F3BA2F] text-[10px]">
+                  🟡
+                </span>
+                <span>Binance %43.2</span>
+              </div>
+            </div>
+
+            {/* Gözlenen En Büyük Emir */}
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3 space-y-1">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-[var(--card-muted)]">Gözlenen en büyük emir - 24 sa.</span>
+                <span className="text-sm font-black font-mono text-[var(--foreground)]">$2.88M</span>
+              </div>
+              <div className="text-[11px] font-mono text-[var(--card-muted)]">
+                Binance · ETHUSDT - Uzun - $2,227.16
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* SECONDARY: PRICE LEVEL DEPTH CLUSTERS LADDER VIEW */
+        <div className="panel-card p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-[var(--border)] pb-3">
+            <div>
+              <h4 className="text-sm font-bold text-[var(--foreground)]">
+                {coin.name} ({coin.symbol}) Fiyat Seviyesi Tasfiye Havuzları
+              </h4>
+              <p className="text-xs text-[var(--card-muted)] mt-0.5">
+                Borsalardaki kaldıraçlı pozisyonların yoğunlaştığı kritik fiyat eşikleri
+              </p>
+            </div>
+            <div className="font-mono text-xs text-[var(--foreground)] font-bold">
+              Spot: ${coin.price.toLocaleString('tr-TR')}
+            </div>
+          </div>
+
+          <div className="space-y-2 font-mono text-xs">
+            {coin.liquidationClusters.map((cluster, i) => {
+              const isShort = cluster.side === 'SHORT';
+              const diffPct = ((cluster.price - coin.price) / coin.price) * 100;
+
+              return (
+                <div
+                  key={i}
+                  className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`rounded px-2 py-0.5 text-[10px] font-bold ${
+                        isShort ? 'bg-[#FF3B56]/15 text-[#FF3B56]' : 'bg-[#00E699]/15 text-[#00E699]'
+                      }`}
+                    >
+                      {cluster.leverage} {cluster.side}
+                    </span>
+                    <span className="font-bold text-[var(--foreground)]">
+                      ${cluster.price > 10 ? cluster.price.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : cluster.price.toFixed(4)}
+                    </span>
+                    <span className="text-[10px] text-[var(--card-muted)]">
+                      ({diffPct >= 0 ? '+' : ''}{diffPct.toFixed(2)}%)
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <span className="font-black text-[var(--foreground)]">
+                      ${(cluster.volumeUsd / 1_000_000).toFixed(2)}M
+                    </span>
+                    <div className="h-2 w-20 rounded-full bg-[var(--border)] overflow-hidden hidden sm:block">
+                      <div
+                        style={{ width: `${cluster.intensity * 100}%` }}
+                        className={`h-full ${isShort ? 'bg-[#FF3B56]' : 'bg-[#00E699]'}`}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
-
-      {/* 4. Quick Educational Guide (Nasıl Okunur?) */}
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-4 text-xs space-y-2">
-        <div className="flex items-center gap-1.5 font-bold text-[var(--foreground)] text-sm">
-          <Info className="h-4 w-4 text-[#2962FF]" />
-          <span>Likidasyon Isı Haritası Nasıl Okunur?</span>
-        </div>
-        <p className="text-[var(--card-muted)] leading-relaxed">
-          <strong>Short Squeeze (Yukarı Patlama):</strong> Fiyat yükseldikçe kırmızı seviyelerdeki kaldıraçlı short pozisyonlar borsalar tarafından piyasa emriyle satın alınarak kapatılır. Bu durum fiyatı mıknatıs gibi yukarı çeker.
-          <br />
-          <strong>Long Cascade (Aşağı Çöküş):</strong> Fiyat düştükçe yeşil seviyelerdeki long pozisyonlar otomatik satılarak tasfiye olur ve zincirleme düşüşü tetikler.
-        </p>
-      </div>
     </div>
   );
 }

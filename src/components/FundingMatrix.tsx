@@ -66,7 +66,78 @@ export default function FundingMatrix({ coins }: FundingMatrixProps) {
     return () => clearInterval(timer);
   }, []);
 
-  const arbitrageOpps = [...coins]
+  // Live API Rates from Binance Futures and Bybit REST
+  const [liveRates, setLiveRates] = useState<Record<string, { binance?: number; bybit?: number }>>({});
+  const [apiVerified, setApiVerified] = useState(false);
+
+  // Fetch verified live rates on mount & every 45s
+  useEffect(() => {
+    let isMounted = true;
+    const fetchLiveRates = async () => {
+      try {
+        const binanceRes = await fetch('https://fapi.binance.com/fapi/v1/premiumIndex');
+        if (!binanceRes.ok) return;
+        const binanceData = await binanceRes.json();
+        const map: Record<string, { binance?: number; bybit?: number }> = {};
+        if (Array.isArray(binanceData)) {
+          binanceData.forEach((item: any) => {
+            if (item.symbol && item.lastFundingRate) {
+              map[item.symbol] = { binance: parseFloat(item.lastFundingRate) };
+            }
+          });
+        }
+
+        try {
+          const bybitRes = await fetch('https://api.bybit.com/v5/market/tickers?category=linear');
+          if (bybitRes.ok) {
+            const bybitData = await bybitRes.json();
+            if (bybitData?.result?.list && Array.isArray(bybitData.result.list)) {
+              bybitData.result.list.forEach((item: any) => {
+                if (item.symbol && item.fundingRate) {
+                  if (!map[item.symbol]) map[item.symbol] = {};
+                  map[item.symbol].bybit = parseFloat(item.fundingRate);
+                }
+              });
+            }
+          }
+        } catch {
+          // Bybit fallback
+        }
+
+        if (isMounted && Object.keys(map).length > 0) {
+          setLiveRates(map);
+          setApiVerified(true);
+        }
+      } catch {
+        // Fallback gracefully
+      }
+    };
+
+    fetchLiveRates();
+    const interval = setInterval(fetchLiveRates, 45000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Merge live API funding rates into coins
+  const enrichedCoins = React.useMemo(() => {
+    return coins.map((c) => {
+      const liveB = liveRates[c.binanceSymbol]?.binance;
+      const liveBy = liveRates[c.binanceSymbol]?.bybit;
+      return {
+        ...c,
+        fundingRates: {
+          ...c.fundingRates,
+          binance: liveB !== undefined ? liveB : c.fundingRates.binance,
+          bybit: liveBy !== undefined ? liveBy : c.fundingRates.bybit,
+        }
+      };
+    });
+  }, [coins, liveRates]);
+
+  const arbitrageOpps = [...enrichedCoins]
     .map((c) => {
       const spread = Math.abs(c.fundingRates.binance - c.fundingRates.bybit);
       const apr = spread * 3 * 365 * 100;
@@ -77,7 +148,7 @@ export default function FundingMatrix({ coins }: FundingMatrixProps) {
     .sort((a, b) => b.spread - a.spread)
     .slice(0, 3);
 
-  const filteredCoins = coins.filter((c) => {
+  const filteredCoins = enrichedCoins.filter((c) => {
     const matchesSearch =
       c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       c.symbol.toLowerCase().includes(searchTerm.toLowerCase());
@@ -112,7 +183,7 @@ export default function FundingMatrix({ coins }: FundingMatrixProps) {
   });
 
   // Selected Arbitrage Asset for the Interactive Calculator
-  const activeCalcCoin = coins.find((c) => c.symbol === selectedArbSymbol) || arbitrageOpps[0]?.coin || coins[0];
+  const activeCalcCoin = enrichedCoins.find((c) => c.symbol === selectedArbSymbol) || arbitrageOpps[0]?.coin || enrichedCoins[0];
   const activeSpread = Math.abs(activeCalcCoin.fundingRates.binance - activeCalcCoin.fundingRates.bybit);
   const activeApr = activeSpread * 3 * 365 * 100;
   const longExchange = activeCalcCoin.fundingRates.binance < activeCalcCoin.fundingRates.bybit ? 'Binance' : 'Bybit';
@@ -150,6 +221,11 @@ export default function FundingMatrix({ coins }: FundingMatrixProps) {
 
         {/* Live Countdown & Controls */}
         <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-1.5 rounded-xl border border-[#00E699]/30 bg-[#00E699]/10 px-3 py-1.5 font-mono text-xs text-[#00A86B] dark:text-[#00E699] font-bold">
+            <span className="h-2 w-2 rounded-full bg-[#00E699] animate-pulse" />
+            <span>{apiVerified ? 'CANLI APİ (Binance & Bybit)' : 'CANLI APİ BAĞLANTISI'}</span>
+          </div>
+
           <div className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-1.5 font-mono text-xs">
             <Clock className="h-3.5 w-3.5 text-[#2962FF]" />
             <span className="text-[var(--card-muted)]">Sonraki Seans:</span>

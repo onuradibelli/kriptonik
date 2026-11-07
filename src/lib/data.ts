@@ -587,6 +587,15 @@ export const COINS_DATA: CoinData[] = [
       predicted: -0.0018000000000000002,
       nextFundingTime: '03:45:12'
     },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-29',
+      unlockedTokens: 15000000,
+      unlockedPercent: 2.9,
+      unlockValueUsd: 72000000,
+      unlockType: 'CLIFF',
+      targetAudience: 'Genesis Katkıcıları & Likidite',
+      riskScore: 85
+    },
     liquidationClusters: [
       { price: 80.4, leverage: '100x', volumeUsd: 5498500, side: 'SHORT', intensity: 0.94 },
       { price: 79.3, leverage: '50x', volumeUsd: 3927500, side: 'SHORT', intensity: 0.82 },
@@ -1105,6 +1114,15 @@ export const COINS_DATA: CoinData[] = [
       predicted: 0.0092,
       nextFundingTime: '03:45:12'
     },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-18',
+      unlockedTokens: 2850000,
+      unlockedPercent: 0.3,
+      unlockValueUsd: 12500000,
+      unlockType: 'LINEAR',
+      targetAudience: 'Ekosistem Hibe Havuzu',
+      riskScore: 42
+    },
     liquidationClusters: [
       { price: 3.811, leverage: '100x', volumeUsd: 2443000, side: 'SHORT', intensity: 0.94 },
       { price: 3.7555, leverage: '50x', volumeUsd: 1745000, side: 'SHORT', intensity: 0.82 },
@@ -1327,6 +1345,15 @@ export const COINS_DATA: CoinData[] = [
       predicted: -0.0018000000000000002,
       nextFundingTime: '03:45:12'
     },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-20',
+      unlockedTokens: 1670000,
+      unlockedPercent: 0.4,
+      unlockValueUsd: 46800000,
+      unlockType: 'LINEAR',
+      targetAudience: 'Stratejik Ortaklar & Vakıf',
+      riskScore: 54
+    },
     liquidationClusters: [
       { price: 8.6005, leverage: '100x', volumeUsd: 934500, side: 'SHORT', intensity: 0.94 },
       { price: 8.4752, leverage: '50x', volumeUsd: 667500, side: 'SHORT', intensity: 0.82 },
@@ -1400,6 +1427,15 @@ export const COINS_DATA: CoinData[] = [
       okx: 0.0075,
       predicted: 0.0092,
       nextFundingTime: '03:45:12'
+    },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-15',
+      unlockedTokens: 64190000,
+      unlockedPercent: 2.1,
+      unlockValueUsd: 55800000,
+      unlockType: 'CLIFF',
+      targetAudience: 'Topluluk & Erken Katkıcılar',
+      riskScore: 78
     },
     liquidationClusters: [
       { price: 0.8955, leverage: '100x', volumeUsd: 1844500, side: 'SHORT', intensity: 0.94 },
@@ -1919,6 +1955,15 @@ export const COINS_DATA: CoinData[] = [
       predicted: 0.0092,
       nextFundingTime: '03:45:12'
     },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-15',
+      unlockedTokens: 45000000,
+      unlockedPercent: 2.4,
+      unlockValueUsd: 22800000,
+      unlockType: 'CLIFF',
+      targetAudience: 'Sats Kampanyası & Yatırımcılar',
+      riskScore: 76
+    },
     liquidationClusters: [
       { price: 0.1691, leverage: '100x', volumeUsd: 1589000, side: 'SHORT', intensity: 0.94 },
       { price: 0.1666, leverage: '50x', volumeUsd: 1135000, side: 'SHORT', intensity: 0.82 },
@@ -2066,6 +2111,15 @@ export const COINS_DATA: CoinData[] = [
       okx: 0.0075,
       predicted: 0.0092,
       nextFundingTime: '03:45:12'
+    },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-27',
+      unlockedTokens: 120000,
+      unlockedPercent: 0.8,
+      unlockValueUsd: 18500000,
+      unlockType: 'LINEAR',
+      targetAudience: 'Güvenlik Modülü (SM) Staking Teşviki',
+      riskScore: 49
     },
     liquidationClusters: [
       { price: 134.3, leverage: '100x', volumeUsd: 1253000, side: 'SHORT', intensity: 0.94 },
@@ -2289,6 +2343,15 @@ export const COINS_DATA: CoinData[] = [
       predicted: -0.0018000000000000002,
       nextFundingTime: '03:45:12'
     },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-18',
+      unlockedTokens: 19500000,
+      unlockedPercent: 1.4,
+      unlockValueUsd: 16400000,
+      unlockType: 'LINEAR',
+      targetAudience: 'RWA Likidite Havuzları & Ortaklar',
+      riskScore: 62
+    },
     liquidationClusters: [
       { price: 0.3831, leverage: '100x', volumeUsd: 595000, side: 'SHORT', intensity: 0.94 },
       { price: 0.3776, leverage: '50x', volumeUsd: 425000, side: 'SHORT', intensity: 0.82 },
@@ -2436,6 +2499,15 @@ export const COINS_DATA: CoinData[] = [
       okx: -0.0035,
       predicted: -0.0018000000000000002,
       nextFundingTime: '03:45:12'
+    },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-16',
+      unlockedTokens: 2400000,
+      unlockedPercent: 0.2,
+      unlockValueUsd: 9800000,
+      unlockType: 'LINEAR',
+      targetAudience: 'Parachain Kiralama Fonları',
+      riskScore: 38
     },
     liquidationClusters: [
       { price: 0.9447, leverage: '100x', volumeUsd: 395500, side: 'SHORT', intensity: 0.94 },
@@ -2733,6 +2805,15 @@ export const COINS_DATA: CoinData[] = [
       predicted: 0.0092,
       nextFundingTime: '03:45:12'
     },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-13',
+      unlockedTokens: 1200000,
+      unlockedPercent: 0.3,
+      unlockValueUsd: 11400000,
+      unlockType: 'LINEAR',
+      targetAudience: 'NNS Yönetişim Dağıtımı',
+      riskScore: 45
+    },
     liquidationClusters: [
       { price: 2.5338, leverage: '100x', volumeUsd: 199500, side: 'SHORT', intensity: 0.94 },
       { price: 2.4969, leverage: '50x', volumeUsd: 142500, side: 'SHORT', intensity: 0.82 },
@@ -2806,6 +2887,15 @@ export const COINS_DATA: CoinData[] = [
       okx: 0.0075,
       predicted: 0.0092,
       nextFundingTime: '03:45:12'
+    },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-17',
+      unlockedTokens: 37200000,
+      unlockedPercent: 3.4,
+      unlockValueUsd: 68000000,
+      unlockType: 'LINEAR',
+      targetAudience: 'Topluluk & Biyometrik Dağıtım',
+      riskScore: 86
     },
     liquidationClusters: [
       { price: 0.3545, leverage: '100x', volumeUsd: 1043000, side: 'SHORT', intensity: 0.94 },
@@ -2955,6 +3045,15 @@ export const COINS_DATA: CoinData[] = [
       predicted: 0.0092,
       nextFundingTime: '03:45:12'
     },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-16',
+      unlockedTokens: 92650000,
+      unlockedPercent: 2.8,
+      unlockValueUsd: 64800000,
+      unlockType: 'CLIFF',
+      targetAudience: 'Ekip & Erken Yatırımcılar',
+      riskScore: 84
+    },
     liquidationClusters: [
       { price: 0.1706, leverage: '100x', volumeUsd: 973000, side: 'SHORT', intensity: 0.94 },
       { price: 0.1681, leverage: '50x', volumeUsd: 695000, side: 'SHORT', intensity: 0.82 },
@@ -3103,6 +3202,15 @@ export const COINS_DATA: CoinData[] = [
       predicted: -0.0018000000000000002,
       nextFundingTime: '03:45:12'
     },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-22',
+      unlockedTokens: 15000000,
+      unlockedPercent: 0.2,
+      unlockValueUsd: 6200000,
+      unlockType: 'LINEAR',
+      targetAudience: 'Vakıf Rezervi & Staking',
+      riskScore: 35
+    },
     liquidationClusters: [
       { price: 0.0955, leverage: '100x', volumeUsd: 273000, side: 'SHORT', intensity: 0.94 },
       { price: 0.0941, leverage: '50x', volumeUsd: 195000, side: 'SHORT', intensity: 0.82 },
@@ -3250,6 +3358,15 @@ export const COINS_DATA: CoinData[] = [
       okx: 0.0075,
       predicted: 0.0092,
       nextFundingTime: '03:45:12'
+    },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-21',
+      unlockedTokens: 3660000,
+      unlockedPercent: 3.8,
+      unlockValueUsd: 62200000,
+      unlockType: 'CLIFF',
+      targetAudience: 'Danışmanlar & Ekosistem Teşvikleri',
+      riskScore: 79
     },
     liquidationClusters: [
       { price: 8.6829, leverage: '100x', volumeUsd: 630000, side: 'SHORT', intensity: 0.94 },
@@ -3472,6 +3589,15 @@ export const COINS_DATA: CoinData[] = [
       okx: 0.0075,
       predicted: 0.0092,
       nextFundingTime: '03:45:12'
+    },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-19',
+      unlockedTokens: 25000000,
+      unlockedPercent: 1.8,
+      unlockValueUsd: 24500000,
+      unlockType: 'CLIFF',
+      targetAudience: 'Likidite ve Topluluk Teşvikleri',
+      riskScore: 68
     },
     liquidationClusters: [
       { price: 0.2515, leverage: '100x', volumeUsd: 220500, side: 'SHORT', intensity: 0.94 },
@@ -3769,6 +3895,15 @@ export const COINS_DATA: CoinData[] = [
       predicted: -0.0018000000000000002,
       nextFundingTime: '03:45:12'
     },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-23',
+      unlockedTokens: 4500000,
+      unlockedPercent: 0.3,
+      unlockValueUsd: 7900000,
+      unlockType: 'LINEAR',
+      targetAudience: 'Nakamoto Yükseltmesi Ekosistem Fonu',
+      riskScore: 40
+    },
     liquidationClusters: [
       { price: 0.3558, leverage: '100x', volumeUsd: 147000, side: 'SHORT', intensity: 0.94 },
       { price: 0.3506, leverage: '50x', volumeUsd: 105000, side: 'SHORT', intensity: 0.82 },
@@ -3842,6 +3977,15 @@ export const COINS_DATA: CoinData[] = [
       okx: -0.0035,
       predicted: -0.0018000000000000002,
       nextFundingTime: '03:45:12'
+    },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-25',
+      unlockedTokens: 12000000,
+      unlockedPercent: 2.6,
+      unlockValueUsd: 44200000,
+      unlockType: 'CLIFF',
+      targetAudience: 'Çekirdek Katılımcılar & Ekosistem',
+      riskScore: 82
     },
     liquidationClusters: [
       { price: 1.6686, leverage: '100x', volumeUsd: 315000, side: 'SHORT', intensity: 0.94 },
@@ -4139,6 +4283,15 @@ export const COINS_DATA: CoinData[] = [
       predicted: 0.0092,
       nextFundingTime: '03:45:12'
     },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-14',
+      unlockedTokens: 8200000,
+      unlockedPercent: 3.1,
+      unlockValueUsd: 12800000,
+      unlockType: 'CLIFF',
+      targetAudience: 'Restaking Teşvikleri & Yatırımcılar',
+      riskScore: 74
+    },
     liquidationClusters: [
       { price: 0.5967, leverage: '100x', volumeUsd: 213500, side: 'SHORT', intensity: 0.94 },
       { price: 0.588, leverage: '50x', volumeUsd: 152500, side: 'SHORT', intensity: 0.82 },
@@ -4213,6 +4366,15 @@ export const COINS_DATA: CoinData[] = [
       predicted: 0.0092,
       nextFundingTime: '03:45:12'
     },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-12',
+      unlockedTokens: 11310000,
+      unlockedPercent: 2.5,
+      unlockValueUsd: 98400000,
+      unlockType: 'CLIFF',
+      targetAudience: 'Vakıf & Çekirdek Geliştiriciler',
+      riskScore: 88
+    },
     liquidationClusters: [
       { price: 0.6285, leverage: '100x', volumeUsd: 154000, side: 'SHORT', intensity: 0.94 },
       { price: 0.6193, leverage: '50x', volumeUsd: 110000, side: 'SHORT', intensity: 0.82 },
@@ -4286,6 +4448,15 @@ export const COINS_DATA: CoinData[] = [
       okx: 0.0075,
       predicted: 0.0092,
       nextFundingTime: '03:45:12'
+    },
+    tokenUnlock: {
+      nextUnlockDate: '2026-11-20',
+      unlockedTokens: 125000000,
+      unlockedPercent: 3.5,
+      unlockValueUsd: 48500000,
+      unlockType: 'CLIFF',
+      targetAudience: 'Oracle Veri Sağlayıcıları & Ekip',
+      riskScore: 81
     },
     liquidationClusters: [
       { price: 0.0677, leverage: '100x', volumeUsd: 119000, side: 'SHORT', intensity: 0.94 },
