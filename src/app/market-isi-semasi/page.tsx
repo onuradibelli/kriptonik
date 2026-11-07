@@ -6,7 +6,7 @@ import MarketHeatmapPageClient from './MarketHeatmapPageClient';
 import { LayoutGrid, Sparkles, TrendingUp, HelpCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Kripto Market Isı Şeması (Crypto Heatmap) — Canlı 24s Hacim & Getiri Haritası | Kriptonik',
+  title: 'Kripto Market Isı Şeması (Crypto Heatmap) — Canlı 24s Hacim & Getiri Haritası',
   description:
     'Bitcoin, Ethereum, Solana ve 60+ kripto paranın canlı 24 saatlik getiri, hacim ağırlıklı market ısı şeması (Crypto Heatmap). Ayı ve boğa piyasası renk ve likidite dağılımı.',
   keywords: [

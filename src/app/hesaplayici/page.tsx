@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, HelpCircle } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Kripto Kaldıraç, Likidasyon ve Borsa Komisyon Hesaplayıcı | Kriptonik',
+  title: 'Kripto Kaldıraç, Likidasyon ve Borsa Komisyon Hesaplayıcı',
   description:
     'Binance TR, Bybit TR, BtcTurk, Paribu komisyon kıyaslama, 1x-125x kaldıraç likidasyon fiyatı, DCA ortalama maliyet düşürme ve net kâr (PnL) simülatörü.',
   keywords: [

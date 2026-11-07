@@ -1,21 +1,18 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { CoinData } from '../lib/types';
+import { computeSquarifiedTreemap } from '../lib/squarify';
+import CoinIcon from './CoinIcon';
 import {
   Flame,
   Layers,
   BarChart2,
-  Zap,
-  Volume2,
-  VolumeX,
   Share2,
   Check,
   TrendingDown,
   TrendingUp,
-  Activity,
-  ArrowUpRight,
   Info
 } from 'lucide-react';
 
@@ -37,11 +34,29 @@ interface LiquidationTile {
 }
 
 export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
-  const [activeTab, setActiveTab] = useState<'treemap' | 'depth' | 'feed'>('treemap');
+  const [activeTab, setActiveTab] = useState<'treemap' | 'depth'>('treemap');
   const [timeframe, setTimeframe] = useState<TimeframeOption>('24h');
   const [category, setCategory] = useState<ViewCategory>('coin');
-  const [soundEnabled, setSoundEnabled] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [canvasDimensions, setCanvasDimensions] = useState<{ width: number; height: number }>({
+    width: 600,
+    height: 480
+  });
+
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        const w = containerRef.current.clientWidth;
+        const h = w > 640 ? Math.max(460, Math.round(w * 0.72)) : 420;
+        setCanvasDimensions({ width: w, height: h });
+      }
+    };
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, [activeTab]);
 
   // Timeframe volume multipliers
   const tfMultipliers: Record<TimeframeOption, number> = {
@@ -53,11 +68,11 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
 
   const mult = tfMultipliers[timeframe];
 
-  // Raw base liquidation data for 24h
+  // Exact 24h liquidation dataset matching CoinGlass Tasfiye Isı Haritası (Screenshot 1)
   const baseCoinsData: LiquidationTile[] = [
     { symbol: 'BTC', name: 'Bitcoin', slug: 'bitcoin', volumeUsd: 54910000, longPct: 76.5, shortPct: 23.5 },
     { symbol: 'ETH', name: 'Ethereum', slug: 'ethereum', volumeUsd: 30740000, longPct: 72.3, shortPct: 27.7 },
-    { symbol: 'Other', name: 'Diğer Altcoinler', volumeUsd: 14060000, longPct: 60.0, shortPct: 40.0, isOther: true },
+    { symbol: 'Other', name: 'Other (Diğer)', volumeUsd: 14060000, longPct: 60.0, shortPct: 40.0, isOther: true },
     { symbol: 'SNDK', name: 'SNDK', volumeUsd: 13490000, longPct: 62.9, shortPct: 37.1 },
     { symbol: 'ZEC', name: 'Zcash', slug: 'zec', volumeUsd: 12210000, longPct: 23.8, shortPct: 76.2 },
     { symbol: 'XRP', name: 'XRP', slug: 'xrp', volumeUsd: 10830000, longPct: 94.5, shortPct: 5.5 },
@@ -68,11 +83,18 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
     { symbol: 'XAU', name: 'Gold / XAU', volumeUsd: 2490000, longPct: 64.0, shortPct: 36.0 },
     { symbol: 'ONE', name: 'Harmony', slug: 'harmony', volumeUsd: 2160000, longPct: 18.0, shortPct: 82.0 },
     { symbol: 'MU', name: 'Micron', volumeUsd: 1960000, longPct: 65.0, shortPct: 35.0 },
-    { symbol: 'XYZ', name: 'XYZ Indices', volumeUsd: 1530000, longPct: 58.0, shortPct: 42.0 },
+    { symbol: 'SPCX', name: 'SPCX', volumeUsd: 1840000, longPct: 31.0, shortPct: 69.0 },
+    { symbol: 'PEPE', name: '1000PEPE', slug: 'pepe', volumeUsd: 1650000, longPct: 34.0, shortPct: 66.0 },
+    { symbol: 'CYBER', name: 'CyberConnect', volumeUsd: 1580000, longPct: 39.0, shortPct: 61.0 },
+    { symbol: 'KORU', name: 'KORU', volumeUsd: 1530000, longPct: 68.0, shortPct: 32.0 },
     { symbol: 'DOGE', name: 'Dogecoin', slug: 'doge', volumeUsd: 1420000, longPct: 69.2, shortPct: 30.8 },
-    { symbol: 'ADA', name: 'Cardano', slug: 'ada', volumeUsd: 1180000, longPct: 22.0, shortPct: 78.0 },
-    { symbol: 'PEPE', name: 'Pepe', slug: 'pepe', volumeUsd: 1050000, longPct: 73.0, shortPct: 27.0 },
-    { symbol: 'AVAX', name: 'Avalanche', slug: 'avax', volumeUsd: 980000, longPct: 41.0, shortPct: 59.0 }
+    { symbol: 'PUMP', name: 'PUMP', volumeUsd: 1350000, longPct: 70.0, shortPct: 30.0 },
+    { symbol: 'JCT', name: 'JCT', volumeUsd: 1280000, longPct: 65.0, shortPct: 35.0 },
+    { symbol: 'AIN', name: 'AIN', volumeUsd: 1220000, longPct: 41.0, shortPct: 59.0 },
+    { symbol: 'ADA', name: 'Cardano', slug: 'ada', volumeUsd: 1180000, longPct: 32.0, shortPct: 68.0 },
+    { symbol: 'TRUMP', name: 'TRUMP', volumeUsd: 1120000, longPct: 38.0, shortPct: 62.0 },
+    { symbol: 'HYPE', name: 'HYPE', volumeUsd: 1090000, longPct: 44.0, shortPct: 56.0 },
+    { symbol: 'AVAX', name: 'Avalanche', slug: 'avax', volumeUsd: 980000, longPct: 64.0, shortPct: 36.0 }
   ];
 
   const baseExchangesData: LiquidationTile[] = [
@@ -85,12 +107,26 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
   ];
 
   // Active items scaled by timeframe
-  const currentItems = (category === 'coin' ? baseCoinsData : baseExchangesData).map((item) => ({
-    ...item,
-    volumeUsd: item.volumeUsd * mult
-  }));
+  const currentItems = useMemo(() => {
+    return (category === 'coin' ? baseCoinsData : baseExchangesData).map((item) => ({
+      ...item,
+      volumeUsd: item.volumeUsd * mult,
+      weight: item.volumeUsd * mult,
+      id: item.symbol
+    }));
+  }, [category, mult]);
 
-  // Summary Metrics calculated dynamically
+  // Compute squarified treemap for the left heatmap container
+  const treemapNodes = useMemo(() => {
+    return computeSquarifiedTreemap(currentItems, {
+      x: 0,
+      y: 0,
+      width: canvasDimensions.width,
+      height: canvasDimensions.height
+    });
+  }, [currentItems, canvasDimensions]);
+
+  // Summary Metrics calculated dynamically (matching Screenshot 1)
   const metrics = {
     '1h': { total: 815110, long: 327540, short: 487570, traders: 1842 },
     '4h': { total: 4330000, long: 2330000, short: 2000000, traders: 7420 },
@@ -99,8 +135,6 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
   };
 
   const currentMetric = metrics[timeframe];
-  const longRatio24h = 65.6;
-  const shortRatio24h = 34.4;
 
   const handleCopySummary = () => {
     const text = `🔥 KRİPTONİK LİKİDASYON ISI HARİTASI (${timeframe.toUpperCase()})\n` +
@@ -115,6 +149,12 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
+  };
+
+  const formatUsd = (val: number) => {
+    if (val >= 1e6) return `$${(val / 1e6).toFixed(2)}M`;
+    if (val >= 1e3) return `$${(val / 1e3).toFixed(2)}K`;
+    return `$${val.toFixed(0)}`;
   };
 
   return (
@@ -156,23 +196,22 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
       </div>
 
       {activeTab === 'treemap' ? (
-        /* TWO-COLUMN COINGLASS STYLE LAYOUT */
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          {/* Left Column: Tasfiye Isı Haritası (Treemap Grid) */}
+        /* TWO-COLUMN COINGLASS STYLE LAYOUT (EXACT REPLICA OF SCREENSHOT 1) */
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+          {/* Left Column: Tasfiye Isı Haritası Squarified Canvas */}
           <div className="lg:col-span-7 panel-card p-4 sm:p-5 flex flex-col justify-between space-y-4">
-            {/* Header with Title and Filters */}
+            {/* Header with Title and Filters matching Screenshot 1 */}
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
               <div className="flex items-center gap-2">
-                <Flame className="h-4.5 w-4.5 text-[#FF3B56]" />
-                <h3 className="text-base sm:text-lg font-black text-[var(--foreground)]">
-                  Tasfiye Isı Haritası
+                <h3 className="text-base sm:text-lg font-black text-[var(--foreground)] tracking-tight">
+                  Tasfiye ısı haritası
                 </h3>
               </div>
 
               {/* Controls: Timeframes & Mode Switcher */}
-              <div className="flex flex-wrap items-center gap-2">
-                {/* Timeframes */}
-                <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--card-subtle)] p-0.5 text-xs font-mono font-bold">
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                {/* 1 sa. 4 sa. 12 sa. 24 sa. Buttons */}
+                <div className="flex items-center gap-0.5 rounded-lg border border-[var(--border)] bg-[var(--card-subtle)] p-0.5 font-mono font-bold">
                   {(['1h', '4h', '12h', '24h'] as TimeframeOption[]).map((tf) => (
                     <button
                       key={tf}
@@ -189,247 +228,288 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
                 </div>
 
                 {/* Coin vs Borsa Toggle */}
-                <div className="flex items-center gap-1 rounded-lg border border-[var(--border)] bg-[var(--card-subtle)] p-0.5 text-xs font-semibold">
+                <div className="flex items-center gap-0.5 rounded-lg border border-[var(--border)] bg-[var(--card-subtle)] p-0.5 font-semibold">
                   <button
                     onClick={() => setCategory('coin')}
-                    className={`rounded px-2 py-1 transition-all cursor-pointer ${
-                      category === 'coin' ? 'bg-[#2962FF] text-white shadow-xs font-bold' : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+                    className={`rounded px-2.5 py-1 transition-all cursor-pointer ${
+                      category === 'coin' ? 'bg-[var(--card)] text-[var(--foreground)] shadow-xs font-bold' : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
                     }`}
                   >
                     Coin
                   </button>
                   <button
                     onClick={() => setCategory('exchange')}
-                    className={`rounded px-2 py-1 transition-all cursor-pointer ${
-                      category === 'exchange' ? 'bg-[#2962FF] text-white shadow-xs font-bold' : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+                    className={`rounded px-2.5 py-1 transition-all cursor-pointer ${
+                      category === 'exchange' ? 'bg-[var(--card)] text-[var(--foreground)] shadow-xs font-bold' : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
                     }`}
                   >
                     Borsa
                   </button>
                 </div>
+
+                {/* Kırmızı/yeşil Selector */}
+                <span className="rounded-lg border border-[var(--border)] bg-[var(--card-subtle)] px-2.5 py-1 text-[var(--card-muted)] font-medium text-xs">
+                  Kırmızı/yeşil ⇅
+                </span>
               </div>
             </div>
 
-            {/* Treemap Blocks Canvas */}
-            <div className="grid grid-cols-6 sm:grid-cols-12 gap-1.5 auto-rows-[42px] sm:auto-rows-[48px] select-none">
-              {/* BTC Tile */}
-              {currentItems[0] && (
-                <div
-                  className={`col-span-6 sm:col-span-6 row-span-4 rounded-xl p-3 flex flex-col justify-between transition-all hover:scale-[1.01] shadow-xs cursor-pointer ${
-                    currentItems[0].longPct >= 50
-                      ? 'bg-[#00C087] text-white'
-                      : 'bg-[#F6465D] text-white'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 font-black text-xs">
-                      ₿
-                    </span>
-                    <span className="text-xl sm:text-2xl font-black tracking-tight">
-                      {currentItems[0].symbol}
-                    </span>
-                  </div>
-                  <div>
-                    <div className="text-2xl sm:text-3xl font-black font-mono">
-                      ${(currentItems[0].volumeUsd / 1_000_000).toFixed(2)}M
-                    </div>
-                    <div className="text-xs font-bold opacity-90 mt-0.5">
-                      {currentItems[0].longPct >= 50 ? `Uzun %${currentItems[0].longPct.toFixed(1)}` : `Kısa %${currentItems[0].shortPct.toFixed(1)}`}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Other & Second Coin / Exchange Tiles */}
-              {currentItems.slice(1, 10).map((item, idx) => {
+            {/* SQUARIFIED TREEMAP CANVAS WITH COIN ICONS */}
+            <div 
+              ref={containerRef}
+              style={{ height: `${canvasDimensions.height}px` }}
+              className="w-full relative rounded-xl overflow-hidden border border-[var(--border)] bg-slate-900 shadow-inner select-none"
+            >
+              {treemapNodes.map((node) => {
+                const item = node.data;
                 const isGreen = item.longPct >= 50;
-                // Span allocation mimicking squarified heatmap
-                const spans = [
-                  'col-span-6 sm:col-span-3 row-span-2', // Other
-                  'col-span-6 sm:col-span-3 row-span-2', // SNDK
-                  'col-span-6 sm:col-span-3 row-span-2', // ZEC
-                  'col-span-6 sm:col-span-3 row-span-2', // XRP
-                  'col-span-3 sm:col-span-2 row-span-2', // AKE
-                  'col-span-3 sm:col-span-2 row-span-2', // SOXL
-                  'col-span-3 sm:col-span-2 row-span-2', // SOL
-                  'col-span-3 sm:col-span-2 row-span-1', // UAI
-                  'col-span-3 sm:col-span-2 row-span-1'  // XAU
-                ][idx] || 'col-span-2 row-span-1';
+                const tileColor = isGreen ? 'bg-[#00C087] hover:bg-[#00a876]' : 'bg-[#F6465D] hover:bg-[#e03a51]';
 
-                return (
+                const w = node.width;
+                const h = node.height;
+                const isHuge = w >= 120 && h >= 90;
+                const isLarge = w >= 75 && h >= 60;
+                const isMedium = w >= 48 && h >= 40;
+                const isSmall = w >= 32 && h >= 28;
+
+                const iconSize = isHuge ? 32 : isLarge ? 24 : isMedium ? 18 : 14;
+
+                const content = (
                   <div
-                    key={item.symbol}
-                    className={`${spans} rounded-xl p-2 sm:p-2.5 flex flex-col justify-between transition-all hover:scale-[1.02] shadow-xs cursor-pointer ${
-                      isGreen ? 'bg-[#00C087] text-white' : 'bg-[#F6465D] text-white'
-                    }`}
+                    className={`w-full h-full rounded-[2px] border border-white/20 dark:border-black/30 ${tileColor} text-white flex flex-col items-center justify-center text-center p-1 overflow-hidden transition-all duration-150 shadow-xs hover:brightness-110 hover:ring-2 hover:ring-white/90`}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="font-black text-xs sm:text-sm truncate">
-                        {item.symbol}
+                    {/* Official Coin Logo */}
+                    {!item.isOther && (isHuge || isLarge || isMedium || isSmall) && (
+                      <div className="shrink-0 mb-1">
+                        <CoinIcon
+                          symbol={item.symbol}
+                          name={item.name}
+                          size={iconSize}
+                          className="shadow-sm border border-white/20"
+                        />
+                      </div>
+                    )}
+
+                    {/* Symbol */}
+                    <span className={`font-black tracking-tight leading-none drop-shadow-sm truncate max-w-full px-0.5 ${
+                      isHuge ? 'text-2xl sm:text-3xl' : isLarge ? 'text-base sm:text-lg' : isMedium ? 'text-xs' : 'text-[10px]'
+                    }`}>
+                      {item.symbol}
+                    </span>
+
+                    {/* Volume Usd */}
+                    {(isHuge || isLarge || isMedium) && (
+                      <span className={`font-mono font-bold leading-tight drop-shadow-sm mt-1 truncate max-w-full ${
+                        isHuge ? 'text-lg sm:text-xl font-black' : isLarge ? 'text-xs sm:text-sm font-bold' : 'text-[10px]'
+                      }`}>
+                        {formatUsd(item.volumeUsd)}
                       </span>
-                    </div>
-                    <div>
-                      <div className="font-black font-mono text-xs sm:text-sm truncate">
-                        ${(item.volumeUsd / 1_000_000).toFixed(2)}M
-                      </div>
-                      <div className="text-[10px] font-semibold opacity-90 truncate">
-                        {isGreen ? `Uzun %${item.longPct.toFixed(0)}` : `Kısa %${item.shortPct.toFixed(0)}`}
-                      </div>
-                    </div>
+                    )}
+
+                    {/* Dominant Direction % */}
+                    {(isHuge || isLarge) && (
+                      <span className="text-[10px] sm:text-xs font-mono font-semibold opacity-90 mt-0.5 drop-shadow-sm">
+                        {isGreen ? `Uzun ${item.longPct.toFixed(1)}%` : `Kısa ${item.shortPct.toFixed(1)}%`}
+                      </span>
+                    )}
                   </div>
                 );
-              })}
 
-              {/* Smaller remaining coin micro-tiles */}
-              {currentItems.slice(10, 18).map((item) => {
-                const isGreen = item.longPct >= 50;
+                if (item.slug) {
+                  return (
+                    <Link
+                      key={item.symbol}
+                      href={`/kripto/${item.slug}/`}
+                      style={{
+                        position: 'absolute',
+                        left: `${(node.x / canvasDimensions.width) * 100}%`,
+                        top: `${(node.y / canvasDimensions.height) * 100}%`,
+                        width: `${(node.width / canvasDimensions.width) * 100}%`,
+                        height: `${(node.height / canvasDimensions.height) * 100}%`,
+                        padding: '1px'
+                      }}
+                      className="cursor-pointer"
+                    >
+                      {content}
+                    </Link>
+                  );
+                }
+
                 return (
                   <div
                     key={item.symbol}
-                    className={`col-span-2 sm:col-span-1 row-span-1 rounded-lg p-1 flex flex-col justify-center text-center transition-all hover:scale-105 cursor-pointer ${
-                      isGreen ? 'bg-[#00C087] text-white' : 'bg-[#F6465D] text-white'
-                    }`}
-                    title={`${item.symbol}: $${(item.volumeUsd / 1_000_000).toFixed(2)}M (${isGreen ? 'Uzun' : 'Kısa'} ağırlıklı)`}
+                    style={{
+                      position: 'absolute',
+                      left: `${(node.x / canvasDimensions.width) * 100}%`,
+                      top: `${(node.y / canvasDimensions.height) * 100}%`,
+                      width: `${(node.width / canvasDimensions.width) * 100}%`,
+                      height: `${(node.height / canvasDimensions.height) * 100}%`,
+                      padding: '1px'
+                    }}
                   >
-                    <span className="font-bold text-[10px] truncate">{item.symbol}</span>
-                    <span className="text-[9px] font-mono opacity-90 truncate">
-                      ${(item.volumeUsd / 1_000_000).toFixed(1)}M
-                    </span>
+                    {content}
                   </div>
                 );
               })}
             </div>
 
-            {/* Bottom Legend */}
-            <div className="flex items-center justify-between text-xs font-mono pt-3 border-t border-[var(--border)]">
-              <span className="flex items-center gap-1.5 text-[#00A86B] dark:text-[#00E699] font-bold">
-                <span className="h-2 w-2 rounded-full bg-[#00C087]" />
-                Uzun Ağırlıklı (Long)
-              </span>
-              <div className="h-2 w-24 sm:w-48 rounded-full bg-gradient-to-r from-[#00C087] via-amber-400 to-[#F6465D]" />
-              <span className="flex items-center gap-1.5 text-[#FF3B56] font-bold">
-                Kısa Ağırlıklı (Short)
-                <span className="h-2 w-2 rounded-full bg-[#F6465D]" />
-              </span>
+            {/* Bottom Color Ratio Bar matching Screenshot 1 */}
+            <div className="flex items-center justify-between text-xs font-mono text-[var(--card-muted)] pt-1">
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-[var(--foreground)]">Uzun ağırlıklı</span>
+                <div className="h-2 w-28 rounded-full bg-gradient-to-r from-[#00C087] via-[#00C087]/50 to-[#F6465D]/50" />
+                <span className="font-bold text-[var(--foreground)]">Kısa ağırlıklı</span>
+              </div>
+              <span className="text-[11px]">Canlı Likidite Derinliği</span>
             </div>
           </div>
 
-          {/* Right Column: Toplam Tasfiyeler (Dashboard Metrics) */}
-          <div className="lg:col-span-5 panel-card p-4 sm:p-5 space-y-4">
-            <h3 className="text-base sm:text-lg font-black text-[var(--foreground)] border-b border-[var(--border)] pb-3">
-              Toplam Tasfiyeler
-            </h3>
+          {/* Right Column: "Toplam tasfiyeler" & Coinglass Metrics matching Screenshot 1 */}
+          <div className="lg:col-span-5 panel-card p-4 sm:p-5 flex flex-col justify-between space-y-4">
+            {/* Header */}
+            <div className="border-b border-[var(--border)] pb-3">
+              <h3 className="text-base sm:text-lg font-black text-[var(--foreground)] tracking-tight">
+                Toplam tasfiyeler
+              </h3>
+            </div>
 
-            {/* 2x2 Grid of Timeframe Cards */}
+            {/* 4 Stat Cards in 2x2 Grid matching Screenshot 1 */}
             <div className="grid grid-cols-2 gap-3">
-              {/* 1 sa. tasfiyeleri */}
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3 space-y-2">
-                <div className="text-[11px] text-[var(--card-muted)] font-semibold">1 sa. tasfiyeleri</div>
-                <div className="text-base sm:text-lg font-black font-mono text-[var(--foreground)]">
+              {/* 1 sa. */}
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 space-y-2">
+                <div className="text-xs text-[var(--card-muted)]">1 sa. tasfiyeleri</div>
+                <div className="text-xl sm:text-2xl font-black font-mono text-[var(--foreground)]">
                   $815.11K
                 </div>
-                <div className="text-[10px] font-mono flex items-center justify-between text-[var(--card-muted)]">
-                  <span>Uzun: <strong className="text-[#00A86B] dark:text-[#00E699]">$327.54K</strong></span>
-                  <span>Kısa: <strong className="text-[#FF3B56]">$487.57K</strong></span>
+                <div className="space-y-1 text-[11px] font-mono">
+                  <div className="flex justify-between">
+                    <span className="text-[var(--card-muted)]">Uzun</span>
+                    <span className="text-[#00C087] font-bold">$327.54K</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[var(--card-muted)]">Kısa</span>
+                    <span className="text-[#F6465D] font-bold">$487.57K</span>
+                  </div>
                 </div>
-                <div className="h-1.5 w-full rounded-full bg-[var(--border)] overflow-hidden flex">
+                <div className="h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden flex">
                   <div style={{ width: '40.2%' }} className="bg-[#00C087] h-full" />
                   <div style={{ width: '59.8%' }} className="bg-[#F6465D] h-full" />
                 </div>
               </div>
 
-              {/* 4 sa. tasfiyeleri */}
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3 space-y-2">
-                <div className="text-[11px] text-[var(--card-muted)] font-semibold">4 sa. tasfiyeleri</div>
-                <div className="text-base sm:text-lg font-black font-mono text-[var(--foreground)]">
+              {/* 4 sa. */}
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 space-y-2">
+                <div className="text-xs text-[var(--card-muted)]">4 sa. tasfiyeleri</div>
+                <div className="text-xl sm:text-2xl font-black font-mono text-[var(--foreground)]">
                   $4.33M
                 </div>
-                <div className="text-[10px] font-mono flex items-center justify-between text-[var(--card-muted)]">
-                  <span>Uzun: <strong className="text-[#00A86B] dark:text-[#00E699]">$2.33M</strong></span>
-                  <span>Kısa: <strong className="text-[#FF3B56]">$2.00M</strong></span>
+                <div className="space-y-1 text-[11px] font-mono">
+                  <div className="flex justify-between">
+                    <span className="text-[var(--card-muted)]">Uzun</span>
+                    <span className="text-[#00C087] font-bold">$2.33M</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[var(--card-muted)]">Kısa</span>
+                    <span className="text-[#F6465D] font-bold">$2.00M</span>
+                  </div>
                 </div>
-                <div className="h-1.5 w-full rounded-full bg-[var(--border)] overflow-hidden flex">
+                <div className="h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden flex">
                   <div style={{ width: '53.8%' }} className="bg-[#00C087] h-full" />
                   <div style={{ width: '46.2%' }} className="bg-[#F6465D] h-full" />
                 </div>
               </div>
 
-              {/* 12 sa. tasfiyeleri */}
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3 space-y-2">
-                <div className="text-[11px] text-[var(--card-muted)] font-semibold">12 sa. tasfiyeleri</div>
-                <div className="text-base sm:text-lg font-black font-mono text-[var(--foreground)]">
+              {/* 12 sa. */}
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 space-y-2">
+                <div className="text-xs text-[var(--card-muted)]">12 sa. tasfiyeleri</div>
+                <div className="text-xl sm:text-2xl font-black font-mono text-[var(--foreground)]">
                   $31.12M
                 </div>
-                <div className="text-[10px] font-mono flex items-center justify-between text-[var(--card-muted)]">
-                  <span>Uzun: <strong className="text-[#00A86B] dark:text-[#00E699]">$18.95M</strong></span>
-                  <span>Kısa: <strong className="text-[#FF3B56]">$12.17M</strong></span>
+                <div className="space-y-1 text-[11px] font-mono">
+                  <div className="flex justify-between">
+                    <span className="text-[var(--card-muted)]">Uzun</span>
+                    <span className="text-[#00C087] font-bold">$18.95M</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[var(--card-muted)]">Kısa</span>
+                    <span className="text-[#F6465D] font-bold">$12.17M</span>
+                  </div>
                 </div>
-                <div className="h-1.5 w-full rounded-full bg-[var(--border)] overflow-hidden flex">
+                <div className="h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden flex">
                   <div style={{ width: '60.9%' }} className="bg-[#00C087] h-full" />
                   <div style={{ width: '39.1%' }} className="bg-[#F6465D] h-full" />
                 </div>
               </div>
 
-              {/* 24 sa. tasfiyeleri */}
-              <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3 space-y-2">
-                <div className="text-[11px] text-[var(--card-muted)] font-semibold">24 sa. tasfiyeleri</div>
-                <div className="text-base sm:text-lg font-black font-mono text-[var(--foreground)]">
+              {/* 24 sa. */}
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 space-y-2">
+                <div className="text-xs text-[var(--card-muted)]">24 sa. tasfiyeleri</div>
+                <div className="text-xl sm:text-2xl font-black font-mono text-[var(--foreground)]">
                   $190.27M
                 </div>
-                <div className="text-[10px] font-mono flex items-center justify-between text-[var(--card-muted)]">
-                  <span>Uzun: <strong className="text-[#00A86B] dark:text-[#00E699]">$124.88M</strong></span>
-                  <span>Kısa: <strong className="text-[#FF3B56]">$65.39M</strong></span>
+                <div className="space-y-1 text-[11px] font-mono">
+                  <div className="flex justify-between">
+                    <span className="text-[var(--card-muted)]">Uzun</span>
+                    <span className="text-[#00C087] font-bold">$124.88M</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[var(--card-muted)]">Kısa</span>
+                    <span className="text-[#F6465D] font-bold">$65.39M</span>
+                  </div>
                 </div>
-                <div className="h-1.5 w-full rounded-full bg-[var(--border)] overflow-hidden flex">
+                <div className="h-1.5 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden flex">
                   <div style={{ width: '65.6%' }} className="bg-[#00C087] h-full" />
                   <div style={{ width: '34.4%' }} className="bg-[#F6465D] h-full" />
                 </div>
               </div>
             </div>
 
-            {/* Analysis Text Note */}
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 text-xs text-[var(--card-muted)] leading-relaxed">
-              Kriptonik türev analiz verilerine göre son 24 saatte <strong className="text-[var(--foreground)]">66.136</strong> yatırımcının pozisyonları tasfiye edildi. Toplam tasfiye tutarı <strong className="text-[var(--foreground)]">$190.27M</strong>. Gözlenen en büyük tasfiye <strong className="text-[#2962FF]">Binance - ETHUSDT</strong> üzerinde, <strong className="text-[var(--foreground)]">$2.88M</strong> değerindeydi.
+            {/* Narrative Box (Screenshot 1 text) */}
+            <div className="rounded-xl bg-[var(--card-subtle)] p-3 text-xs leading-relaxed text-[var(--card-muted)]">
+              CoinGlass verilerine göre son 24 saatte <strong className="text-[var(--foreground)]">66.136</strong> yatırımcının pozisyonları tasfiye edildi. Toplam tasfiye tutarı <strong className="text-[var(--foreground)]">$190.27M</strong>. Gözlenen en büyük tasfiye <strong className="text-[var(--foreground)]">Binance - ETHUSDT</strong> üzerinde, <strong className="text-[var(--foreground)]">$2.88M</strong> değerindeydi.
             </div>
 
-            {/* 24 sa. Tasfiye Dağılımı Progress Bar */}
-            <div className="space-y-1.5 pt-1">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="flex items-center gap-1.5 font-bold text-[#00A86B] dark:text-[#00E699]">
+            {/* 24 sa. tasfiye dağılımı Split Bar */}
+            <div className="space-y-2 border-t border-[var(--border)] pt-3 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-[var(--card-muted)]">24 sa. tasfiye dağılımı</span>
+                <span className="text-[11px] font-mono text-[var(--card-muted)]">24h</span>
+              </div>
+              <div className="flex items-center justify-between font-mono font-bold">
+                <span className="text-[#00C087] flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-[#00C087]" />
-                  Uzun %{longRatio24h}
+                  Uzun 65.6%
                 </span>
-                <span className="text-[11px] text-[var(--card-muted)]">24h Dağılım</span>
-                <span className="flex items-center gap-1.5 font-bold text-[#FF3B56]">
-                  Kısa %{shortRatio24h}
+                <span className="text-[#F6465D] flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-full bg-[#F6465D]" />
+                  Kısa 34.4%
                 </span>
               </div>
-              <div className="h-2.5 w-full rounded-full bg-[var(--border)] overflow-hidden flex">
-                <div style={{ width: `${longRatio24h}%` }} className="bg-[#00C087] h-full" />
-                <div style={{ width: `${shortRatio24h}%` }} className="bg-[#F6465D] h-full" />
+              <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden flex">
+                <div style={{ width: '65.6%' }} className="bg-[#00C087] h-full" />
+                <div style={{ width: '34.4%' }} className="bg-[#F6465D] h-full" />
               </div>
             </div>
 
-            {/* En Büyük Borsa Payı */}
-            <div className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3 text-xs">
+            {/* En büyük borsa payı */}
+            <div className="flex items-center justify-between border-t border-[var(--border)] pt-3 text-xs">
               <span className="text-[var(--card-muted)]">En büyük borsa payı</span>
-              <div className="flex items-center gap-2 font-mono font-bold text-[var(--foreground)]">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#F3BA2F]/20 text-[#F3BA2F] text-[10px]">
-                  🟡
+              <div className="flex items-center gap-1.5 font-bold font-mono text-[var(--foreground)]">
+                <span className="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-[#F0B90B]/20 text-[#F0B90B] text-[10px] font-black">
+                  ❖
                 </span>
-                <span>Binance %43.2</span>
+                <span>Binance 43.2%</span>
               </div>
             </div>
 
-            {/* Gözlenen En Büyük Emir */}
-            <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3 space-y-1">
+            {/* Gözlenen en büyük emir */}
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-[var(--card-muted)]">Gözlenen en büyük emir - 24 sa.</span>
-                <span className="text-sm font-black font-mono text-[var(--foreground)]">$2.88M</span>
+                <span className="text-[var(--card-muted)]">Gözlenen en büyük emir · 24 sa.</span>
+                <span className="text-base font-black font-mono text-[var(--foreground)]">$2.88M</span>
               </div>
               <div className="text-[11px] font-mono text-[var(--card-muted)]">
-                Binance · ETHUSDT - Uzun - $2,227.16
+                Binance · ETHUSDT · Uzun · $2,227.16
               </div>
             </div>
           </div>

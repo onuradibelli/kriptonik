@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useId } from 'react';
 
 interface SparklineProps {
   change24h: number;
@@ -19,7 +19,8 @@ export default function Sparkline({
 }: SparklineProps) {
   const isPositive = change24h >= 0;
   const strokeColor = isPositive ? '#00C087' : '#F6465D';
-  const fillGradientId = `grad-${isPositive ? 'bull' : 'bear'}-${Math.random().toString(36).substring(2, 7)}`;
+  const rawId = useId();
+  const fillGradientId = `grad-${isPositive ? 'bull' : 'bear'}-${rawId.replace(/[^a-zA-Z0-9_-]/g, '')}`;
 
   // If data is provided, normalize it. Otherwise generate realistic 10-point wave ending at change24h
   const points = data || generateSyntheticPath(change24h);

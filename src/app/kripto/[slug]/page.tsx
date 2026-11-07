@@ -5,14 +5,7 @@ import { COINS_DATA } from '../../../lib/data';
 import CoinTerminalClient from '../../../components/CoinTerminalClient';
 
 export async function generateStaticParams() {
-  const params: { slug: string }[] = [];
-  COINS_DATA.forEach((coin) => {
-    params.push({ slug: coin.slug });
-    if (coin.symbol.toLowerCase() !== coin.slug.toLowerCase()) {
-      params.push({ slug: coin.symbol.toLowerCase() });
-    }
-  });
-  return params;
+  return COINS_DATA.map((coin) => ({ slug: coin.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -20,13 +13,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const coin = COINS_DATA.find(
     (c) => c.slug.toLowerCase() === slug.toLowerCase() || c.symbol.toLowerCase() === slug.toLowerCase()
   );
-  if (!coin) return { title: 'Coin Bulunamadı | Kriptonik' };
+  if (!coin) return { title: 'Coin Bulunamadı' };
 
   const ath = coin.athUsd ? `$${coin.athUsd.toLocaleString('tr-TR')}` : 'Tüm zamanların zirvesi';
 
   return {
-    title: `${coin.name} (${coin.symbol}) Canlı Fiyatı, Kaç TL, Likidasyon Haritası ve Analiz Terminali | Kriptonik`,
-    description: `${coin.name} (${coin.symbol}) anlık canlı fiyatı, TL karşılığı, ATH (${ath}), 24s likidasyon ısı haritası derinliği, fonlama arbitrajı, açık pozisyon ve teknik analiz göstergeleri.`,
+    title: `${coin.name} (${coin.symbol}) Canlı Fiyatı ve Analiz Terminali`,
+    description: `${coin.name} (${coin.symbol}) anlık canlı fiyatı, TL karşılığı, ATH (${ath}), 24s likidasyon ısı haritası derinliği, fonlama arbitrajı ve teknik analiz göstergeleri.`,
     keywords: [
       `${coin.name.toLowerCase()} canlı fiyat`,
       `${coin.symbol.toLowerCase()} kaç tl`,

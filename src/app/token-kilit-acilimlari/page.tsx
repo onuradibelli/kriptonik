@@ -6,7 +6,7 @@ import TokenUnlockCalendar from '../../components/TokenUnlockCalendar';
 import { Calendar, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Kripto Token Kilit Açılım Takvimi (Cliff & Linear Unlocks) | Kriptonik',
+  title: 'Kripto Token Kilit Açılım Takvimi (Cliff & Linear Unlocks)',
   description: 'Önümüzdeki 30 gün içinde kilitli arzı serbest kalacak tokenlar, satış baskısı risk skorları, dolaşım oranları ve yatırımcı/ekip payları takvimi.',
   keywords: [
     'token kilit açılımı',

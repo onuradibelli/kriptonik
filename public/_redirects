@@ -1,0 +1,18 @@
+# 301 Permanent Redirects for Cloudflare Pages
+/kripto/btc/ /kripto/bitcoin/ 301
+/kripto/eth/ /kripto/ethereum/ 301
+/kripto/sol/ /kripto/solana/ 301
+/kripto/bnb/ /kripto/binancecoin/ 301
+/kripto/xrp/ /kripto/ripple/ 301
+/kripto/doge/ /kripto/dogecoin/ 301
+/kripto/ada/ /kripto/cardano/ 301
+/kripto/avax/ /kripto/avalanche-2/ 301
+/likidasyon/btc/ /likidasyon/bitcoin/ 301
+/likidasyon/eth/ /likidasyon/ethereum/ 301
+/likidasyon/sol/ /likidasyon/solana/ 301
+/fonlama-oranlari/btc/ /fonlama-oranlari/bitcoin/ 301
+/fonlama-oranlari/eth/ /fonlama-oranlari/ethereum/ 301
+/fonlama-oranlari/sol/ /fonlama-oranlari/solana/ 301
+/acik-pozisyon/btc/ /acik-pozisyon/bitcoin/ 301
+/acik-pozisyon/eth/ /acik-pozisyon/ethereum/ 301
+/acik-pozisyon/sol/ /acik-pozisyon/solana/ 301

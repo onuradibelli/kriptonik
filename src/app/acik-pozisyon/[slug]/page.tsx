@@ -6,14 +6,7 @@ import { COINS_DATA, generateProgrammaticAnalysis } from '../../../lib/data';
 import { Compass, ArrowLeft, TrendingUp, TrendingDown, HelpCircle } from 'lucide-react';
 
 export async function generateStaticParams() {
-  const params: { slug: string }[] = [];
-  COINS_DATA.forEach((coin) => {
-    params.push({ slug: coin.slug });
-    if (coin.symbol.toLowerCase() !== coin.slug.toLowerCase()) {
-      params.push({ slug: coin.symbol.toLowerCase() });
-    }
-  });
-  return params;
+  return COINS_DATA.map((coin) => ({ slug: coin.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -21,10 +14,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const coin = COINS_DATA.find(
     (c) => c.slug.toLowerCase() === slug.toLowerCase() || c.symbol.toLowerCase() === slug.toLowerCase()
   );
-  if (!coin) return { title: 'Coin Bulunamadı | Kriptonik' };
+  if (!coin) return { title: 'Coin Bulunamadı' };
 
   return {
-    title: `${coin.name} (${coin.symbol}) Canlı Açık Pozisyon (Open Interest - OI) | Kriptonik`,
+    title: `${coin.name} (${coin.symbol}) Canlı Açık Pozisyon (Open Interest - OI)`,
     description: `${coin.name} vadeli işlemlerinde açık pozisyon kontrat büyüklüğü $${(coin.openInterestUsd / 1_000_000_000).toFixed(2)}B, long/short rasyosu ve piyasa yönü analizi.`,
     keywords: [
       `${coin.name.toLowerCase()} open interest`,

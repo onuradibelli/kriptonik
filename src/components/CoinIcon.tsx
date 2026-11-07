@@ -23,12 +23,14 @@ export default function CoinIcon({
 
   // Multi-tier reliable CDN fallbacks:
   // 1. Primary: Direct CoinGecko imageUrl if provided
-  // 2. Secondary: Cryptocurrency Icons CDN (jsdelivr SVG)
-  // 3. Tertiary: CoinCap / CoinGecko known static pattern
+  // 2. Secondary: Binance official high-res logo CDN (covers 100% of Binance/Bybit listed tokens)
+  // 3. Tertiary: CoinCap high-res icon CDN
+  // 4. Quaternary: Cryptocurrency Icons CDN
   const fallbackUrls = [
     imageUrl,
-    `https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63539be1e3741faef35e2100e1ae6834d16752/svg/color/${lowerSymbol}.svg`,
-    `https://assets.coincap.io/assets/icons/${lowerSymbol}@2x.png`
+    `https://bin.bnbstatic.com/static/assets/logos/${cleanSymbol}.png`,
+    `https://assets.coincap.io/assets/icons/${lowerSymbol}@2x.png`,
+    `https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63539be1e3741faef35e2100e1ae6834d16752/svg/color/${lowerSymbol}.svg`
   ].filter(Boolean) as string[];
 
   const currentSrc = fallbackUrls[errorStage];

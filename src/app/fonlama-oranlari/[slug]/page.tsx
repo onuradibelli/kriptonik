@@ -6,14 +6,7 @@ import { COINS_DATA, generateProgrammaticAnalysis } from '../../../lib/data';
 import { DollarSign, ArrowLeft, Zap, HelpCircle } from 'lucide-react';
 
 export async function generateStaticParams() {
-  const params: { slug: string }[] = [];
-  COINS_DATA.forEach((coin) => {
-    params.push({ slug: coin.slug });
-    if (coin.symbol.toLowerCase() !== coin.slug.toLowerCase()) {
-      params.push({ slug: coin.symbol.toLowerCase() });
-    }
-  });
-  return params;
+  return COINS_DATA.map((coin) => ({ slug: coin.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -21,10 +14,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const coin = COINS_DATA.find(
     (c) => c.slug.toLowerCase() === slug.toLowerCase() || c.symbol.toLowerCase() === slug.toLowerCase()
   );
-  if (!coin) return { title: 'Coin Bulunamadı | Kriptonik' };
+  if (!coin) return { title: 'Coin Bulunamadı' };
 
   return {
-    title: `${coin.name} (${coin.symbol}) Canlı Fonlama Oranları (Funding Rate) | Kriptonik`,
+    title: `${coin.name} (${coin.symbol}) Canlı Fonlama Oranları (Funding Rate)`,
     description: `${coin.name} için Binance, Bybit ve OKX borsaları anlık fonlama oranları, arbitraj spreadi ve sonraki fonlama tahminleri.`,
     keywords: [
       `${coin.name.toLowerCase()} fonlama oranı`,

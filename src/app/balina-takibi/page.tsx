@@ -6,7 +6,7 @@ import WhaleTracker from '../../components/WhaleTracker';
 import { ShieldAlert, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Canlı Kripto Balina Takibi ve Büyük Cüzdan Transfer Radarı | Kriptonik',
+  title: 'Canlı Kripto Balina Takibi ve Büyük Cüzdan Transfer Radarı',
   description: 'Milyonlarca dolarlık Bitcoin, Ethereum, Solana ve altcoin balina hareketleri, soğuk cüzdan transferleri, borsa giriş/çıkış akışları ve whale alert sinyalleri.',
   keywords: [
     'kripto balina takibi',

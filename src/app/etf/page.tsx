@@ -5,7 +5,7 @@ import EtfTracker from '../../components/EtfTracker';
 import { BarChart3, ShieldCheck } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Canlı Spot Bitcoin, Ethereum ve Solana ETF Giriş/Çıkış Akışları (Net Flows) | Kriptonik',
+  title: 'Canlı Spot Bitcoin, Ethereum ve Solana ETF Giriş/Çıkış Akışları (Net Flows)',
   description: 'BlackRock (IBIT), Fidelity (FBTC), Grayscale ve tüm kurumsal ETF ihraççılarının günlük net sermaye akışları, kurumsal konsolide giriş/çıkış bilançosu ve AUM rezervleri.',
   keywords: [
     'spot etf akışları',

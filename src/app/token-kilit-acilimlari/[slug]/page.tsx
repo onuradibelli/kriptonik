@@ -7,11 +7,8 @@ import { Calendar, ArrowLeft, Clock, AlertTriangle, HelpCircle } from 'lucide-re
 
 export async function generateStaticParams() {
   const params: { slug: string }[] = [];
-  COINS_DATA.forEach((coin) => {
+  COINS_DATA.filter((coin) => coin.tokenUnlock !== undefined).forEach((coin) => {
     params.push({ slug: coin.slug });
-    if (coin.symbol.toLowerCase() !== coin.slug.toLowerCase()) {
-      params.push({ slug: coin.symbol.toLowerCase() });
-    }
   });
   return params;
 }
@@ -21,10 +18,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const coin = COINS_DATA.find(
     (c) => c.slug.toLowerCase() === slug.toLowerCase() || c.symbol.toLowerCase() === slug.toLowerCase()
   );
-  if (!coin) return { title: 'Coin Bulunamadı | Kriptonik' };
+  if (!coin) return { title: 'Coin Bulunamadı' };
 
   return {
-    title: `${coin.name} (${coin.symbol}) Token Kilit Açılım Takvimi ve Risk Skoru | Kriptonik`,
+    title: `${coin.name} (${coin.symbol}) Token Kilit Açılım Takvimi ve Risk Skoru`,
     description: `${coin.name} için bir sonraki kilit açılış tarihi, açılacak token adedi, satış baskısı riski ve dolaşıma etki oranı.`,
     keywords: [
       `${coin.name.toLowerCase()} token kilit açılımı`,

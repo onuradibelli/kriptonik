@@ -182,10 +182,6 @@ export default function HomePage() {
       `• Korku & Açgözlülük İndeksi: ${liveFearGreed.value} / 100 (${liveFearGreed.classification})\r\n` +
       `• Ağırlıklı Fonlama Oranı: +%0.0084 (Dengeli)\r\n\r\n` +
       `🔗 Detaylı Canlı Isı Haritası, TradingView Grafikleri & Arbitraj:\r\n` +
-      `👉 https://kriptonik.com\r\n`; +
-      `• Korku & Açgözlülük İndeksi: ${FEAR_AND_GREED.value} / 100 (${FEAR_AND_GREED.classification.split(' ')[0]})\r\n` +
-      `• Ağırlıklı Fonlama Oranı: +%0.0084 (Dengeli)\r\n\r\n` +
-      `🔗 Detaylı Canlı Isı Haritası, TradingView Grafikleri & Arbitraj:\r\n` +
       `👉 https://kriptonik.com\r\n`;
 
     if (navigator?.clipboard) {

@@ -17,7 +17,6 @@ export const metadata: Metadata = {
     'liquidation heatmap',
     'canlı kripto fiyatları',
     'bitcoin likidasyon',
-    'coinglass türkçe',
     'fonlama oranları',
     'funding rate arbitraj',
     'spot etf girişleri',
@@ -31,20 +30,14 @@ export const metadata: Metadata = {
     'açık pozisyon open interest',
     'kriptonik terminal'
   ],
-  authors: [{ name: 'Kriptonik Finansal Mühendislik', url: 'https://kriptonik.com' }],
+  authors: [{ name: 'Kriptonik', url: 'https://kriptonik.com' }],
   creator: 'Kriptonik',
   publisher: 'Kriptonik',
   metadataBase: new URL('https://kriptonik.com'),
-  alternates: {
-    canonical: 'https://kriptonik.com/',
-    languages: {
-      'tr-TR': 'https://kriptonik.com/'
-    }
-  },
   openGraph: {
     title: 'Kriptonik — Canlı Kripto Veri ve Türev Analiz Terminali',
     description:
-      'Coinglass ve CryptoQuant verilerini basitleştiren Türkiye’nin en gelişmiş canlı kripto türev, likidasyon ve on-chain istihbarat platformu.',
+      'Halka açık borsa ve zincir üstü verilerle canlı kripto türev, likidasyon ısı haritası ve fonlama analizi terminali.',
     url: 'https://kriptonik.com',
     siteName: 'Kriptonik',
     locale: 'tr_TR',
@@ -94,11 +87,6 @@ export default function RootLayout({
         publisher: {
           '@id': 'https://kriptonik.com/#organization'
         },
-        potentialAction: {
-          '@type': 'SearchAction',
-          target: 'https://kriptonik.com/kripto/{search_term_string}/',
-          'query-input': 'required name=search_term_string'
-        },
         inLanguage: 'tr-TR'
       },
       {
@@ -109,21 +97,16 @@ export default function RootLayout({
         logo: {
           '@type': 'ImageObject',
           url: 'https://kriptonik.com/icon.svg'
-        },
-        sameAs: [
-          'https://twitter.com/kriptonik'
-        ]
+        }
       },
       {
-        '@type': 'FinancialService',
-        '@id': 'https://kriptonik.com/#service',
-        name: 'Kriptonik Finansal Veri Terminali',
+        '@type': 'WebApplication',
+        '@id': 'https://kriptonik.com/#app',
+        name: 'Kriptonik Kripto Veri Terminali',
         url: 'https://kriptonik.com',
-        serviceType: 'Cryptocurrency Derivative Analytics & On-Chain Intelligence',
-        provider: {
-          '@id': 'https://kriptonik.com/#organization'
-        },
-        description: 'Canlı likidasyon havuzları, borsalar arası fonlama arbitrajı, açık pozisyon ve spot ETF sermaye akışları takip servisi.'
+        applicationCategory: 'FinanceApplication',
+        operatingSystem: 'All',
+        description: 'Canlı likidasyon havuzları, borsalar arası fonlama arbitrajı, açık pozisyon ve spot ETF sermaye akışları takip arayüzü.'
       }
     ]
   };

@@ -647,7 +647,7 @@ export default function CoinTerminalClient({ coin }: CoinTerminalClientProps) {
               <a
                 href={coin.officialWebsite}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noopener noreferrer nofollow"
                 className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-1.5 text-[var(--foreground)] hover:border-[#2962FF] transition-colors"
               >
                 <Globe className="h-3.5 w-3.5 text-[#2962FF]" />
@@ -659,7 +659,7 @@ export default function CoinTerminalClient({ coin }: CoinTerminalClientProps) {
               <a
                 href={coin.explorerUrl}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noopener noreferrer nofollow"
                 className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-1.5 text-[var(--foreground)] hover:border-[#00E699] transition-colors"
               >
                 <Search className="h-3.5 w-3.5 text-[#00E699]" />
@@ -671,7 +671,7 @@ export default function CoinTerminalClient({ coin }: CoinTerminalClientProps) {
               <a
                 href={coin.twitterUrl}
                 target="_blank"
-                rel="noopener noreferrer"
+                rel="noopener noreferrer nofollow"
                 className="flex items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-1.5 text-[var(--foreground)] hover:border-[#1DA1F2] transition-colors"
               >
                 <MessageSquare className="h-3.5 w-3.5 text-[#1DA1F2]" />
