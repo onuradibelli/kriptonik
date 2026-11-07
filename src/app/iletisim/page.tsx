@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 import { Mail, MessageSquare, Send } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'İletişim — Kriptonik Terminal',
+  title: 'İletişim & Geri Bildirim',
   description: 'Kriptonik geliştirici ekibine ulaşın; geri bildirim, veri düzeltme, hata bildirimleri ve kurumsal iş birlikleri.',
   alternates: {
     canonical: 'https://kriptonik.com/iletisim/'

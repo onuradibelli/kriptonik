@@ -6,7 +6,7 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://s3.tradingview.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https: wss:; font-src 'self' data:; frame-src https://s.tradingview.com;
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://s3.tradingview.com https://*.tradingview.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.binance.com https://fapi.binance.com wss://stream.binance.com:9443 wss://stream.binance.com wss://fstream.binance.com https://api.bybit.com https://api.alternative.me https://open.er-api.com https://mempool.space; font-src 'self' data:; frame-src 'self' https://s.tradingview.com https://*.tradingview.com;
 
 # Cache static Next.js assets indefinitely (content-hashed)
 /_next/static/*
@@ -16,6 +16,12 @@
   Cache-Control: public, max-age=86400
 
 /icon.svg
+  Cache-Control: public, max-age=86400
+
+/og-image.png
+  Cache-Control: public, max-age=86400
+
+/apple-touch-icon.png
   Cache-Control: public, max-age=86400
 
 /manifest.json

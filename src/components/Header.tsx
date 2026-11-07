@@ -176,6 +176,13 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[var(--background)]/95 backdrop-blur-xl transition-colors">
+      {/* Skip to Main Content Link for A11y */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:rounded-lg focus:bg-[#2962FF] focus:px-4 focus:py-2 focus:text-white focus:font-bold focus:shadow-lg focus:outline-none"
+      >
+        Ana İçeriğe Atla
+      </a>
       {/* MAIN NAVIGATION BAR (Sade, Ferah, Kompakt Dropdown Destekli) */}
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 py-3" ref={dropdownRef}>
         <div className="flex items-center gap-6 lg:gap-10">

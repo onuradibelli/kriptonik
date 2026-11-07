@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 import { ShieldCheck, Lock } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Gizlilik Taahhüdü ve KVKK Aydınlatma Metni',
+  title: 'Gizlilik ve KVKK Politikası',
   description: 'Kriptonik gizlilik politikası, veri güvenliği taahhüdü ve 6698 sayılı KVKK kapsamında aydınlatma metni.',
   alternates: {
     canonical: 'https://kriptonik.com/gizlilik/'

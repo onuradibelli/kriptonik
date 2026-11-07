@@ -469,6 +469,15 @@ export default function EtfTracker() {
           </tbody>
         </table>
       </div>
+
+      {/* ETF Reference Footnote (B-02) */}
+      <div className="pt-3 border-t border-[var(--border)] flex items-center justify-between flex-wrap gap-2 text-[11px] text-[var(--card-muted)]">
+        <div className="flex items-center gap-1.5">
+          <Info className="h-3.5 w-3.5 text-[#2962FF]" />
+          <span>Kaynak: <strong>SEC Kamu İhraç Bildirimleri & Farside / Sosovalue</strong> (Kurumsal Fon Bilançoları)</span>
+        </div>
+        <span className="italic text-[10px]">Veri Tipi: Piyasa Referans Verisi (Periyodik Fon Raporları Konsolidasyonu).</span>
+      </div>
     </div>
   );
 }

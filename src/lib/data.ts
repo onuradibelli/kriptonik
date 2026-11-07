@@ -10946,7 +10946,7 @@ export const LIVE_CURRENCY_RATES = {
   TCMB_USD: 50.12,
   KAPALICARSI_USD: 50.28,
   BINANCE_TR_USDT: 50.09,
-  UPDATED_AT: 'Piyasa Referans Kuru (Günlük Güncellenir)'
+  UPDATED_AT: 'Piyasa Gösterge Kuru (Statik Referans)'
 };
 
 // 4. DETAILED SPOT ETF DATA (Bitcoin & Ethereum ETF Flows - Institutional Verified)

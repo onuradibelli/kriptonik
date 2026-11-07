@@ -8,7 +8,7 @@ import { TickerProvider } from '../context/TickerContext';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Kriptonik — Canlı Kripto Veri, Likidasyon Haritası ve On-Chain Analiz Terminali',
+    default: 'Kriptonik — Canlı Kripto ve Likidasyon Terminali',
     template: '%s | Kriptonik'
   },
   description:
@@ -35,8 +35,18 @@ export const metadata: Metadata = {
   creator: 'Kriptonik',
   publisher: 'Kriptonik',
   metadataBase: new URL('https://kriptonik.com'),
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' }
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }
+    ]
+  },
   openGraph: {
-    title: 'Kriptonik — Canlı Kripto Veri ve Türev Analiz Terminali',
+    title: 'Kriptonik — Canlı Kripto ve Likidasyon Terminali',
     description:
       'Halka açık borsa ve zincir üstü verilerle canlı kripto türev, likidasyon ısı haritası ve fonlama analizi terminali.',
     url: 'https://kriptonik.com',
@@ -45,9 +55,10 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://kriptonik.com/icon.svg',
+        url: 'https://kriptonik.com/og-image.png',
         width: 1200,
         height: 630,
+        type: 'image/png',
         alt: 'Kriptonik Terminal'
       }
     ]
@@ -56,7 +67,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Kriptonik — Finansal Kripto Analiz Terminali',
     description: 'Canlı Likidasyon Isı Haritası, Spot ETF Girişleri, Fonlama Oranları ve Açık Pozisyon Radarı.',
-    images: ['https://kriptonik.com/icon.svg']
+    images: ['https://kriptonik.com/og-image.png']
   },
   robots: {
     index: true,
@@ -97,7 +108,7 @@ export default function RootLayout({
         url: 'https://kriptonik.com',
         logo: {
           '@type': 'ImageObject',
-          url: 'https://kriptonik.com/icon.svg'
+          url: 'https://kriptonik.com/icon-512.png'
         }
       },
       {
@@ -118,7 +129,8 @@ export default function RootLayout({
         <meta name="theme-color" content="#2962FF" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/icon.svg" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
@@ -132,7 +144,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased selection:bg-[#2962FF] selection:text-white flex flex-col transition-colors duration-200">
         <TickerProvider>
           <Header />
-          <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 pb-20 md:pb-6">
+          <main id="main-content" className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 pb-20 md:pb-6">
             {children}
           </main>
           <Footer />

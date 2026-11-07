@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { CoinData } from '../lib/types';
 import { LIVE_CURRENCY_RATES } from '../lib/data';
-import { Calendar, AlertCircle, Clock, ShieldAlert, ArrowRight, Search, Zap, CheckCircle2 } from 'lucide-react';
+import { Calendar, AlertCircle, Clock, ShieldAlert, ArrowRight, Search, Zap, CheckCircle2, Info } from 'lucide-react';
 
 interface TokenUnlockCalendarProps {
   coins: CoinData[];
@@ -18,7 +18,7 @@ export default function TokenUnlockCalendar({ coins }: TokenUnlockCalendarProps)
   const [now] = useState(() => new Date());
 
   const unlockCoins = coins
-    .filter((c) => c.tokenUnlock !== undefined)
+    .filter((c) => c.tokenUnlock !== undefined && new Date(c.tokenUnlock.nextUnlockDate).getTime() >= now.getTime())
     .sort((a, b) => (b.tokenUnlock?.riskScore || 0) - (a.tokenUnlock?.riskScore || 0));
 
   // Compute Total Monitored Unlock Value
@@ -228,13 +228,13 @@ export default function TokenUnlockCalendar({ coins }: TokenUnlockCalendarProps)
         })}
       </div>
 
-      {/* Verified Source Footnote (B-04) */}
+      {/* Sample Vesting Reference Footnote (B-02) */}
       <div className="pt-3 border-t border-[var(--border)] flex items-center justify-between flex-wrap gap-2 text-[11px] text-[var(--card-muted)]">
         <div className="flex items-center gap-1.5">
-          <CheckCircle2 className="h-3.5 w-3.5 text-[#00E699]" />
-          <span>Kaynak: <strong>Tokenomist / Proje Resmi Dağıtım Takvimi</strong> (Doğrulanmış Vesting Verileri)</span>
+          <Info className="h-3.5 w-3.5 text-[#2962FF]" />
+          <span>Veri Tipi: <strong>Protokol Takvimi Referans Vesting Verileri</strong> (Örnek Seçilmiş Projeler)</span>
         </div>
-        <span className="italic text-[10px]">Belirtilen tarihler ve miktarlar tahmini olup, protokol oylamaları veya vesting güncellemelerine göre değişiklik gösterebilir.</span>
+        <span className="italic text-[10px]">Tarihler ve miktarlar protokol dağıtım dokümanlarından derlenmiş olup, DAO oylamaları veya vesting ertelemelerine göre değişiklik gösterebilir.</span>
       </div>
     </div>
   );

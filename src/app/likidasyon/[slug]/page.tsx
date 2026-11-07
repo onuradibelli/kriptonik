@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!coin) return { title: 'Coin Bulunamadı' };
 
   return {
-    title: `${coin.name} (${coin.symbol}) Likidasyon Isı Haritası`,
+    title: `${coin.symbol} Likidasyon Isı Haritası`,
     description: `${coin.name} vadeli işlemlerinde son 24 saatte gerçekleşen tasfiyeler, dominant tasfiye seviyesi $${coin.dominantLiquidationLevel} ve 100x kaldıraç havuzları.`,
     keywords: [
       `${coin.name.toLowerCase()} likidasyon`,

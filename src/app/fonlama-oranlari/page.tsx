@@ -6,7 +6,7 @@ import FundingMatrix from '../../components/FundingMatrix';
 import { DollarSign, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Borsalar Arası Canlı Fonlama Oranları (Funding Rate) ve Arbitraj Matrisi',
+  title: 'Canlı Fonlama Oranları & Arbitraj',
   description: 'Binance, Bybit ve OKX canlı fonlama oranları, geçmiş fonlama verileri, arbitraj spread takibi, delta-nötr getiri fırsatları ve ağırlıklı piyasa ortalaması.',
   keywords: [
     'kripto fonlama oranları',

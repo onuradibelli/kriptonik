@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const ath = coin.athUsd ? `$${coin.athUsd.toLocaleString('tr-TR')}` : 'Tüm zamanların zirvesi';
 
   return {
-    title: `${coin.name} (${coin.symbol}) Canlı Fiyatı ve Analiz Terminali`,
+    title: `${coin.symbol} Canlı Fiyatı ve Analizi`,
     description: `${coin.name} (${coin.symbol}) anlık canlı fiyatı, TL karşılığı, ATH (${ath}), 24s likidasyon ısı haritası derinliği, fonlama arbitrajı ve teknik analiz göstergeleri.`,
     keywords: [
       `${coin.name.toLowerCase()} canlı fiyat`,
@@ -35,14 +35,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       `binance tr ${coin.symbol.toLowerCase()}`
     ],
     openGraph: {
-      title: `${coin.name} (${coin.symbol}) Canlı Fiyat ve Likidasyon Terminali`,
+      title: `${coin.symbol} Canlı Fiyatı ve Terminali`,
       description: `${coin.name} için anlık fiyat, ₺ çevirici, ATH verileri ve Coinglass standartlarında likidasyon derinlik haritası.`,
       url: `https://kriptonik.com/kripto/${coin.slug}/`,
       type: 'website'
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${coin.name} (${coin.symbol}) Canlı Analiz Terminali | Kriptonik`,
+      title: `${coin.symbol} Canlı Analiz Terminali`,
       description: `${coin.name} canlı türev ve spot piyasa analizleri.`
     },
     alternates: {

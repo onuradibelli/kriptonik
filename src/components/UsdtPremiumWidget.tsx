@@ -88,13 +88,13 @@ export default function UsdtPremiumWidget() {
         <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3.5">
           <div className="flex items-center justify-between text-[11px] text-[var(--card-muted)]">
             <span>TCMB Gösterge Kuru</span>
-            <span className="font-mono text-[10px] rounded bg-[var(--card)] px-1.5 py-0.2 border border-[var(--border)]">Resmi</span>
+            <span className="font-mono text-[10px] rounded bg-[var(--card)] px-1.5 py-0.2 border border-[var(--border)]">Resmi Gösterge</span>
           </div>
           <div className="mt-1 font-mono text-xl font-black text-[var(--foreground)]">
             ₺{tcmb.toFixed(2)}
           </div>
           <div className="mt-0.5 text-[10px] text-[var(--card-muted)]">
-            Bankalararası referans kur
+            TCMB bülten referans kuru
           </div>
         </div>
 
@@ -102,7 +102,9 @@ export default function UsdtPremiumWidget() {
         <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3.5">
           <div className="flex items-center justify-between text-[11px] text-[var(--card-muted)]">
             <span>Serbest Piyasa (Forex / Nakit)</span>
-            <span className="font-mono text-[10px] rounded bg-[var(--card)] px-1.5 py-0.2 border border-[var(--border)]">Canlı</span>
+            <span className="font-mono text-[10px] rounded bg-[var(--card)] px-1.5 py-0.2 border border-[var(--border)]">
+              {liveForexUsd > 0 ? 'Forex Canlı' : 'Piyasa Referans'}
+            </span>
           </div>
           <div className="mt-1 font-mono text-xl font-black text-[var(--foreground)]">
             ₺{kapalicarsi.toFixed(2)}

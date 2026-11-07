@@ -6,7 +6,7 @@ import KacTlConverter from '../../components/KacTlConverter';
 import { Calculator, ArrowRight, HelpCircle, TrendingUp, DollarSign } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Kaç TL? Canlı Dolar, USDT, Bitcoin ve Kripto Türk Lirası Çevirici',
+  title: 'Kaç TL? Canlı Dolar ve Kripto Çevirici',
   description: '1 Dolar kaç TL? 1 USDT Tether kaç TL? 1 Bitcoin kaç TL? TCMB, serbest piyasa ve Binance TR canlı kurlarıyla anında Türk Lirası hesaplama ve dönüştürücü aracı.',
   keywords: [
     '1 dolar kaç tl',

@@ -44,16 +44,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'always',
       priority: 0.85
     });
-
-    // /token-kilit-acilimlari/[slug]/ (only for verified tokens with tokenUnlock)
-    if (coin.tokenUnlock !== undefined) {
-      sitemapEntries.push({
-        url: `${baseUrl}/token-kilit-acilimlari/${coin.slug}/`,
-        lastModified: now,
-        changeFrequency: 'daily',
-        priority: 0.65
-      });
-    }
   });
 
   // 3. Dynamic Kaç TL Pages

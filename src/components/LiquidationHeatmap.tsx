@@ -447,10 +447,10 @@ export default function LiquidationHeatmap({ coin }: LiquidationHeatmapProps) {
             <div className="rounded-xl bg-[var(--card-subtle)] p-3.5 text-xs leading-relaxed text-[var(--card-muted)] space-y-1.5 border border-[var(--border)]">
               <div className="flex items-center gap-1.5 font-bold text-[var(--foreground)]">
                 <ShieldCheck className="h-4 w-4 text-[#00E699]" />
-                <span>Şeffaf Analiz Modeli:</span>
+                <span>Şeffaf Hesaplama Modeli:</span>
               </div>
               <p>
-                Kriptonik türev radarı, borsaların anlık spot ve vadeli işlem hacimlerini, volatilite katsayılarını ve açık pozisyon yoğunluğunu analiz ederek tasfiye risk havuzlarını modeller. Veriler gerçek borsa verileriyle dinamik güncellenir.
+                Bu değerler doğrudan borsa API tasfiye akışı değil; 24 saatlik spot işlem hacimleri ve fiyat oynaklığı (volatilite) katsayıları kullanılarak modellenmiş Kriptonik Hacim & Volatilite Ağırlıklı Likidasyon Modeli tahminidir.
               </p>
             </div>
 

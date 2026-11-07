@@ -105,7 +105,7 @@ function determineCategory(c) {
       const shortPercentage = 100 - longPercentage;
       const totalLiq = Math.round(volume24hUsd * 0.015);
 
-      const VERIFIED_TOKEN_UNLOCKS = {
+      const SAMPLE_TOKEN_UNLOCKS = {
         SUI: {
           nextUnlockDate: '2026-12-03',
           unlockedTokens: 64190000,
@@ -210,7 +210,7 @@ function determineCategory(c) {
         explorerUrl: links.explorer,
         twitterUrl: links.twitter,
         githubUrl: links.github,
-        tokenUnlock: VERIFIED_TOKEN_UNLOCKS[sym] || undefined,
+        tokenUnlock: SAMPLE_TOKEN_UNLOCKS[sym] || undefined,
         faqs: [
           {
             question: `1 ${cg.name} (${sym}) Kaç TL?`,

@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!coin) return { title: 'Coin Bulunamadı' };
 
   return {
-    title: `${coin.name} (${coin.symbol}) Token Kilit Açılımı`,
+    title: `${coin.symbol} Token Kilit Açılımı`,
     description: `${coin.name} için bir sonraki kilit açılış tarihi, açılacak token adedi, satış baskısı riski ve dolaşıma etki oranı.`,
     keywords: [
       `${coin.name.toLowerCase()} token kilit açılımı`,
@@ -31,6 +31,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     ],
     alternates: {
       canonical: `https://kriptonik.com/token-kilit-acilimlari/${coin.slug}/`
+    },
+    robots: {
+      index: false,
+      follow: true
     }
   };
 }

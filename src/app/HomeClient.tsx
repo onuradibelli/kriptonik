@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { COINS_DATA, WHALE_TRANSACTIONS, LIVE_CURRENCY_RATES, FEAR_AND_GREED } from '../lib/data';
 import { useBinanceTickers } from '../lib/useBinanceTickers';
+import { formatLargeUsd } from '../lib/format';
+import { getLiquidationSummary } from '../lib/liquidationModel';
 import LiquidationHeatmap from '../components/LiquidationHeatmap';
 import FundingMatrix from '../components/FundingMatrix';
 import TokenUnlockCalendar from '../components/TokenUnlockCalendar';
@@ -61,6 +63,9 @@ export default function HomeClient() {
 
   const { tickers } = useBinanceTickers(defaultTickers);
   const selectedCoin = COINS_DATA.find((c) => c.slug === selectedCoinSlug) || COINS_DATA[0];
+
+  // Dynamic liquidation summary derived proportionally from active coin volumes & volatility
+  const liqSummary = useMemo(() => getLiquidationSummary(COINS_DATA), []);
 
   // Dynamic Real-Time Macro Telemetry State
   const [liveFearGreed, setLiveFearGreed] = useState<{ value: number; classification: string; yesterday: number }>({
@@ -173,8 +178,9 @@ export default function HomeClient() {
       `• Tether (USDT/TRY): ₺${usdtTry.toFixed(2)} (Binance TR Canlı)\r\n` +
       `• Dolar (USD/TRY): ₺${usdTry.toFixed(2)}\r\n` +
       `• Kripto Dolar Arbitraj Primi: %${spreadPct.toFixed(2)} (${spreadPct <= 0 ? 'İskontolu Alım Avantajı' : 'Primli'})\r\n\r\n` +
-      `🔥 PİYASA HACMİ & DUYARLILIK\r\n` +
+      `🔥 PİYASA HACMİ & TASFİYE\r\n` +
       `• Bitcoin 24s Hacim: $${btcVolBillion} Milyar\r\n` +
+      `• 24s Modellenen Tasfiye: ${formatLargeUsd(liqSummary.totalLiqUsd)} (%${liqSummary.longPct.toFixed(1)} Long / %${liqSummary.shortPct.toFixed(1)} Short)\r\n` +
       `• Piyasa Duyarlılığı: ${liveFearGreed.value} / 100 (${liveFearGreed.classification})\r\n` +
       `• Genel Trend: ${btcTick.change24h >= 0 ? 'Pozitif (Boğa Eğilimli)' : 'Satış Baskısı (Düzeltme)'}\r\n\r\n` +
       `🔗 Detaylı Canlı Isı Haritası, TradingView Grafikleri & Arbitraj:\r\n` +
@@ -288,26 +294,42 @@ export default function HomeClient() {
           <div className="cockpit-card p-4 space-y-3">
             <div className="flex items-center justify-between text-xs">
               <span className="font-semibold text-[var(--card-muted)]">24s Tasfiye Isı Dengesi</span>
-              <span className="font-mono text-[10px] text-[#00A86B] dark:text-[#00E699] font-bold">Uzun Baskın</span>
+              <span className={`font-mono text-[10px] font-bold ${
+                liqSummary.longPct >= 50 ? 'text-[#00A86B] dark:text-[#00E699]' : 'text-[#FF3B56]'
+              }`}>
+                {liqSummary.dominantSide}
+              </span>
             </div>
             <div className="flex items-baseline justify-between">
               <div className="text-2xl font-black font-mono text-[var(--foreground)]">
-                $190.27M
+                {formatLargeUsd(liqSummary.totalLiqUsd)}
               </div>
-              <div className="text-[10px] font-mono text-[var(--card-muted)]">
-                66.136 Yatırımcı
+              <div className="text-[10px] font-mono text-[var(--card-muted)] bg-[var(--background)] px-1.5 py-0.5 rounded border border-[var(--border)]">
+                Model Tahmini (İlk 20 Coin)
               </div>
             </div>
 
             {/* Visual Duel Bar (Long vs Short) */}
             <div className="space-y-1">
               <div className="h-2.5 w-full rounded-full bg-[var(--border)] overflow-hidden flex">
-                <div style={{ width: '65.6%' }} className="bg-[#00C087] h-full" title="Long Tasfiyeleri: %65.6 ($124.9M)" />
-                <div style={{ width: '34.4%' }} className="bg-[#FF3B56] h-full" title="Short Tasfiyeleri: %34.4 ($65.4M)" />
+                <div 
+                  style={{ width: `${liqSummary.longPct}%` }} 
+                  className="bg-[#00C087] h-full transition-all duration-300" 
+                  title={`Long Tasfiyeleri: %${liqSummary.longPct.toFixed(1)} (${formatLargeUsd(liqSummary.totalLongUsd)})`} 
+                />
+                <div 
+                  style={{ width: `${liqSummary.shortPct}%` }} 
+                  className="bg-[#FF3B56] h-full transition-all duration-300" 
+                  title={`Short Tasfiyeleri: %${liqSummary.shortPct.toFixed(1)} (${formatLargeUsd(liqSummary.totalShortUsd)})`} 
+                />
               </div>
               <div className="flex justify-between text-[10px] font-mono">
-                <span className="text-[#00A86B] dark:text-[#00E699] font-bold">%65.6 Long ($124.9M)</span>
-                <span className="text-[#FF3B56] font-bold">%34.4 Short ($65.4M)</span>
+                <span className="text-[#00A86B] dark:text-[#00E699] font-bold">
+                  %{liqSummary.longPct.toFixed(1)} Long ({formatLargeUsd(liqSummary.totalLongUsd)})
+                </span>
+                <span className="text-[#FF3B56] font-bold">
+                  %{liqSummary.shortPct.toFixed(1)} Short ({formatLargeUsd(liqSummary.totalShortUsd)})
+                </span>
               </div>
             </div>
           </div>

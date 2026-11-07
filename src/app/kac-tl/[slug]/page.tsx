@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!item) return { title: 'Dönüştürücü Bulunamadı' };
 
   return {
-    title: `${item.unitAmount} ${item.symbol} Kaç TL? (${item.name} Canlı Kur)`,
+    title: `${item.unitAmount} ${item.symbol} Kaç TL? (${item.name})`,
     description: `${item.unitAmount} ${item.symbol} (${item.name}) anlık kaç Türk Lirası? 1, 10, 50, 100, 500, 1000 ${item.symbol} hızlı hesaplama tablosu, TCMB ve serbest piyasa teyitli veriler.`,
     keywords: [
       `${item.unitAmount} ${item.symbol.toLowerCase()} kaç tl`,

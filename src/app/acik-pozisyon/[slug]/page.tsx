@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!coin) return { title: 'Coin Bulunamadı' };
 
   return {
-    title: `${coin.name} (${coin.symbol}) Açık Pozisyon (OI)`,
+    title: `${coin.symbol} Açık Pozisyon (OI)`,
     description: `${coin.name} vadeli işlemlerinde açık pozisyon kontrat büyüklüğü $${(coin.openInterestUsd / 1_000_000_000).toFixed(2)}B, long/short rasyosu ve piyasa yönü analizi.`,
     keywords: [
       `${coin.name.toLowerCase()} open interest`,

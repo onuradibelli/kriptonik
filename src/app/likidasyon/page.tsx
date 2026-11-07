@@ -6,7 +6,7 @@ import LiquidationHubClient from '../../components/LiquidationHubClient';
 import { Flame } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Canlı Kripto Likidasyon Isı Haritası ve Tasfiye Seviyeleri (Coinglass Modeli)',
+  title: 'Canlı Kripto Likidasyon Isı Haritası',
   description:
     'Binance, Bybit ve OKX vadeli işlemlerinde 10x, 25x, 50x, 100x kaldıraçlı tasfiye havuzları, canlı likidasyon ısı haritası ve short squeeze sinyalleri.',
   keywords: [

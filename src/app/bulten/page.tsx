@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import BulletinClient from './BulletinClient';
 
 export const metadata: Metadata = {
-  title: 'Kripto Piyasa Analiz Bülteni & Günlük Raporlar',
+  title: 'Günlük Kripto Piyasa Bülteni',
   description: 'Günlük kripto türev tasfiyeleri, kurumsal spot ETF akışları, borsa fonlama oranları ve zincir üstü piyasa nabzı bülteni.',
   alternates: {
     canonical: 'https://kriptonik.com/bulten/'

@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { COINS_DATA, FEAR_AND_GREED, BITCOIN_ETF_SUMMARY, ETHEREUM_ETF_SUMMARY, SOLANA_ETF_SUMMARY, LIVE_CURRENCY_RATES } from '../../lib/data';
+import { formatLargeUsd } from '../../lib/format';
+import { getLiquidationSummary } from '../../lib/liquidationModel';
 import {
   Newspaper,
   Flame,
@@ -74,11 +76,14 @@ export default function BulletinClient() {
   const totalEtf = ((BITCOIN_ETF_SUMMARY.lastDayNetFlowUsd + ETHEREUM_ETF_SUMMARY.lastDayNetFlowUsd + (SOLANA_ETF_SUMMARY?.lastDayNetFlowUsd || 0)) / 1_000_000).toFixed(1);
   const isEtfPositive = Number(totalEtf) >= 0;
 
+  // Dynamic liquidation metrics calculated from active 24h market model
+  const liqSummary = useMemo(() => getLiquidationSummary(COINS_DATA), []);
+
   // 30-Second Digest Text formatted for 1-Click Sharing
   const digestShareText = `📊 KRİPTONİK GÜNLÜK PİYASA ÖZETİ (${todayDate})\n\n` +
     `🪙 BTC: $${btc.price.toLocaleString('tr-TR')} | ETH: $${eth.price.toLocaleString('tr-TR')} | SOL: $${sol.price.toLocaleString('tr-TR')}\n` +
     `💵 USDT/TRY: ₺${LIVE_CURRENCY_RATES.USDT_TRY.toFixed(2)} | USD/TRY: ₺${LIVE_CURRENCY_RATES.USD_TRY.toFixed(2)}\n` +
-    `🔥 24s Likidasyon: $190.27M (%65.6 Long Tasfiyesi)\n` +
+    `🔥 24s Likidasyon: ${formatLargeUsd(liqSummary.totalLiqUsd)} (%${liqSummary.longPct.toFixed(1)} Long Tasfiyesi)\n` +
     `🏦 Spot ETF Kurumsal Akış: ${isEtfPositive ? '+' : ''}$${totalEtf}M\n` +
     `😱 Korku ve Açgözlülük: ${FEAR_AND_GREED.value}/100 (${FEAR_AND_GREED.classification.split(' ')[0]})\n\n` +
     `Detaylı Analiz & Isı Haritası:\n👉 https://kriptonik.com/bulten/`;
@@ -128,20 +133,20 @@ export default function BulletinClient() {
       id: 'turev-tasfiye-bulteni',
       category: 'TASFİYE & TÜREV RAPORU',
       categoryColor: 'bg-[#FF3B56]/15 text-[#FF3B56]',
-      title: `Türev Piyasalarında Son 24 Saatte $190.27M Pozisyon Tasfiye Edildi: 66.136 Yatırımcı Likidasyona Uğradı`,
-      subtitle: `Tasfiyelerin %65.6'lık kısmı yükseliş bekleyen long yatırımcıların zorunlu tasfiyesiyle gerçekleşti.`,
+      title: `Türev Piyasalarında Son 24 Saatte ${formatLargeUsd(liqSummary.totalLiqUsd)} Pozisyon Tasfiye Edildi: ${liqSummary.dominantSide}`,
+      subtitle: `Tasfiyelerin %${liqSummary.longPct.toFixed(1)}'lik kısmı long, %${liqSummary.shortPct.toFixed(1)}'lik kısmı short pozisyonlardan oluştu.`,
       date: `${todayDate}, 09:30`,
       readTime: '4 dk',
       metrics: [
-        { label: '24s Tasfiye', value: '$190.27M' },
-        { label: 'Long Tasfiye Oranı', value: '%65.6' },
-        { label: 'En Büyük Emir', value: '$2.88M (Binance)' }
+        { label: '24s Tasfiye', value: formatLargeUsd(liqSummary.totalLiqUsd) },
+        { label: 'Long Oranı', value: `%${liqSummary.longPct.toFixed(1)}` },
+        { label: 'Model', value: 'Hacim & Volatilite' }
       ],
-      summary: `Kripto vadeli işlem borsalarında kaldıraçlı pozisyonlar üzerinde yoğun bir tasfiye süreci yaşandı. $${btc.dominantLiquidationLevel.toLocaleString('tr-TR')} civarındaki devasa likidite havuzları piyasa yapıcılar için ana çekim merkezi olmaya devam ediyor.`,
+      summary: `Kripto vadeli işlem borsalarında kaldıraçlı pozisyonlar üzerinde yoğun bir tasfiye süreci yaşandı. $${btc.dominantLiquidationLevel.toLocaleString('tr-TR')} civarındaki likidite havuzları piyasa yapıcılar için ana çekim merkezi olmaya devam ediyor.`,
       content: [
-        `Son 24 saatte kaydedilen tasfiyelerin büyük kısmını 50x ve 100x kaldıraç kullanan yüksek riskli pozisyonlar oluşturdu.`,
-        `Binance ve Bybit fonlama oranları pozitif kalarak long pozisyonların piyasaya ılımlı bir prim ödediğini, ancak genel piyasa ağırlıklı fonlamanın %${(btc.fundingRates.binance * 100).toFixed(4)} ile dengeli bölgede seyrettiğini ortaya koyuyor.`,
-        `Kriptonik Likidasyon Haritası motoru, mevcut açık pozisyonların tasfiye haritasına göre $${btc.dominantLiquidationLevel.toLocaleString('tr-TR')} seviyesinde short likidasyon kümelenmesi olduğunu raporlamaktadır.`
+        `Son 24 saatte kaydedilen tasfiyelerin ağırlıklı kısmını yüksek kaldıraç kullanan vadeli pozisyonlar oluşturdu.`,
+        `Binance ve Bybit türev verilerine göre piyasa genelinde ortalama fonlama oranı dengeli bölgede seyretmektedir.`,
+        `Kriptonik Likidasyon Haritası motoru, 24 saatlik işlem hacmi ve fiyat dalgalanmasını temel alarak olası tasfiye yoğunluklarını hesaplamaktadır.`
       ]
     },
     {
@@ -289,12 +294,12 @@ export default function BulletinClient() {
           </div>
 
           <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3">
-            <span className="text-[11px] text-[var(--card-muted)] block">24s Toplam Tasfiye</span>
+            <span className="text-[11px] text-[var(--card-muted)] block">24s Modellenen Tasfiye</span>
             <strong className="text-base sm:text-lg font-black text-[#FF3B56]">
-              $190.27M
+              {formatLargeUsd(liqSummary.totalLiqUsd)}
             </strong>
             <span className="text-[10px] text-[var(--card-muted)] block mt-0.5">
-              %65.6 Long tasfiyesi
+              %{liqSummary.longPct.toFixed(1)} Long ({liqSummary.dominantSide.split(' ')[0]})
             </span>
           </div>
 

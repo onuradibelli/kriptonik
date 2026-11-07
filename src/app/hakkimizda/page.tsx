@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 import { Compass, Info, Cpu, Layers } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Hakkımızda — Kriptonik Finansal Teşhis Terminali',
+  title: 'Hakkımızda',
   description: 'Kriptonik platformunun misyonu, veri ilkeleri, teknik mimarisi ve bağımsız kripto türev analiz vizyonu.',
   alternates: {
     canonical: 'https://kriptonik.com/hakkimizda/'

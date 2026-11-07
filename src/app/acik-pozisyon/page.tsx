@@ -6,7 +6,7 @@ import OpenInterestRadar from '../../components/OpenInterestRadar';
 import { Compass, TrendingUp } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Kripto Açık Pozisyon (Open Interest - OI) ve Trend Gücü Radarı',
+  title: 'Kripto Açık Pozisyon (OI) Radarı',
   description: 'Vadeli piyasalardaki açık kontrat büyüklüğü, 24 saatlik para giriş/çıkışları, long/short rasyoları, kurumsal para akışı ve trend kırılım anormallik analizi.',
   keywords: [
     'açık pozisyon kripto',
