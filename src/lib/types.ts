@@ -104,7 +104,7 @@ export interface EtfFundData {
 }
 
 export interface EtfSummaryData {
-  type: 'BTC' | 'ETH';
+  type: 'BTC' | 'ETH' | 'SOL';
   assetName: string;
   totalAumUsd: number;
   cumulativeNetInflowUsd: number;

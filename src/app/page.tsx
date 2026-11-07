@@ -45,7 +45,7 @@ export default function HomePage() {
   const [watchlist, setWatchlist] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<'ALL' | 'FAVORITES'>('ALL');
   const [copiedBrief, setCopiedBrief] = useState(false);
-  const [activeCockpitTab, setActiveCockpitTab] = useState<'heatmap' | 'funding' | 'etf' | 'whales' | 'converter' | 'directory'>('heatmap');
+  const [activeCockpitTab, setActiveCockpitTab] = useState<'funding' | 'etf' | 'whales' | 'converter' | 'directory'>('funding');
   const [expandAllModules, setExpandAllModules] = useState(false);
 
   const defaultTickers = {
@@ -139,7 +139,7 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
               <span>KRİPTONİK CANLI KOKPİT v2.6</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-[var(--foreground)] tracking-tight">
-              Piyasa Nabzı & <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2962FF] to-[#00E699]">Görsel İstihbarat</span>
+              Piyasa Nabzı & <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2962FF] to-[#00E699]">Anlık Takip</span>
             </h1>
             <p className="text-xs sm:text-sm text-[var(--card-muted)] max-w-2xl">
               Karmaşık on-chain tabloları geride bırakın. Kaldıraçlı tasfiyeler, borsalar arası arbitraj ve kurumsal ETF akışları tek ekranda.
@@ -175,16 +175,10 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
           </div>
         </div>
 
-        {/* Major Assets Market Pulse Hero Bar (BTC, ETH, SOL, BNB with Real-Time Ticks) */}
+        {/* A) LİDER KRİPTO VARLIKLAR (BTC, ETH, SOL, BNB with Real-Time Ticks) */}
         <MajorAssetsPulseBar coins={COINS_DATA} tickers={tickers} />
 
-        {/* Market Isı Şeması (Hacim Ağırlıklı Yatay Canlı Treemap) */}
-        <CryptoMarketHeatmapGrid coins={COINS_DATA} tickers={tickers} />
-
-        {/* 24s Piyasa Hareketi: En Çok Yükselenler, Düşenler ve Hacim Liderleri */}
-        <MarketMoversBar coins={COINS_DATA} tickers={tickers} />
-
-        {/* 4 Primary High-Impact Visual Cards (Görsel Odak Kartları) */}
+        {/* B) PİYASA DUYARLILIĞI - 24S TASFİYE ISI DENGESİ - SPOT ETF KURUMSAL AKIŞ - TETHER & DOLAR KURU (4 Odak Kartı) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Card 1: Fear & Greed Visual Segmented Gauge */}
           <div className="cockpit-card p-4 space-y-3">
@@ -245,7 +239,7 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
               </div>
               <div className="flex justify-between text-[10px] font-mono">
                 <span className="text-[#FF3B56] font-bold">%62 Short ($216M)</span>
-                <span className="text-[#00E699] font-bold">%38 Long ($132M)</span>
+                <span className="text-[#00A86B] dark:text-[#00E699] font-bold">%38 Long ($132M)</span>
               </div>
             </div>
           </div>
@@ -285,12 +279,12 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
           <div className="cockpit-card p-4 space-y-3">
             <div className="flex items-center justify-between text-xs">
               <span className="font-semibold text-[var(--card-muted)]">Tether & Dolar Kuru</span>
-              <span className="font-mono text-[10px] text-[#00E699] font-bold">Canlı Tahta</span>
+              <span className="font-mono text-[10px] text-[#00A86B] dark:text-[#00E699] font-bold">Canlı Tahta</span>
             </div>
             <div className="flex items-baseline justify-between">
               <div>
                 <span className="text-xs text-[var(--card-muted)] mr-1">USDT:</span>
-                <span className="text-2xl font-black font-mono text-[#00E699]">
+                <span className="text-2xl font-black font-mono text-[#00A86B] dark:text-[#00E699]">
                   ₺{LIVE_CURRENCY_RATES.USDT_TRY.toFixed(2)}
                 </span>
               </div>
@@ -305,7 +299,7 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
             <div className="space-y-1">
               <div className="flex items-center justify-between text-[10px] font-mono">
                 <span className="text-[var(--card-muted)]">Kripto Dolar Primi:</span>
-                <span className="text-[#00E699] font-bold">-%0.22 İskonto</span>
+                <span className="text-[#00A86B] dark:text-[#00E699] font-bold">-%0.22 İskonto</span>
               </div>
               <div className="h-1.5 w-full rounded-full bg-[var(--border)] overflow-hidden">
                 <div style={{ width: '48%' }} className="bg-[#00E699] h-full" />
@@ -313,9 +307,15 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
             </div>
           </div>
         </div>
+
+        {/* C) MARKET ISI ŞEMASI (Hacim Ağırlıklı Saydam Treemap) */}
+        <CryptoMarketHeatmapGrid coins={COINS_DATA} tickers={tickers} />
+
+        {/* D) EN ÇOK YÜKSELENLER (24S) - EN ÇOK DÜŞENLER (24S) - 24S HACİM LİDERLERİ */}
+        <MarketMoversBar coins={COINS_DATA} tickers={tickers} />
       </section>
 
-      {/* 2. REAL-TIME CRYPTO MARKET SCREENER TABLE */}
+      {/* E) CANLI KRİPTO VARLIKLAR TABLOSU */}
       <section className="space-y-4">
         <LiveCryptoMarketTable
           coins={COINS_DATA}
@@ -325,23 +325,57 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
         />
       </section>
 
+      {/* F) CANLI LİKİDASYON ISI HARİTASI */}
+      <section className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
+          <div className="flex items-center gap-2">
+            <Flame className="h-5 w-5 text-[#FF3B56]" />
+            <h2 className="text-lg sm:text-xl font-black text-[var(--foreground)]">
+              Canlı Likidasyon Isı Haritası
+            </h2>
+            <span className="text-xs text-[var(--card-muted)] hidden sm:inline">
+              • 25x, 50x, 100x Tasfiye Kümeleri ve Fiyat Duvarları
+            </span>
+          </div>
+
+          {/* Quick Coin Switcher */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+            {COINS_DATA.slice(0, 8).map((c) => (
+              <button
+                key={c.id}
+                onClick={() => setSelectedCoinSlug(c.slug)}
+                className={`rounded-lg px-3 py-1 text-xs font-mono font-bold transition-all cursor-pointer ${
+                  selectedCoinSlug === c.slug
+                    ? 'bg-[#2962FF] text-white shadow-xs'
+                    : 'bg-[var(--card)] text-[var(--card-muted)] hover:text-[var(--foreground)] border border-[var(--border)]'
+                }`}
+              >
+                {c.symbol}
+              </button>
+            ))}
+            <Link
+              href="/likidasyon/"
+              className="rounded-lg px-3 py-1 text-xs text-[#2962FF] hover:underline flex items-center gap-1 font-bold"
+            >
+              Tüm Isı Haritaları <ArrowUpRight className="h-3 w-3" />
+            </Link>
+          </div>
+        </div>
+
+        <LiquidationHeatmap
+          coin={{
+            ...selectedCoin,
+            price: tickers[selectedCoin.binanceSymbol]?.price || selectedCoin.price,
+            change24h: tickers[selectedCoin.binanceSymbol]?.change24h !== undefined ? tickers[selectedCoin.binanceSymbol].change24h : selectedCoin.change24h
+          }}
+        />
+      </section>
+
       {/* 3. SEGMENTED COCKPIT NAVIGATION BAR (Derli Toplu Görsel Sekmeler) */}
       <section className="space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
           {/* Scrollable Tabs */}
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full sm:w-auto">
-            <button
-              onClick={() => setActiveCockpitTab('heatmap')}
-              className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
-                activeCockpitTab === 'heatmap'
-                  ? 'bg-[#2962FF] text-white shadow-md shadow-[#2962FF]/20'
-                  : 'text-[var(--card-muted)] hover:text-[var(--foreground)] bg-[var(--card)] border border-[var(--border)]'
-              }`}
-            >
-              <Flame className="h-3.5 w-3.5 text-[#FF3B56]" />
-              <span>Likidasyon Haritası</span>
-            </button>
-
             <button
               onClick={() => setActiveCockpitTab('funding')}
               className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
@@ -415,51 +449,7 @@ Detaylı Canlı Isı Haritaları, Grafikler & Arbitraj:
 
         {/* 3. DYNAMIC TAB CONTENT / PANELS */}
 
-        {/* Panel A: Heatmap */}
-        {(activeCockpitTab === 'heatmap' || expandAllModules) && (
-          <div className="space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <Flame className="h-5 w-5 text-[#FF3B56]" />
-                <h2 className="text-lg font-black text-[var(--foreground)]">Canlı Likidasyon Isı Haritası</h2>
-                <span className="text-xs text-[var(--card-muted)] hidden sm:inline">• 25x, 50x, 100x Tasfiye Kümeleri</span>
-              </div>
-
-              {/* Coin Switcher Tabs */}
-              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-                {COINS_DATA.slice(0, 8).map((c) => (
-                  <button
-                    key={c.id}
-                    onClick={() => setSelectedCoinSlug(c.slug)}
-                    className={`rounded-lg px-3 py-1 text-xs font-mono font-bold transition-all cursor-pointer ${
-                      selectedCoinSlug === c.slug
-                        ? 'bg-[#2962FF] text-white shadow-xs'
-                        : 'bg-[var(--card)] text-[var(--card-muted)] hover:text-[var(--foreground)] border border-[var(--border)]'
-                    }`}
-                  >
-                    {c.symbol}
-                  </button>
-                ))}
-                <Link
-                  href="/likidasyon/"
-                  className="rounded-lg px-3 py-1 text-xs text-[#2962FF] hover:underline flex items-center gap-1 font-bold"
-                >
-                  Tüm Isı Haritaları <ArrowUpRight className="h-3 w-3" />
-                </Link>
-              </div>
-            </div>
-
-            <LiquidationHeatmap
-              coin={{
-                ...selectedCoin,
-                price: tickers[selectedCoin.binanceSymbol]?.price || selectedCoin.price,
-                change24h: tickers[selectedCoin.binanceSymbol]?.change24h !== undefined ? tickers[selectedCoin.binanceSymbol].change24h : selectedCoin.change24h
-              }}
-            />
-          </div>
-        )}
-
-        {/* Panel B: Funding & Open Interest */}
+        {/* Panel A: Funding & Open Interest */}
         {(activeCockpitTab === 'funding' || expandAllModules) && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

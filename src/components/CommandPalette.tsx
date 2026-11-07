@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { COINS_DATA } from '../lib/data';
-import { Search, Flame, DollarSign, Calendar, Compass, ShieldAlert, Newspaper, Calculator, BarChart3, ArrowRight, Zap, ExternalLink, X, Layers } from 'lucide-react';
+import { Search, Flame, DollarSign, Calendar, Compass, ShieldAlert, Newspaper, Calculator, BarChart3, ArrowRight, Zap, ExternalLink, X, Layers, LayoutGrid } from 'lucide-react';
 
 interface PaletteItem {
   id: string;
@@ -32,6 +32,15 @@ export default function CommandPalette() {
       subtitle: 'Tüm türev ve on-chain sinyalleri tek ekranda',
       href: '/',
       icon: Zap,
+      badge: 'CANLI'
+    },
+    {
+      id: 'tool-market-isi-semasi',
+      category: 'ARAÇLAR',
+      title: 'Market Isı Şeması (Crypto Heatmap)',
+      subtitle: '24 saatlik getiri ve hacim ağırlıklı canlı kripto ısı haritası',
+      href: '/market-isi-semasi/',
+      icon: LayoutGrid,
       badge: 'CANLI'
     },
     {

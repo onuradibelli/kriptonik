@@ -4548,6 +4548,28 @@ export const ETHEREUM_ETF_SUMMARY: EtfSummaryData = {
   ]
 };
 
+export const SOLANA_ETF_SUMMARY: EtfSummaryData = {
+  type: 'SOL',
+  assetName: 'Spot Solana ETF & Kurumsal Fonlar',
+  totalAumUsd: 2625000000, // $2.625 Billion
+  cumulativeNetInflowUsd: 1850000000,
+  lastDayNetFlowUsd: 36200000, // +$36.2M Net Giriş
+  funds: [
+    { ticker: 'GSOL', fundName: 'Grayscale Solana Trust / Spot ETF', issuer: 'Grayscale', netFlowUsd24h: 12400000, totalAumUsd: 1420000000, feePercent: 2.50, holdingsCoins: 15690000 },
+    { ticker: 'VSOL', fundName: 'VanEck Solana Trust ETF', issuer: 'VanEck', netFlowUsd24h: 11800000, totalAumUsd: 410000000, feePercent: 0.25, holdingsCoins: 4530000 },
+    { ticker: 'TSOL', fundName: '21Shares Core Solana ETF', issuer: '21Shares', netFlowUsd24h: 6800000, totalAumUsd: 320000000, feePercent: 0.25, holdingsCoins: 3535000 },
+    { ticker: 'BSOL', fundName: 'Bitwise Solana ETF', issuer: 'Bitwise', netFlowUsd24h: 3400000, totalAumUsd: 280000000, feePercent: 0.20, holdingsCoins: 3090000 },
+    { ticker: 'CSOL', fundName: 'Canary Solana ETF', issuer: 'Canary Capital', netFlowUsd24h: 1800000, totalAumUsd: 195000000, feePercent: 0.25, holdingsCoins: 2154000 }
+  ],
+  recentDailyFlows: [
+    { date: 'Dün', netInflowUsd: 36.2, btcPriceAtDate: 90.5 },
+    { date: '05 Kas', netInflowUsd: 22.4, btcPriceAtDate: 88.2 },
+    { date: '04 Kas', netInflowUsd: 45.1, btcPriceAtDate: 86.4 },
+    { date: '03 Kas', netInflowUsd: 18.6, btcPriceAtDate: 89.1 },
+    { date: '02 Kas', netInflowUsd: 12.8, btcPriceAtDate: 84.7 }
+  ]
+};
+
 // 5. WHALE TRANSACTIONS
 export const WHALE_TRANSACTIONS: WhaleTransaction[] = [
   {

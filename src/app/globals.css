@@ -133,10 +133,22 @@ html.light .cockpit-card {
   border: 1px solid rgba(0, 230, 153, 0.35);
 }
 
+html.light .badge-bull {
+  background-color: rgba(5, 150, 105, 0.12);
+  color: #047857;
+  border-color: rgba(5, 150, 105, 0.35);
+}
+
 .badge-bear {
   background-color: rgba(255, 59, 86, 0.16);
   color: #FF3B56;
   border: 1px solid rgba(255, 59, 86, 0.35);
+}
+
+html.light .badge-bear {
+  background-color: rgba(225, 29, 72, 0.12);
+  color: #BE123C;
+  border-color: rgba(225, 29, 72, 0.35);
 }
 
 .pulse-bull {

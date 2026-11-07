@@ -23,7 +23,8 @@ import {
   Layers,
   ArrowRightLeft,
   Sparkles,
-  TrendingDown
+  TrendingDown,
+  LayoutGrid
 } from 'lucide-react';
 
 export default function Header() {
@@ -85,6 +86,13 @@ export default function Header() {
       title: 'Türev & Likidasyon',
       icon: Flame,
       items: [
+        {
+          label: 'Market Isı Şeması (Heatmap)',
+          href: '/market-isi-semasi/',
+          desc: 'Kripto varlıkların 24 saatlik getiri ve hacim ısı haritası',
+          icon: LayoutGrid,
+          color: 'text-[#00E699]'
+        },
         {
           label: 'Likidasyon Isı Haritası',
           href: '/likidasyon/',
@@ -226,7 +234,7 @@ export default function Header() {
 
                   {/* Dropdown Menu - Sleek, Compact & Fully Responsive */}
                   {isOpen && (
-                    <div className="absolute top-full left-0 mt-2 w-[340px] rounded-2xl border border-[#232E42] bg-[#0C111C] p-2 shadow-[0_20px_50px_rgba(0,0,0,0.95)] z-50 animate-in fade-in zoom-in-95 duration-150">
+                    <div className="absolute top-full left-0 mt-2 w-[340px] rounded-2xl border border-[var(--border)] bg-[var(--card)] p-2 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-150 backdrop-blur-2xl">
                       <div className="space-y-1">
                         {group.items.map((item) => {
                           const ItemIcon = item.icon;
@@ -239,18 +247,18 @@ export default function Header() {
                               className={`flex items-center gap-2.5 rounded-xl p-2.5 transition-all ${
                                 isItemActive
                                   ? 'bg-[#2962FF]/15 border border-[#2962FF]/35'
-                                  : 'hover:bg-[#161F30]'
+                                  : 'hover:bg-[var(--card-subtle)]'
                               }`}
                             >
-                              <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#121826] border border-[#232E42] ${item.color}`}>
+                              <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--card-subtle)] border border-[var(--border)] ${item.color}`}>
                                 <ItemIcon className="h-4 w-4" />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <div className="text-xs sm:text-sm font-bold text-white flex items-center justify-between">
+                                <div className="text-xs sm:text-sm font-bold text-[var(--foreground)] flex items-center justify-between">
                                   <span className="truncate">{item.label}</span>
                                   {isItemActive && <span className="h-1.5 w-1.5 rounded-full bg-[#2962FF] shrink-0" />}
                                 </div>
-                                <p className="text-[11px] text-[#9AA7BC] truncate mt-0.5 font-sans">
+                                <p className="text-[11px] text-[var(--card-muted)] truncate mt-0.5 font-sans">
                                   {item.desc}
                                 </p>
                               </div>

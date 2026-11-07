@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Sun, Moon } from 'lucide-react';
+import { Sun, Moon, Laptop } from 'lucide-react';
 
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
@@ -10,16 +10,31 @@ export default function ThemeToggle() {
   useEffect(() => {
     setMounted(true);
     const saved = localStorage.getItem('kriptonik-theme') as 'dark' | 'light' | null;
+
     if (saved) {
       setTheme(saved);
       document.documentElement.classList.remove('dark', 'light');
       document.documentElement.classList.add(saved);
     } else {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const initial = prefersDark ? 'dark' : 'dark'; // default to dark
-      setTheme(initial);
+      // Automatic detection based on user's operating system preferences
+      const media = window.matchMedia('(prefers-color-scheme: dark)');
+      const systemTheme = media.matches ? 'dark' : 'light';
+      setTheme(systemTheme);
       document.documentElement.classList.remove('dark', 'light');
-      document.documentElement.classList.add(initial);
+      document.documentElement.classList.add(systemTheme);
+
+      // Listen for dynamic OS theme changes
+      const handleSystemChange = (e: MediaQueryListEvent) => {
+        if (!localStorage.getItem('kriptonik-theme')) {
+          const newSystemTheme = e.matches ? 'dark' : 'light';
+          setTheme(newSystemTheme);
+          document.documentElement.classList.remove('dark', 'light');
+          document.documentElement.classList.add(newSystemTheme);
+        }
+      };
+
+      media.addEventListener('change', handleSystemChange);
+      return () => media.removeEventListener('change', handleSystemChange);
     }
   }, []);
 
@@ -33,16 +48,16 @@ export default function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <div className="h-8 w-8 rounded-lg border border-[var(--border)] bg-[var(--card)] opacity-50" />
+      <div className="h-8 w-8 rounded-xl border border-[var(--border)] bg-[var(--card)] opacity-50" />
     );
   }
 
   return (
     <button
       onClick={toggleTheme}
-      aria-label="Temayı Değiştir (Aydınlık / Karanlık Mod)"
+      aria-label="Temayı Değiştir (Sistem / Aydınlık / Karanlık Mod)"
       title={theme === 'dark' ? 'Aydınlık Moda Geç' : 'Karanlık Moda Geç'}
-      className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--card)] text-[var(--card-muted)] hover:text-[var(--foreground)] hover:border-[#2962FF] transition-all"
+      className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--card)] text-[var(--card-muted)] hover:text-[var(--foreground)] hover:border-[#2962FF] transition-all cursor-pointer shadow-xs"
     >
       {theme === 'dark' ? (
         <Sun className="h-4 w-4 text-[#F2C14E] transition-transform hover:rotate-45" />

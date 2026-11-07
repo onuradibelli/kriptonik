@@ -5,13 +5,14 @@ import EtfTracker from '../../components/EtfTracker';
 import { BarChart3, ShieldCheck } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Canlı Spot Bitcoin ve Ethereum ETF Giriş/Çıkış Akışları (Net Flows) | Kriptonik',
+  title: 'Canlı Spot Bitcoin, Ethereum ve Solana ETF Giriş/Çıkış Akışları (Net Flows) | Kriptonik',
   description: 'BlackRock (IBIT), Fidelity (FBTC), Grayscale ve tüm kurumsal ETF ihraççılarının günlük net sermaye akışları, kurumsal konsolide giriş/çıkış bilançosu ve AUM rezervleri.',
   keywords: [
     'spot etf akışları',
     'bitcoin etf girişleri',
     'ethereum spot etf',
-    'solana etf başvuruları',
+    'solana spot etf akışları',
+    'solana etf',
     'ibit net flow',
     'fbtc para girişi',
     'kripto etf verileri',
@@ -66,7 +67,7 @@ export default function EtfHubPage() {
             <BarChart3 className="h-5 w-5" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[var(--foreground)]">
-            Spot Bitcoin & Ethereum ETF Kurumsal Akışları
+            Spot Bitcoin, Ethereum & Solana ETF Kurumsal Akışları
           </h1>
         </div>
         <p className="text-xs sm:text-sm text-[var(--card-muted)] max-w-3xl leading-relaxed">
