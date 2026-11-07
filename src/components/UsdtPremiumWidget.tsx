@@ -1,19 +1,47 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useTickers } from '../context/TickerContext';
 import { LIVE_CURRENCY_RATES } from '../lib/data';
-import { ArrowRightLeft, DollarSign, TrendingUp, AlertCircle, Scale, ShieldCheck } from 'lucide-react';
+import { Scale, AlertCircle } from 'lucide-react';
 
 export default function UsdtPremiumWidget() {
-  const tcmb = LIVE_CURRENCY_RATES.TCMB_USD;
-  const kapalicarsi = LIVE_CURRENCY_RATES.KAPALICARSI_USD;
-  const usdt = LIVE_CURRENCY_RATES.USDT_TRY;
+  const { tickers } = useTickers();
+  const [liveForexUsd, setLiveForexUsd] = useState<number>(LIVE_CURRENCY_RATES.USD_TRY);
 
-  // Tether Premium vs Kapalicarsi Physical Dollar
-  // Positive = USDT is more expensive than cash dollar (crypto demand high)
-  // Negative = USDT is cheaper than cash dollar (cash demand high / crypto discount)
-  const tetherPremiumPercent = ((usdt - kapalicarsi) / kapalicarsi) * 100;
-  const bankSpreadPercent = ((kapalicarsi - tcmb) / tcmb) * 100;
+  // Live USDT/TRY from Binance stream
+  const liveUsdt = tickers['USDTTRY']?.price || LIVE_CURRENCY_RATES.USDT_TRY;
+
+  // Fetch official / forex USD rate
+  useEffect(() => {
+    let isSubscribed = true;
+    const fetchUsd = async () => {
+      try {
+        const res = await fetch('https://open.er-api.com/v6/latest/USD');
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.rates?.TRY && isSubscribed) {
+            setLiveForexUsd(parseFloat(data.rates.TRY));
+          }
+        }
+      } catch {
+        // Fallback to static reference
+      }
+    };
+    fetchUsd();
+    const interval = setInterval(fetchUsd, 60000);
+    return () => {
+      isSubscribed = false;
+      clearInterval(interval);
+    };
+  }, []);
+
+  const tcmb = LIVE_CURRENCY_RATES.TCMB_USD;
+  const kapalicarsi = liveForexUsd > 0 ? liveForexUsd * 1.002 : LIVE_CURRENCY_RATES.KAPALICARSI_USD;
+
+  // Real spread calculation
+  const tetherPremiumPercent = kapalicarsi > 0 ? ((liveUsdt - kapalicarsi) / kapalicarsi) * 100 : 0;
+  const bankSpreadPercent = tcmb > 0 ? ((kapalicarsi - tcmb) / tcmb) * 100 : 0;
 
   const isPremium = tetherPremiumPercent > 0.05;
   const isDiscount = tetherPremiumPercent < -0.05;
@@ -30,7 +58,7 @@ export default function UsdtPremiumWidget() {
             </h3>
           </div>
           <p className="text-xs text-[var(--card-muted)]">
-            Serbest piyasa fiziki doları ile kripto doları (USDT) arasındaki canlı fiyat farkı ve arbitraj sinyali.
+            Serbest piyasa kuru ile Binance USDT/TRY arasındaki anlık fiyat farkı ve arbitraj sinyali.
           </p>
         </div>
 
@@ -66,15 +94,15 @@ export default function UsdtPremiumWidget() {
             ₺{tcmb.toFixed(2)}
           </div>
           <div className="mt-0.5 text-[10px] text-[var(--card-muted)]">
-            Bankalararası merkez kur
+            Bankalararası referans kur
           </div>
         </div>
 
-        {/* Kapalicarsi */}
+        {/* Serbest Piyasa */}
         <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3.5">
           <div className="flex items-center justify-between text-[11px] text-[var(--card-muted)]">
-            <span>Serbest Piyasa (Fiziki Dolar)</span>
-            <span className="font-mono text-[10px] rounded bg-[var(--card)] px-1.5 py-0.2 border border-[var(--border)]">Kapalıçarşı</span>
+            <span>Serbest Piyasa (Forex / Nakit)</span>
+            <span className="font-mono text-[10px] rounded bg-[var(--card)] px-1.5 py-0.2 border border-[var(--border)]">Canlı</span>
           </div>
           <div className="mt-1 font-mono text-xl font-black text-[var(--foreground)]">
             ₺{kapalicarsi.toFixed(2)}
@@ -84,17 +112,17 @@ export default function UsdtPremiumWidget() {
           </div>
         </div>
 
-        {/* USDT Binance TR */}
+        {/* USDT Binance */}
         <div className="rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-3.5 relative overflow-hidden">
           <div className="flex items-center justify-between text-[11px] text-[var(--card-muted)]">
             <span>Tether (USDT/TRY)</span>
-            <span className="font-mono text-[10px] rounded bg-[#2962FF]/15 text-[#2962FF] px-1.5 py-0.2 border border-[#2962FF]/30 font-bold">Kripto</span>
+            <span className="font-mono text-[10px] rounded bg-[#2962FF]/15 text-[#2962FF] px-1.5 py-0.2 border border-[#2962FF]/30 font-bold">Binance Canlı</span>
           </div>
           <div className="mt-1 font-mono text-xl font-black text-[#2962FF]">
-            ₺{usdt.toFixed(2)}
+            ₺{liveUsdt.toFixed(2)}
           </div>
           <div className="mt-0.5 text-[10px] text-[var(--card-muted)] font-mono">
-            Net Prim/Fark:{' '}
+            Net Arbitraj Makası:{' '}
             <strong className={tetherPremiumPercent >= 0 ? 'text-[#00C087]' : 'text-[#2962FF]'}>
               {tetherPremiumPercent >= 0 ? '+' : ''}{tetherPremiumPercent.toFixed(2)}%
             </strong>
@@ -106,18 +134,18 @@ export default function UsdtPremiumWidget() {
       <div className="rounded-xl border border-[var(--border)] bg-gradient-to-r from-[var(--card-subtle)] to-[var(--card)] p-3 text-xs text-[var(--card-muted)] flex items-start gap-2.5">
         <AlertCircle className="h-4 w-4 text-[#2962FF] shrink-0 mt-0.5" />
         <div>
-          <span className="font-bold text-[var(--foreground)]">Yatırımcı Strateji Notu: </span>
+          <span className="font-bold text-[var(--foreground)]">Yatırımcı Notu: </span>
           {isDiscount ? (
             <span>
-              Tether (USDT), serbest piyasa fiziki nakit dolara kıyasla <strong>%{Math.abs(tetherPremiumPercent).toFixed(2)} daha ucuz (iskontolu)</strong> işlem görüyor. Bu durum TL ile kripto para veya stablecoin almak isteyenler için maliyet avantajı sunar.
+              Tether (USDT), serbest piyasa nakit dolara göre <strong>%{Math.abs(tetherPremiumPercent).toFixed(2)} iskontolu</strong> işlem görmektedir. Bu durum TL ile stablecoin veya kripto almak isteyenler için arbitraj avantajı oluşturur.
             </span>
           ) : isPremium ? (
             <span>
-              Tether (USDT), serbest piyasaya göre <strong>%{tetherPremiumPercent.toFixed(2)} primli</strong> satılıyor. Kripto varlıklarını nakit TL&apos;ye çeviren yatırımcılar döviz bürolarına göre kur avantajı elde eder.
+              Tether (USDT), serbest piyasaya kıyasla <strong>%{tetherPremiumPercent.toFixed(2)} primli</strong> satılmaktadır. Kripto varlıkları nakit TL&apos;ye çevirenler kur farkından avantaj elde eder.
             </span>
           ) : (
             <span>
-              Kripto doları (USDT) ile fiziki serbest piyasa doları birebir dengede işlem görüyor. Arbitraj makası bulunmamaktadır.
+              Kripto doları (USDT) ile serbest piyasa doları dengede işlem görüyor. Anlık arbitraj makası bulunmamaktadır.
             </span>
           )}
         </div>

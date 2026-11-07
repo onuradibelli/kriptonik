@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!coin) return { title: 'Coin Bulunamadı' };
 
   return {
-    title: `${coin.name} (${coin.symbol}) Canlı Açık Pozisyon (Open Interest - OI)`,
+    title: `${coin.name} (${coin.symbol}) Açık Pozisyon (OI)`,
     description: `${coin.name} vadeli işlemlerinde açık pozisyon kontrat büyüklüğü $${(coin.openInterestUsd / 1_000_000_000).toFixed(2)}B, long/short rasyosu ve piyasa yönü analizi.`,
     keywords: [
       `${coin.name.toLowerCase()} open interest`,
@@ -25,6 +25,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       `${coin.symbol.toLowerCase()} oi analizi`,
       `${coin.name.toLowerCase()} vadeli hacim`
     ],
+    robots: {
+      index: false,
+      follow: true,
+    },
     alternates: {
       canonical: `https://kriptonik.com/acik-pozisyon/${coin.slug}/`
     }

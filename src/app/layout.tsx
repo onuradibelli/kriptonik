@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import CommandPalette from '../components/CommandPalette';
 import MobileBottomNav from '../components/MobileBottomNav';
+import { TickerProvider } from '../context/TickerContext';
 
 export const metadata: Metadata = {
   title: {
@@ -129,13 +130,15 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased selection:bg-[#2962FF] selection:text-white flex flex-col transition-colors duration-200">
-        <Header />
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 pb-20 md:pb-6">
-          {children}
-        </main>
-        <Footer />
-        <CommandPalette />
-        <MobileBottomNav />
+        <TickerProvider>
+          <Header />
+          <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-6 pb-20 md:pb-6">
+            {children}
+          </main>
+          <Footer />
+          <CommandPalette />
+          <MobileBottomNav />
+        </TickerProvider>
       </body>
     </html>
   );

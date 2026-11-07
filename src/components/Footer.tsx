@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { COINS_DATA } from '../lib/data';
+import { formatUsd } from '../lib/format';
 import { Cpu, ShieldCheck } from 'lucide-react';
 
 export default function Footer() {
@@ -74,7 +75,7 @@ export default function Footer() {
                 <li key={coin.id}>
                   <Link href={`/kripto/${coin.slug}/`} className="hover:text-[#2962FF] transition-colors flex items-center justify-between">
                     <span>{coin.name} ({coin.symbol})</span>
-                    <span className="font-mono text-[10px] text-[var(--card-muted)]">${coin.price > 10 ? coin.price.toLocaleString('tr-TR', { maximumFractionDigits: 0 }) : coin.price.toFixed(4)}</span>
+                    <span className="font-mono text-[10px] text-[var(--card-muted)]">{formatUsd(coin.price)}</span>
                   </Link>
                 </li>
               ))}

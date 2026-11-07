@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!coin) return { title: 'Coin Bulunamadı' };
 
   return {
-    title: `${coin.name} (${coin.symbol}) Canlı Likidasyon Isı Haritası ve Tasfiye Seviyeleri`,
+    title: `${coin.name} (${coin.symbol}) Likidasyon Isı Haritası`,
     description: `${coin.name} vadeli işlemlerinde son 24 saatte gerçekleşen tasfiyeler, dominant tasfiye seviyesi $${coin.dominantLiquidationLevel} ve 100x kaldıraç havuzları.`,
     keywords: [
       `${coin.name.toLowerCase()} likidasyon`,
@@ -26,6 +26,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       `${coin.symbol.toLowerCase()} tasfiye haritası`,
       `${coin.name.toLowerCase()} kaldıraç analizi`
     ],
+    robots: {
+      index: false,
+      follow: true,
+    },
     alternates: {
       canonical: `https://kriptonik.com/likidasyon/${coin.slug}/`
     }

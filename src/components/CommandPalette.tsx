@@ -258,8 +258,12 @@ export default function CommandPalette() {
     <div
       className="fixed inset-0 z-50 flex items-start justify-center bg-black/75 p-4 pt-16 sm:pt-24 backdrop-blur-sm transition-all"
       onClick={() => setIsOpen(false)}
+      role="presentation"
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Arama ve Hızlı Komutlar"
         className="w-full max-w-2xl overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-2xl transition-all"
         onClick={(e) => e.stopPropagation()}
       >
@@ -272,12 +276,14 @@ export default function CommandPalette() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleInputKeyDown}
+            aria-label="Platform içinde arama yapın"
             placeholder="Ne aramak istiyorsun? (Bitcoin, Likidasyon, Hesaplayıcı, 1 Dolar Kaç TL...)"
             className="w-full bg-transparent px-3 text-sm font-medium text-[var(--foreground)] placeholder-[var(--card-muted)] outline-none"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
+              aria-label="Aramayı temizle"
               className="mr-2 rounded p-1 text-[var(--card-muted)] hover:text-[var(--foreground)]"
             >
               <X className="h-4 w-4" />

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CoinData } from '../lib/types';
 import { LIVE_CURRENCY_RATES } from '../lib/data';
+import { formatUsd, formatTry } from '../lib/format';
 import Sparkline from './Sparkline';
 import CoinIcon from './CoinIcon';
 import {
@@ -306,10 +307,10 @@ export default function LiveCryptoMarketTable({
                   {/* Price ($ and ₺) */}
                   <td className="py-3.5 px-3">
                     <div className="font-mono font-bold text-sm sm:text-base text-[var(--foreground)] inline-block">
-                      ${coin.effectivePrice > 10 ? coin.effectivePrice.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : coin.effectivePrice.toFixed(4)}
+                      {formatUsd(coin.effectivePrice)}
                     </div>
                     <div className="text-xs font-mono text-[var(--card-muted)]">
-                      ₺{tryPrice > 10 ? tryPrice.toLocaleString('tr-TR', { maximumFractionDigits: 0 }) : tryPrice.toFixed(2)}
+                      {formatTry(tryPrice)}
                     </div>
                   </td>
 
@@ -327,8 +328,8 @@ export default function LiveCryptoMarketTable({
                   <td className="py-3 px-3 hidden lg:table-cell">
                     <div className="space-y-1 w-32">
                       <div className="flex justify-between text-[9px] font-mono text-[var(--card-muted)]">
-                        <span>${low24 > 10 ? low24.toFixed(0) : low24.toFixed(2)}</span>
-                        <span>${high24 > 10 ? high24.toFixed(0) : high24.toFixed(2)}</span>
+                        <span>{formatUsd(low24)}</span>
+                        <span>{formatUsd(high24)}</span>
                       </div>
                       <div className="h-1.5 w-full rounded-full bg-[var(--border)] relative overflow-hidden">
                         <div

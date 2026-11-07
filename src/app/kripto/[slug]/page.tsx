@@ -61,20 +61,6 @@ export default async function CoinTerminalPage({ params }: { params: Promise<{ s
     notFound();
   }
 
-  // Schema.org Financial Product Structured Data
-  const financialLd = {
-    '@context': 'https://schema.org',
-    '@type': 'FinancialProduct',
-    name: `${coin.name} (${coin.symbol})`,
-    description: `${coin.name} canlı türev, likidasyon ve on-chain analiz terminali.`,
-    url: `https://kriptonik.com/kripto/${coin.slug}/`,
-    offers: {
-      '@type': 'Offer',
-      price: coin.price,
-      priceCurrency: 'USD'
-    }
-  };
-
   // Schema.org FAQPage Structured Data for Google Rich Snippets
   const faqs = coin.faqs || [
     {
@@ -102,10 +88,6 @@ export default async function CoinTerminalPage({ params }: { params: Promise<{ s
 
   return (
     <div className="space-y-6">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(financialLd) }}
-      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { CoinData } from '../lib/types';
 import { useBinanceTickers } from '../lib/useBinanceTickers';
 import { LIVE_CURRENCY_RATES } from '../lib/data';
+import { formatUsd, formatTry } from '../lib/format';
 import TradingViewChart from './TradingViewChart';
 import LiquidationHeatmap from './LiquidationHeatmap';
 import Sparkline from './Sparkline';
@@ -214,10 +215,10 @@ export default function CoinTerminalClient({ coin }: CoinTerminalClientProps) {
 
           <div className="text-right">
             <div className="font-mono text-2xl sm:text-3xl font-black text-[var(--foreground)]">
-              ${price > 10 ? price.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : price.toFixed(4)}
+              {formatUsd(price)}
             </div>
             <div className="font-mono text-xs font-semibold text-[var(--card-muted)] mt-0.5">
-              ₺{tryPrice > 10 ? tryPrice.toLocaleString('tr-TR', { maximumFractionDigits: 0 }) : tryPrice.toFixed(2)}
+              {formatTry(tryPrice)}
             </div>
             <div className={`text-xs sm:text-sm font-mono font-bold flex items-center justify-end gap-1 mt-1 ${isPos ? 'text-[#00E699]' : 'text-[#FF3B56]'}`}>
               {isPos ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
@@ -280,7 +281,7 @@ export default function CoinTerminalClient({ coin }: CoinTerminalClientProps) {
         <div className="panel-card p-4 space-y-1">
           <span className="text-[var(--card-muted)] block text-[11px] font-sans font-medium">Tüm Zamanlar Zirvesi (ATH)</span>
           <div className="text-base font-black text-[var(--foreground)]">
-            ${ath > 10 ? ath.toLocaleString('tr-TR', { maximumFractionDigits: 0 }) : ath.toFixed(4)}
+            {formatUsd(ath)}
           </div>
           <div className="text-[11px] text-[#FF3B56] font-semibold">
             {athChange.toFixed(1)}% ({athDate})
@@ -291,7 +292,7 @@ export default function CoinTerminalClient({ coin }: CoinTerminalClientProps) {
         <div className="panel-card p-4 space-y-1">
           <span className="text-[var(--card-muted)] block text-[11px] font-sans font-medium">Tüm Zamanlar Dibi (ATL)</span>
           <div className="text-base font-black text-[var(--foreground)]">
-            ${atl > 10 ? atl.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : atl.toFixed(4)}
+            {formatUsd(atl)}
           </div>
           <div className="text-[11px] text-[#00E699] font-semibold">
             +{atlChange.toFixed(0)}% ({atlDate})
@@ -316,8 +317,8 @@ export default function CoinTerminalClient({ coin }: CoinTerminalClientProps) {
             />
           </div>
           <div className="flex items-center justify-between font-bold">
-            <span className="text-[#FF3B56]">En Düşük: ${low24 > 10 ? low24.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : low24.toFixed(4)}</span>
-            <span className="text-[#00E699]">En Yüksek: ${high24 > 10 ? high24.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : high24.toFixed(4)}</span>
+            <span className="text-[#FF3B56]">En Düşük: {formatUsd(low24)}</span>
+            <span className="text-[#00E699]">En Yüksek: {formatUsd(high24)}</span>
           </div>
         </div>
 
@@ -391,10 +392,10 @@ export default function CoinTerminalClient({ coin }: CoinTerminalClientProps) {
           <div className="space-y-1.5 rounded-xl border border-[var(--border)] bg-[var(--background)] p-3">
             <div className="text-xs font-semibold text-[var(--card-muted)]">Amerikan Doları (USD) Karşılığı</div>
             <div className="font-mono text-xl sm:text-2xl font-black text-[var(--foreground)]">
-              ${convertedUsd > 10 ? convertedUsd.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : convertedUsd.toFixed(4)}
+              {formatUsd(convertedUsd)}
             </div>
             <div className="text-[11px] font-mono text-[var(--card-muted)]">
-              1 {coin.symbol} = ${price.toLocaleString('tr-TR', { maximumFractionDigits: 2 })}
+              1 {coin.symbol} = {formatUsd(price)}
             </div>
           </div>
 
@@ -404,7 +405,7 @@ export default function CoinTerminalClient({ coin }: CoinTerminalClientProps) {
               <span>Türk Lirası (₺) Karşılığı</span>
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(`₺${convertedTry.toLocaleString('tr-TR', { maximumFractionDigits: 2 })}`);
+                  navigator.clipboard.writeText(formatTry(convertedTry));
                   setCopied(true);
                   setTimeout(() => setCopied(false), 2000);
                 }}
@@ -415,10 +416,10 @@ export default function CoinTerminalClient({ coin }: CoinTerminalClientProps) {
               </button>
             </div>
             <div className="font-mono text-xl sm:text-2xl font-black text-[#00E699]">
-              ₺{convertedTry > 10 ? convertedTry.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : convertedTry.toFixed(2)}
+              {formatTry(convertedTry)}
             </div>
             <div className="text-[11px] font-mono text-[var(--card-muted)]">
-              1 {coin.symbol} = ₺{tryPrice.toLocaleString('tr-TR', { maximumFractionDigits: 2 })}
+              1 {coin.symbol} = {formatTry(tryPrice)}
             </div>
           </div>
         </div>
@@ -595,10 +596,10 @@ export default function CoinTerminalClient({ coin }: CoinTerminalClientProps) {
                       </td>
                       <td className="py-3 text-[var(--card-muted)]">{mp.pair}</td>
                       <td className="py-3 text-right font-bold text-[var(--foreground)]">
-                        ${mp.priceUsd > 10 ? mp.priceUsd.toLocaleString('tr-TR', { maximumFractionDigits: 2 }) : mp.priceUsd.toFixed(4)}
+                        {formatUsd(mp.priceUsd)}
                       </td>
                       <td className="py-3 text-right text-[var(--foreground)]">
-                        ₺{mp.priceTry > 10 ? mp.priceTry.toLocaleString('tr-TR', { maximumFractionDigits: 0 }) : mp.priceTry.toFixed(2)}
+                        {formatTry(mp.priceTry)}
                       </td>
                       <td className="py-3 text-right text-[#00E699]">
                         +{mp.spreadPct.toFixed(2)}%

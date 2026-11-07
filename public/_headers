@@ -1,17 +1,22 @@
-# Security & Caching Headers for Cloudflare Pages
+# Security & Performance Headers for Cloudflare Pages
 
 /*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   X-Frame-Options: SAMEORIGIN
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://s3.tradingview.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https: wss:; font-src 'self' data:; frame-src https://s.tradingview.com;
 
-# Cache static assets
+# Cache static Next.js assets indefinitely (content-hashed)
 /_next/static/*
   Cache-Control: public, max-age=31536000, immutable
 
 /images/*
   Cache-Control: public, max-age=86400
 
-/favicon.ico
+/icon.svg
+  Cache-Control: public, max-age=86400
+
+/manifest.json
   Cache-Control: public, max-age=86400

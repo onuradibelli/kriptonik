@@ -35,7 +35,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: r.priority
   }));
 
-  // 2. Dynamic Coin Terminal Pages
+  // 2. Dynamic Coin Terminal Pages (High-value indexable assets)
   COINS_DATA.forEach((coin) => {
     // /kripto/[slug]/
     sitemapEntries.push({
@@ -43,30 +43,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: 'always',
       priority: 0.85
-    });
-
-    // /likidasyon/[slug]/
-    sitemapEntries.push({
-      url: `${baseUrl}/likidasyon/${coin.slug}/`,
-      lastModified: now,
-      changeFrequency: 'hourly',
-      priority: 0.75
-    });
-
-    // /fonlama-oranlari/[slug]/
-    sitemapEntries.push({
-      url: `${baseUrl}/fonlama-oranlari/${coin.slug}/`,
-      lastModified: now,
-      changeFrequency: 'hourly',
-      priority: 0.7
-    });
-
-    // /acik-pozisyon/[slug]/
-    sitemapEntries.push({
-      url: `${baseUrl}/acik-pozisyon/${coin.slug}/`,
-      lastModified: now,
-      changeFrequency: 'hourly',
-      priority: 0.7
     });
 
     // /token-kilit-acilimlari/[slug]/ (only for verified tokens with tokenUnlock)

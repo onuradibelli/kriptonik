@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!coin) return { title: 'Coin Bulunamadı' };
 
   return {
-    title: `${coin.name} (${coin.symbol}) Canlı Fonlama Oranları (Funding Rate)`,
+    title: `${coin.name} (${coin.symbol}) Canlı Fonlama Oranları`,
     description: `${coin.name} için Binance, Bybit ve OKX borsaları anlık fonlama oranları, arbitraj spreadi ve sonraki fonlama tahminleri.`,
     keywords: [
       `${coin.name.toLowerCase()} fonlama oranı`,
@@ -25,6 +25,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       `${coin.symbol.toLowerCase()} bybit binance fonlama`,
       `${coin.name.toLowerCase()} arbitraj`
     ],
+    robots: {
+      index: false,
+      follow: true,
+    },
     alternates: {
       canonical: `https://kriptonik.com/fonlama-oranlari/${coin.slug}/`
     }

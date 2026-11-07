@@ -2,31 +2,53 @@
 
 import React, { useState, useEffect } from 'react';
 import { WhaleTransaction } from '../lib/types';
-import { ShieldAlert, ArrowDownRight, ArrowUpRight, ArrowRight, Volume2, VolumeX, Copy, Check, ExternalLink } from 'lucide-react';
+import { useTickers } from '../context/TickerContext';
+import { formatUsd, formatLargeUsd } from '../lib/format';
+import { ShieldAlert, ArrowRight, Volume2, VolumeX, Copy, Check, ExternalLink, Activity } from 'lucide-react';
 
 interface WhaleTrackerProps {
   transactions: WhaleTransaction[];
 }
 
-interface DynamicWhaleTx extends WhaleTransaction {
+interface DynamicWhaleTx {
+  id: string;
+  hash: string;
+  fullHash: string;
+  symbol: string;
+  amount: number;
+  amountUsd: number;
+  fromName: string;
+  toName: string;
+  timestamp: string;
   secondsAgo: number;
-  fullHash?: string;
 }
 
 export default function WhaleTracker({ transactions }: WhaleTrackerProps) {
-  const [filterType, setFilterType] = useState<'ALL' | 'INFLOW' | 'OUTFLOW'>('ALL');
-  const [symbolFilter, setSymbolFilter] = useState<string>('ALL');
+  const { tickers } = useTickers();
+  const btcPrice = tickers['BTCUSDT']?.price || 76000;
+
   const [minAmountFilter, setMinAmountFilter] = useState<number>(0);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [copiedHash, setCopiedHash] = useState<string | null>(null);
 
   // Live dynamic transaction feed starting with verified historical records
   const [liveList, setLiveList] = useState<DynamicWhaleTx[]>(() =>
-    transactions.map((t, idx) => ({ ...t, secondsAgo: (idx + 1) * 120 }))
+    transactions.map((t, idx) => ({
+      id: t.id,
+      hash: t.hash,
+      fullHash: t.hash.length > 20 ? t.hash : `mempool-${t.id}`,
+      symbol: t.symbol,
+      amount: t.amount,
+      amountUsd: t.amountUsd,
+      fromName: 'Bilinmeyen Cüzdan',
+      toName: 'Bilinmeyen Cüzdan',
+      timestamp: t.timestamp,
+      secondsAgo: (idx + 1) * 120
+    }))
   );
 
-  // Audio synthesizer for whale alert ping
-  const playWhaleAlert = (type: 'INFLOW' | 'OUTFLOW') => {
+  // Audio synthesizer for large transaction ping
+  const playAlert = () => {
     if (!soundEnabled) return;
     try {
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
@@ -35,14 +57,14 @@ export default function WhaleTracker({ transactions }: WhaleTrackerProps) {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(type === 'INFLOW' ? 440 : 660, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(type === 'INFLOW' ? 220 : 880, ctx.currentTime + 0.18);
-      gain.gain.setValueAtTime(0.06, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+      osc.frequency.setValueAtTime(520, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.05, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
-      osc.stop(ctx.currentTime + 0.18);
+      osc.stop(ctx.currentTime + 0.15);
     } catch {
       // Audio safe
     }
@@ -61,30 +83,26 @@ export default function WhaleTracker({ transactions }: WhaleTrackerProps) {
         if (!res.ok) return;
         const data = await res.json();
         if (Array.isArray(data) && isSubscribed && data.length > 0) {
-          const btcPrice = 75800; // Reference anchor
+          const currentBtcPrice = btcPrice > 1000 ? btcPrice : 76000;
           const newEntries: DynamicWhaleTx[] = [];
 
-          for (const item of data.slice(0, 3)) {
+          for (const item of data.slice(0, 5)) {
             const btcAmount = item.value ? item.value / 1e8 : 0;
-            const usdVal = btcAmount * btcPrice;
-            if (usdVal < 50000) continue; // Only surface significant transfers
+            const usdVal = btcAmount * currentBtcPrice;
+            if (usdVal < 50000) continue; // Only surface significant transfers > $50K
 
-            const shortHash = item.txid ? `${item.txid.slice(0, 6)}...${item.txid.slice(-4)}` : 'On-Chain';
-            const isToExchange = btcAmount > 5;
+            const shortHash = item.txid ? `${item.txid.slice(0, 6)}...${item.txid.slice(-4)}` : 'Mempool';
 
             newEntries.push({
               id: item.txid || `btc-${Date.now()}`,
               hash: shortHash,
-              fullHash: item.txid,
+              fullHash: item.txid || '',
               symbol: 'BTC',
               amount: parseFloat(btcAmount.toFixed(2)),
               amountUsd: Math.round(usdVal),
-              fromType: isToExchange ? 'WALLET' : 'EXCHANGE',
-              fromName: isToExchange ? 'Doğrulanmış Blok Cüzdanı' : 'Mempool İşlem Havuzu',
-              toType: isToExchange ? 'EXCHANGE' : 'WALLET',
-              toName: isToExchange ? 'Binance / Borsa Havuzu' : 'Bilinmeyen Cüzdan',
+              fromName: 'Bilinmeyen Cüzdan',
+              toName: 'Bilinmeyen Cüzdan',
               timestamp: 'Az önce',
-              type: isToExchange ? 'INFLOW' : 'OUTFLOW',
               secondsAgo: 0
             });
           }
@@ -94,7 +112,7 @@ export default function WhaleTracker({ transactions }: WhaleTrackerProps) {
               const existingIds = new Set(prev.map((p) => p.id));
               const fresh = newEntries.filter((e) => !existingIds.has(e.id));
               if (fresh.length > 0 && soundEnabled) {
-                playWhaleAlert(fresh[0].type as any);
+                playAlert();
               }
               return [...fresh, ...prev].slice(0, 30);
             });
@@ -120,7 +138,7 @@ export default function WhaleTracker({ transactions }: WhaleTrackerProps) {
       clearInterval(interval);
       clearInterval(ageTimer);
     };
-  }, [soundEnabled]);
+  }, [soundEnabled, btcPrice]);
 
   const handleCopyHash = (hash: string) => {
     if (navigator?.clipboard) {
@@ -131,18 +149,12 @@ export default function WhaleTracker({ transactions }: WhaleTrackerProps) {
   };
 
   const filtered = liveList.filter((tx) => {
-    if (filterType !== 'ALL' && tx.type !== filterType) return false;
-    if (symbolFilter !== 'ALL' && tx.symbol !== symbolFilter) return false;
     if (minAmountFilter > 0 && tx.amountUsd < minAmountFilter) return false;
     return true;
   });
 
-  // Calculate live inflow vs outflow
-  const totalInflow = liveList.filter((t) => t.type === 'INFLOW').reduce((a, b) => a + b.amountUsd, 0);
-  const totalOutflow = liveList.filter((t) => t.type === 'OUTFLOW').reduce((a, b) => a + b.amountUsd, 0);
-  const sumBoth = totalInflow + totalOutflow || 1;
-  const outflowRatio = (totalOutflow / sumBoth) * 100;
-  const inflowRatio = (totalInflow / sumBoth) * 100;
+  const totalVolumeDetected = liveList.reduce((acc, t) => acc + t.amountUsd, 0);
+  const totalBtcDetected = liveList.reduce((acc, t) => acc + t.amount, 0);
 
   return (
     <div className="panel-card p-5 sm:p-6 space-y-5">
@@ -155,16 +167,16 @@ export default function WhaleTracker({ transactions }: WhaleTrackerProps) {
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-black text-[var(--foreground)] flex items-center gap-2">
-                <span>Büyük Transfer & Zincir Üstü (On-Chain) Radar</span>
+                <span>Büyük Transfer Radarı (Zincir Üstü Mempool)</span>
                 <span className="rounded bg-[#00E699]/15 text-[#00E699] px-2 py-0.5 text-xs font-mono font-bold flex items-center gap-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#00E699] pulse-bull" />
-                  MEMPOOL DOĞRULANMIŞ
+                  MEMPOOL CANLI AKIŞ
                 </span>
               </h2>
             </div>
           </div>
           <p className="mt-1 text-xs text-[var(--card-muted)]">
-            Mempool.space açık blokzincir ağı üzerinden doğrulanan büyük Bitcoin transferleri ve kurumsal cüzdan hareketleri.
+            Mempool.space açık Bitcoin düğümleri üzerinden canlı yakalanan onaysız (0-konfirmasyon) büyük transferler.
           </p>
         </div>
 
@@ -185,150 +197,133 @@ export default function WhaleTracker({ transactions }: WhaleTrackerProps) {
         </div>
       </div>
 
-      {/* 2. Radar KPI Cards with Net Flow Visual Bar */}
+      {/* 2. Honest Radar KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
         <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5 space-y-1">
-          <span className="text-[var(--card-muted)] font-mono">Borsa Girişleri (Potansiyel Satış)</span>
-          <div className="text-lg font-black font-mono text-[#FF3B56]">
-            ${(totalInflow / 1e6).toFixed(1)}M
+          <span className="text-[var(--card-muted)] font-mono">İzlenen Büyük Transfer Hacmi</span>
+          <div className="text-lg font-black font-mono text-[var(--foreground)]">
+            {formatLargeUsd(totalVolumeDetected)}
           </div>
-          <div className="text-[11px] text-[var(--card-muted)]">Pay: %{inflowRatio.toFixed(1)}</div>
+          <div className="text-[11px] text-[var(--card-muted)]">Son 30 işlem toplamı</div>
         </div>
 
         <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5 space-y-1">
-          <span className="text-[var(--card-muted)] font-mono">Borsa Çıkışları (Soğuk Cüzdan)</span>
-          <div className="text-lg font-black font-mono text-[#00E699]">
-            ${(totalOutflow / 1e6).toFixed(1)}M
+          <span className="text-[var(--card-muted)] font-mono">Toplam Bitcoin Miktarı</span>
+          <div className="text-lg font-black font-mono text-[#F0B90B]">
+            {totalBtcDetected.toFixed(1)} BTC
           </div>
-          <div className="text-[11px] text-[var(--card-muted)]">Pay: %{outflowRatio.toFixed(1)}</div>
+          <div className="text-[11px] text-[var(--card-muted)]">Canlı BTC kuru: {formatUsd(btcPrice)}</div>
         </div>
 
         <div className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3.5 space-y-1">
-          <span className="text-[var(--card-muted)] font-mono">Net Akış Dengesi</span>
-          <div className={`text-lg font-black font-mono ${totalOutflow >= totalInflow ? 'text-[#00E699]' : 'text-[#FF3B56]'}`}>
-            {totalOutflow >= totalInflow ? 'Akümülasyon (Pozitif)' : 'Borsa Baskısı (Negatif)'}
+          <span className="text-[var(--card-muted)] font-mono">Veri Kaynağı & Doğrulama</span>
+          <div className="text-sm font-black font-mono text-[#00E699] flex items-center gap-1.5">
+            <Activity className="h-4 w-4" />
+            <span>Mempool.space API</span>
           </div>
           <div className="text-[11px] text-[var(--card-muted)]">
-            Fark: ${Math.abs((totalOutflow - totalInflow) / 1e6).toFixed(1)}M
+            0-Konfirmasyon Onaysız Havuz
           </div>
         </div>
       </div>
 
       {/* 3. Filter Controls */}
       <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-          {[
-            { id: 'ALL', label: 'Tümü' },
-            { id: 'INFLOW', label: 'Borsa Girişi (Inflow)' },
-            { id: 'OUTFLOW', label: 'Borsa Çıkışı (Outflow)' }
-          ].map((tab) => (
+        <div className="flex items-center gap-1.5">
+          <span className="text-[var(--card-muted)] font-bold">Minimum Tutar:</span>
+          {[0, 100000, 250000, 500000, 1000000].map((amt) => (
             <button
-              key={tab.id}
-              onClick={() => setFilterType(tab.id as any)}
-              className={`rounded-xl px-3 py-1.5 font-bold transition-all cursor-pointer ${
-                filterType === tab.id
+              key={amt}
+              onClick={() => setMinAmountFilter(amt)}
+              className={`rounded-lg px-2.5 py-1 font-mono font-bold transition-all cursor-pointer ${
+                minAmountFilter === amt
                   ? 'bg-[#2962FF] text-white shadow-xs'
-                  : 'border border-[var(--border)] bg-[var(--background)] text-[var(--card-muted)] hover:text-[var(--foreground)]'
+                  : 'border border-[var(--border)] bg-[var(--card)] text-[var(--card-muted)] hover:text-[var(--foreground)]'
               }`}
             >
-              {tab.label}
+              {amt === 0 ? 'Tümü' : `>${formatLargeUsd(amt)}`}
             </button>
           ))}
         </div>
 
-        <div className="flex items-center gap-2">
-          <select
-            value={symbolFilter}
-            onChange={(e) => setSymbolFilter(e.target.value)}
-            className="rounded-xl border border-[var(--border)] bg-[var(--background)] px-2.5 py-1.5 font-mono text-xs text-[var(--foreground)] cursor-pointer"
-          >
-            <option value="ALL">Tüm Varlıklar</option>
-            <option value="BTC">BTC</option>
-            <option value="ETH">ETH</option>
-            <option value="SOL">SOL</option>
-            <option value="XRP">XRP</option>
-            <option value="USDT">USDT</option>
-          </select>
+        <div className="text-[11px] font-mono text-[var(--card-muted)]">
+          Gösterilen: <strong className="text-[var(--foreground)]">{filtered.length}</strong> / {liveList.length} İşlem
         </div>
       </div>
 
-      {/* 4. Transactions List */}
-      <div className="space-y-2">
-        {filtered.length === 0 ? (
-          <div className="py-8 text-center text-xs text-[var(--card-muted)]">
-            Kriterlere uygun transfer bulunamadı.
-          </div>
-        ) : (
-          filtered.map((tx) => {
-            const isInflow = tx.type === 'INFLOW';
-            return (
-              <div
-                key={tx.id}
-                className="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-[#2962FF]/40 transition-all text-xs"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-bold ${
-                    isInflow ? 'bg-rose-500/15 text-rose-500' : 'bg-emerald-500/15 text-emerald-500'
-                  }`}>
-                    {isInflow ? <ArrowDownRight className="h-5 w-5" /> : <ArrowUpRight className="h-5 w-5" />}
+      {/* 4. Live Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-xs">
+          <thead>
+            <tr className="border-b border-[var(--border)] text-[var(--card-muted)] font-mono text-[11px]">
+              <th className="pb-2.5 font-bold">Zaman</th>
+              <th className="pb-2.5 font-bold">Varlık</th>
+              <th className="pb-2.5 font-bold">Miktar / Değer</th>
+              <th className="pb-2.5 font-bold">Transfer Akışı</th>
+              <th className="pb-2.5 font-bold">İşlem Özeti (Hash)</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[var(--border)] font-mono">
+            {filtered.map((tx) => (
+              <tr key={tx.id} className="hover:bg-[var(--card-subtle)] transition-colors">
+                <td className="py-3 text-[var(--card-muted)] text-[11px]">
+                  {tx.secondsAgo < 60 ? `${tx.secondsAgo} sn önce` : `${Math.floor(tx.secondsAgo / 60)} dk önce`}
+                </td>
+                <td className="py-3 font-bold text-[var(--foreground)]">
+                  <div className="flex items-center gap-1.5">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#F0B90B]/20 text-[#F0B90B] text-[10px] font-black">
+                      ₿
+                    </span>
+                    <span>{tx.symbol}</span>
                   </div>
-
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-black text-sm text-[var(--foreground)]">
-                        {tx.amount.toLocaleString('tr-TR')} {tx.symbol}
-                      </span>
-                      <span className="font-mono text-xs text-[var(--card-muted)]">
-                        (${tx.amountUsd.toLocaleString('tr-TR')})
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 text-[11px] text-[var(--card-muted)] font-mono mt-0.5">
-                      <span className="truncate max-w-[120px]">{tx.fromName}</span>
-                      <ArrowRight className="h-3 w-3 shrink-0" />
-                      <span className="truncate max-w-[120px] text-[var(--foreground)] font-semibold">{tx.toName}</span>
-                    </div>
+                </td>
+                <td className="py-3">
+                  <div className="font-black text-[var(--foreground)]">
+                    {tx.amount.toLocaleString('tr-TR')} {tx.symbol}
                   </div>
-                </div>
-
-                <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto border-t sm:border-0 border-[var(--border)] pt-2 sm:pt-0">
-                  <div className="text-right font-mono text-[11px] text-[var(--card-muted)]">
-                    <div>{tx.secondsAgo < 60 ? `${tx.secondsAgo} sn önce` : tx.timestamp}</div>
-                    <div className="text-[10px] opacity-75">
-                      {tx.fullHash ? (
-                        <a
-                          href={`https://mempool.space/tx/${tx.fullHash}`}
-                          target="_blank"
-                          rel="noopener noreferrer nofollow"
-                          className="hover:text-[#2962FF] underline inline-flex items-center gap-0.5"
-                        >
-                          {tx.hash} <ExternalLink className="h-2.5 w-2.5" />
-                        </a>
-                      ) : (
-                        <span>{tx.hash}</span>
-                      )}
-                    </div>
+                  <div className="text-[11px] text-[var(--card-muted)]">
+                    ≈ {formatLargeUsd(tx.amountUsd)}
                   </div>
-
-                  {tx.fullHash && (
+                </td>
+                <td className="py-3 text-[11px]">
+                  <div className="flex items-center gap-1.5 text-[var(--card-muted)]">
+                    <span>{tx.fromName}</span>
+                    <ArrowRight className="h-3 w-3 text-[var(--card-muted)]" />
+                    <span>{tx.toName}</span>
+                  </div>
+                  <span className="text-[10px] text-amber-500/80">0-Konfirmasyon Mempool</span>
+                </td>
+                <td className="py-3 text-[11px]">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[var(--card-muted)]">{tx.hash}</span>
+                    {tx.fullHash && (
+                      <a
+                        href={`https://mempool.space/tx/${tx.fullHash}`}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow"
+                        className="text-[#2962FF] hover:underline flex items-center gap-0.5"
+                        title="Mempool.space üzerinde görüntüle"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    )}
                     <button
-                      onClick={() => handleCopyHash(tx.fullHash!)}
-                      className="rounded-lg border border-[var(--border)] p-1.5 hover:bg-[var(--card-subtle)] text-[var(--card-muted)] hover:text-[var(--foreground)] transition-all cursor-pointer"
-                      title="İşlem Hash'ini Kopyala"
+                      onClick={() => handleCopyHash(tx.fullHash || tx.hash)}
+                      className="text-[var(--card-muted)] hover:text-[var(--foreground)] p-1 rounded"
+                      title="TxID kopyala"
                     >
-                      {copiedHash === tx.fullHash ? <Check className="h-3.5 w-3.5 text-[#00E699]" /> : <Copy className="h-3.5 w-3.5" />}
+                      {copiedHash === (tx.fullHash || tx.hash) ? (
+                        <Check className="h-3 w-3 text-[#00E699]" />
+                      ) : (
+                        <Copy className="h-3 w-3" />
+                      )}
                     </button>
-                  )}
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-
-      <div className="text-[11px] text-[var(--card-muted)] border-t border-[var(--border)] pt-3 flex items-center justify-between">
-        <span>* Blokzincir transferleri halka açık düğümlerden (Mempool) doğrulanarak yansıtılır.</span>
-        <span>Yatırım tavsiyesi değildir.</span>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
