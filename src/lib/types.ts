@@ -5,6 +5,7 @@ export interface CoinData {
   slug: string;
   binanceSymbol: string;
   coingeckoId: string;
+  imageUrl?: string;
   price: number;
   change24h: number;
   high24h: number;

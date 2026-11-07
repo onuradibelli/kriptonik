@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { CoinData } from '../lib/types';
 import { LIVE_CURRENCY_RATES } from '../lib/data';
 import Sparkline from './Sparkline';
+import CoinIcon from './CoinIcon';
 import { TrendingUp, TrendingDown, ArrowUpRight, Zap, Flame, BarChart3, ShieldCheck } from 'lucide-react';
 
 interface MajorAssetsPulseBarProps {
@@ -71,9 +72,13 @@ export default function MajorAssetsPulseBar({ coins, tickers }: MajorAssetsPulse
               {/* Header: Name, Symbol, Rank & Direct Arrow */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--background)] border border-[var(--border)] font-mono text-sm font-black text-[#2962FF] group-hover:scale-105 transition-transform">
-                    {coin.symbol.slice(0, 3)}
-                  </div>
+                  <CoinIcon
+                    symbol={coin.symbol}
+                    name={coin.name}
+                    imageUrl={coin.imageUrl}
+                    size={36}
+                    className="border border-[var(--border)] group-hover:scale-105 transition-transform shadow-2xs"
+                  />
                   <div>
                     <div className="flex items-center gap-1.5">
                       <span className="font-bold text-sm sm:text-base text-[var(--foreground)] group-hover:text-[#2962FF] transition-colors">

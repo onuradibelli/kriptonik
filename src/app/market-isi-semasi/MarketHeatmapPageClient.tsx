@@ -27,7 +27,14 @@ export default function MarketHeatmapPageClient({ coins }: MarketHeatmapPageClie
 
   const filteredCoins = selectedCategory === 'ALL'
     ? coins
-    : coins.filter((c) => c.category === selectedCategory);
+    : coins.filter((c) => {
+        const cat = (c.category || '').toLowerCase();
+        if (selectedCategory === 'layer-1') return cat.includes('katman');
+        if (selectedCategory === 'defi') return cat.includes('defi');
+        if (selectedCategory === 'ai') return cat.includes('yapay') || cat.includes('ai');
+        if (selectedCategory === 'meme') return cat.includes('meme');
+        return true;
+      });
 
   return (
     <div className="space-y-6">

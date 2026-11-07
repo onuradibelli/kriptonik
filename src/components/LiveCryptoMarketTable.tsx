@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { CoinData } from '../lib/types';
 import { LIVE_CURRENCY_RATES } from '../lib/data';
 import Sparkline from './Sparkline';
+import CoinIcon from './CoinIcon';
 import {
   Search,
   Star,
@@ -43,7 +44,8 @@ export default function LiveCryptoMarketTable({
   const [searchQuery, setSearchQuery] = useState('');
   const [sortField, setSortField] = useState<SortField>('rank');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
-  const [visibleCount, setVisibleCount] = useState<number>(20);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(50);
 
   const usdtRate = LIVE_CURRENCY_RATES.USDT_TRY;
 
@@ -115,7 +117,12 @@ export default function LiveCryptoMarketTable({
     return result;
   }, [coins, tickers, searchQuery, activeCategory, sortField, sortOrder, watchlist]);
 
-  const displayedCoins = filteredCoins.slice(0, visibleCount);
+  const totalPages = pageSize === -1 ? 1 : Math.ceil(filteredCoins.length / pageSize);
+  const displayedCoins = useMemo(() => {
+    if (pageSize === -1) return filteredCoins;
+    const start = (currentPage - 1) * pageSize;
+    return filteredCoins.slice(start, start + pageSize);
+  }, [filteredCoins, currentPage, pageSize]);
 
   return (
     <div className="panel-card p-5 sm:p-6 space-y-5">
@@ -177,7 +184,7 @@ export default function LiveCryptoMarketTable({
             key={tab.id}
             onClick={() => {
               setActiveCategory(tab.id as CategoryType);
-              setVisibleCount(20);
+              setCurrentPage(1);
             }}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
               activeCategory === tab.id
@@ -276,9 +283,13 @@ export default function LiveCryptoMarketTable({
                         {coin.marketCapRank}
                       </span>
 
-                      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--background)] border border-[var(--border)] font-black text-xs text-[#2962FF]">
-                        {coin.symbol.slice(0, 3)}
-                      </div>
+                      <CoinIcon
+                        symbol={coin.symbol}
+                        name={coin.name}
+                        imageUrl={coin.imageUrl}
+                        size={32}
+                        className="border border-[var(--border)] shadow-2xs group-hover:scale-105 transition-transform"
+                      />
 
                       <div>
                         <div className="font-bold text-sm text-[var(--foreground)] group-hover:text-[#2962FF] transition-colors flex items-center gap-1.5 font-sans">
@@ -398,42 +409,79 @@ export default function LiveCryptoMarketTable({
         )}
       </div>
 
-      {/* Pagination / Expand Control */}
-      {filteredCoins.length > 20 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs font-mono text-[var(--card-muted)]">
+      {/* Enhanced Pagination Controls */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-3 border-t border-[var(--border)] text-xs font-mono text-[var(--card-muted)]">
+        {/* Left: Display Count & Page Size Selector */}
+        <div className="flex flex-wrap items-center gap-3">
           <div>
-            Gösterilen: <strong className="text-[var(--foreground)]">{displayedCoins.length}</strong> / {filteredCoins.length} Varlık
+            Gösterilen: <strong className="text-[var(--foreground)]">{pageSize === -1 ? filteredCoins.length : Math.min(filteredCoins.length, (currentPage - 1) * pageSize + 1)} - {pageSize === -1 ? filteredCoins.length : Math.min(filteredCoins.length, currentPage * pageSize)}</strong> / Toplam <strong className="text-[var(--foreground)]">{filteredCoins.length}</strong> Kripto Varlık
           </div>
 
-          <div className="flex items-center gap-2">
-            {visibleCount < filteredCoins.length ? (
+          <div className="flex items-center gap-1 bg-[var(--background)] p-1 rounded-xl border border-[var(--border)]">
+            <span className="px-2 text-[11px] text-[var(--card-muted)]">Sayfa Başı:</span>
+            {[25, 50, 100, -1].map((size) => (
               <button
-                onClick={() => setVisibleCount((prev) => Math.min(filteredCoins.length, prev + 20))}
-                className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-2 font-bold text-[var(--foreground)] hover:border-[#2962FF] hover:text-[#2962FF] transition-all cursor-pointer flex items-center gap-1.5"
+                key={size}
+                onClick={() => {
+                  setPageSize(size);
+                  setCurrentPage(1);
+                }}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  pageSize === size
+                    ? 'bg-[#2962FF] text-white shadow-xs'
+                    : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
+                }`}
               >
-                <span>Daha Fazla Göster (+20 Varlık)</span>
-                <ChevronDown className="h-3.5 w-3.5" />
+                {size === -1 ? 'Tümü' : size}
               </button>
-            ) : (
-              <button
-                onClick={() => setVisibleCount(20)}
-                className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-2 font-bold text-[var(--card-muted)] hover:text-[var(--foreground)] transition-all cursor-pointer"
-              >
-                İlk 20 Varlığa Daralt ↑
-              </button>
-            )}
-
-            {visibleCount < filteredCoins.length && (
-              <button
-                onClick={() => setVisibleCount(filteredCoins.length)}
-                className="rounded-xl border border-[#2962FF]/30 bg-[#2962FF]/10 px-4 py-2 font-bold text-[#2962FF] hover:bg-[#2962FF] hover:text-white transition-all cursor-pointer"
-              >
-                Tümünü Aç ({filteredCoins.length})
-              </button>
-            )}
+            ))}
           </div>
         </div>
-      )}
+
+        {/* Right: Page Buttons */}
+        {pageSize !== -1 && totalPages > 1 && (
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 font-bold text-[var(--foreground)] disabled:opacity-30 disabled:cursor-not-allowed hover:border-[#2962FF] transition-all cursor-pointer"
+            >
+              ← Önceki
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter((page) => page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1)
+              .map((page, idx, arr) => {
+                const prev = arr[idx - 1];
+                const showEllipsis = prev && page - prev > 1;
+
+                return (
+                  <React.Fragment key={page}>
+                    {showEllipsis && <span className="px-1 text-[var(--card-muted)]">...</span>}
+                    <button
+                      onClick={() => setCurrentPage(page)}
+                      className={`h-8 w-8 rounded-xl font-bold transition-all cursor-pointer ${
+                        currentPage === page
+                          ? 'bg-[#2962FF] text-white shadow-xs'
+                          : 'border border-[var(--border)] bg-[var(--card)] text-[var(--card-muted)] hover:text-[var(--foreground)] hover:border-[#2962FF]'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  </React.Fragment>
+                );
+              })}
+
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-1.5 font-bold text-[var(--foreground)] disabled:opacity-30 disabled:cursor-not-allowed hover:border-[#2962FF] transition-all cursor-pointer"
+            >
+              Sonraki →
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

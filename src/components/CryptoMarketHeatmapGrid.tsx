@@ -1,91 +1,187 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { CoinData } from '../lib/types';
+import { LIVE_CURRENCY_RATES } from '../lib/data';
+import { computeSquarifiedTreemap, TreemapNode } from '../lib/squarify';
+import CoinIcon from './CoinIcon';
 import { 
-  LayoutGrid, 
-  ArrowUpRight, 
+  Layers, 
+  ChevronDown, 
+  Maximize2, 
   TrendingUp, 
   TrendingDown, 
-  Layers, 
-  Sparkles, 
-  SlidersHorizontal,
-  Flame,
-  Activity,
-  BarChart2
+  Sparkles,
+  ArrowUpRight,
+  Info
 } from 'lucide-react';
-import { LIVE_CURRENCY_RATES } from '../lib/data';
-import Sparkline from './Sparkline';
 
 interface CryptoMarketHeatmapGridProps {
   coins: CoinData[];
   tickers: Record<string, { price: number; change24h: number; flashDirection?: 'UP' | 'DOWN' | null }>;
 }
 
-// Brand color maps for top tokens
-const COIN_BADGES: Record<string, { bg: string; text: string; icon: string }> = {
-  BTC: { bg: 'bg-[#F7931A]/15 border-[#F7931A]/30', text: 'text-[#F7931A]', icon: '₿' },
-  ETH: { bg: 'bg-[#627EEA]/15 border-[#627EEA]/30', text: 'text-[#627EEA]', icon: 'Ξ' },
-  SOL: { bg: 'bg-[#9945FF]/15 border-[#14F195]/30', text: 'text-[#14F195]', icon: '◎' },
-  BNB: { bg: 'bg-[#F3BA2F]/15 border-[#F3BA2F]/30', text: 'text-[#F3BA2F]', icon: 'B' },
-  XRP: { bg: 'bg-[#23292F]/20 border-slate-400/30', text: 'text-[var(--foreground)]', icon: '✕' },
-  DOGE: { bg: 'bg-[#C2A633]/15 border-[#C2A633]/30', text: 'text-[#C2A633]', icon: 'Ð' },
-  AVAX: { bg: 'bg-[#E84142]/15 border-[#E84142]/30', text: 'text-[#E84142]', icon: '▲' },
-  SUI: { bg: 'bg-[#4DA2FF]/15 border-[#4DA2FF]/30', text: 'text-[#4DA2FF]', icon: '💧' },
-  LINK: { bg: 'bg-[#375BD2]/15 border-[#375BD2]/30', text: 'text-[#375BD2]', icon: '⬡' },
-  ADA: { bg: 'bg-[#0033AD]/15 border-[#0033AD]/30', text: 'text-[#3366FF]', icon: '₳' },
-  NEAR: { bg: 'bg-[#000000]/15 border-slate-400/30', text: 'text-[var(--foreground)]', icon: 'Ⓝ' },
-  TAO: { bg: 'bg-[#2ECC71]/15 border-[#2ECC71]/30', text: 'text-[#2ECC71]', icon: '𝜏' },
-  PEPE: { bg: 'bg-[#479E39]/15 border-[#479E39]/30', text: 'text-[#479E39]', icon: '🐸' },
-  SHIB: { bg: 'bg-[#FFA409]/15 border-[#FFA409]/30', text: 'text-[#FFA409]', icon: '🐕' },
-  USDT: { bg: 'bg-[#26A17B]/15 border-[#26A17B]/30', text: 'text-[#26A17B]', icon: '₮' },
-  USDC: { bg: 'bg-[#2775CA]/15 border-[#2775CA]/30', text: 'text-[#2775CA]', icon: '$' }
+// Color palette matching the Coinglass Stocks / Crypto Heatmap screenshot
+const getCoinglassColor = (change: number): { bg: string; text: string; hex: string } => {
+  if (Math.abs(change) < 0.05) {
+    return { bg: 'bg-[#64748B]', text: 'text-white', hex: '#64748B' }; // Neutral slate
+  }
+  if (change >= 5) {
+    return { bg: 'bg-[#005A32]', text: 'text-white', hex: '#005A32' }; // Deep dark forest green
+  }
+  if (change >= 2.5) {
+    return { bg: 'bg-[#007A43]', text: 'text-white', hex: '#007A43' }; // Dark green
+  }
+  if (change >= 0.8) {
+    return { bg: 'bg-[#00A859]', text: 'text-white', hex: '#00A859' }; // Medium emerald green
+  }
+  if (change > 0) {
+    return { bg: 'bg-[#22C55E]', text: 'text-white', hex: '#22C55E' }; // Soft light green
+  }
+  if (change > -0.8) {
+    return { bg: 'bg-[#F87171]', text: 'text-white', hex: '#F87171' }; // Soft coral red
+  }
+  if (change > -2.5) {
+    return { bg: 'bg-[#EF4444]', text: 'text-white', hex: '#EF4444' }; // Medium red
+  }
+  if (change > -5) {
+    return { bg: 'bg-[#DC2626]', text: 'text-white', hex: '#DC2626' }; // Strong red
+  }
+  return { bg: 'bg-[#991B1B]', text: 'text-white', hex: '#991B1B' }; // Deep ruby red
 };
 
 export default function CryptoMarketHeatmapGrid({ coins, tickers }: CryptoMarketHeatmapGridProps) {
-  const [viewMode, setViewMode] = useState<'bento' | 'treemap'>('bento');
-  const [filterCategory, setFilterCategory] = useState<'ALL' | 'L1' | 'DEFI' | 'AI' | 'MEME'>('ALL');
-  const [sortBy, setSortBy] = useState<'CAP' | 'VOLUME' | 'CHANGE'>('CAP');
+  const [isSectorMode, setIsSectorMode] = useState<boolean>(false);
+  const [weightMetric, setWeightMetric] = useState<'MARKET_CAP' | 'VOLUME'>('MARKET_CAP');
+  const [timeframe, setTimeframe] = useState<'24H' | '1H' | '7D'>('24H');
+  const [hoveredCoin, setHoveredCoin] = useState<{
+    coin: CoinData & { effectivePrice: number; effectiveChange: number };
+    x: number;
+    y: number;
+  } | null>(null);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [canvasDimensions, setCanvasDimensions] = useState<{ width: number; height: number }>({
+    width: 1100,
+    height: 640
+  });
+
   const usdtRate = LIVE_CURRENCY_RATES.USDT_TRY;
 
-  // Process coins with real-time tickers
-  const mappedCoins = coins.map((coin) => {
-    const tick = tickers[coin.binanceSymbol];
-    const livePrice = tick?.price || coin.price;
-    const liveChange = tick?.change24h !== undefined ? tick.change24h : coin.change24h;
-
-    return {
-      ...coin,
-      effectivePrice: livePrice,
-      effectiveChange: liveChange
+  // Measure container dimensions for pixel-perfect squarified aspect ratio calculation
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        const w = containerRef.current.clientWidth;
+        // Keep a golden 16:9 or 16:10 ratio on desktop, square-like on mobile
+        const h = w > 768 ? Math.max(560, Math.round(w * 0.56)) : 480;
+        setCanvasDimensions({ width: w, height: h });
+      }
     };
-  });
 
-  // Filter by category
-  const filtered = mappedCoins.filter((c) => {
-    if (filterCategory === 'L1') return c.category.toLowerCase().includes('katman') || ['BTC', 'ETH', 'SOL', 'BNB', 'AVAX', 'SUI', 'APT', 'ADA', 'NEAR'].includes(c.symbol);
-    if (filterCategory === 'DEFI') return c.category.toLowerCase().includes('defi') || ['UNI', 'AAVE', 'ENA', 'JUP', 'RAY', 'ETHFI'].includes(c.symbol);
-    if (filterCategory === 'MEME') return c.category.toLowerCase().includes('meme') || ['DOGE', 'SHIB', 'PEPE', 'PUMP', 'FLOKI', 'BONK'].includes(c.symbol);
-    if (filterCategory === 'AI') return c.category.toLowerCase().includes('yapay') || ['NEAR', 'RENDER', 'TAO', 'FET'].includes(c.symbol);
-    return true;
-  });
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
 
-  // Sort
-  const sorted = [...filtered].sort((a, b) => {
-    if (sortBy === 'CHANGE') return b.effectiveChange - a.effectiveChange;
-    if (sortBy === 'VOLUME') return b.volume24hUsd - a.volume24hUsd;
-    return a.marketCapRank - b.marketCapRank;
-  });
+  // Map real-time Binance tickers
+  const mappedCoins = useMemo(() => {
+    return coins.map((c) => {
+      const liveTick = tickers[c.binanceSymbol];
+      const livePrice = liveTick?.price || c.price;
+      const liveChange = liveTick?.change24h !== undefined ? liveTick.change24h : c.change24h;
 
-  // Specific coins for top Bento slots
-  const btc = mappedCoins.find((c) => c.symbol === 'BTC') || sorted[0];
-  const eth = mappedCoins.find((c) => c.symbol === 'ETH') || sorted[1];
-  
-  // Secondary tier
-  const mediumCoins = sorted.filter((c) => c.symbol !== 'BTC' && c.symbol !== 'ETH').slice(0, 8);
-  // Remaining liquid altcoins
-  const compactCoins = sorted.filter((c) => c.symbol !== 'BTC' && c.symbol !== 'ETH').slice(8, 28);
+      return {
+        ...c,
+        effectivePrice: livePrice,
+        effectiveChange: liveChange
+      };
+    });
+  }, [coins, tickers]);
+
+  // Compute global treemap nodes (when Sector is OFF)
+  const globalNodes = useMemo(() => {
+    if (isSectorMode) return [];
+
+    const items = mappedCoins.map((coin) => ({
+      ...coin,
+      id: coin.id,
+      weight: weightMetric === 'MARKET_CAP' 
+        ? Math.max(1000, coin.marketCapUsd || 1000000) 
+        : Math.max(1000, coin.volume24hUsd || 500000)
+    }));
+
+    return computeSquarifiedTreemap(items, {
+      x: 0,
+      y: 0,
+      width: canvasDimensions.width,
+      height: canvasDimensions.height
+    });
+  }, [mappedCoins, isSectorMode, weightMetric, canvasDimensions]);
+
+  // Compute sector-partitioned treemap nodes (when Sector is ON)
+  const sectorGroups = useMemo(() => {
+    if (!isSectorMode) return [];
+
+    // Group coins by category
+    const groups: Record<string, (CoinData & { effectivePrice: number; effectiveChange: number })[]> = {};
+    mappedCoins.forEach((coin) => {
+      const cat = coin.category || 'Diğer Altcoinler';
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(coin);
+    });
+
+    // 1. Calculate each sector's total weight
+    const sectorItems = Object.entries(groups).map(([category, coinList]) => {
+      const totalWeight = coinList.reduce((sum, c) => {
+        return sum + (weightMetric === 'MARKET_CAP' ? Math.max(1000, c.marketCapUsd) : Math.max(1000, c.volume24hUsd));
+      }, 0);
+
+      const avgChange = coinList.reduce((sum, c) => sum + c.effectiveChange, 0) / (coinList.length || 1);
+
+      return {
+        id: category,
+        category,
+        weight: totalWeight,
+        avgChange,
+        coinList
+      };
+    });
+
+    // 2. Squarify sectors in canvas
+    const sectorRects = computeSquarifiedTreemap(sectorItems, {
+      x: 0,
+      y: 0,
+      width: canvasDimensions.width,
+      height: canvasDimensions.height
+    });
+
+    // 3. For each sector, squarify its coins inside its assigned bounds (leaving 22px for sector header)
+    return sectorRects.map((sNode) => {
+      const headerHeight = 24;
+      const innerBounds = {
+        x: sNode.x + 1,
+        y: sNode.y + headerHeight,
+        width: Math.max(10, sNode.width - 2),
+        height: Math.max(10, sNode.height - headerHeight - 1)
+      };
+
+      const coinItems = sNode.data.coinList.map((coin: any) => ({
+        ...coin,
+        id: coin.id,
+        weight: weightMetric === 'MARKET_CAP' ? Math.max(100, coin.marketCapUsd) : Math.max(100, coin.volume24hUsd)
+      }));
+
+      const coinNodes = computeSquarifiedTreemap(coinItems, innerBounds);
+
+      return {
+        sector: sNode.data,
+        rect: sNode,
+        nodes: coinNodes
+      };
+    });
+  }, [mappedCoins, isSectorMode, weightMetric, canvasDimensions]);
 
   const formatPrice = (price: number) => {
     if (price >= 1000) return price.toLocaleString('tr-TR', { maximumFractionDigits: 0 });
@@ -94,463 +190,323 @@ export default function CryptoMarketHeatmapGrid({ coins, tickers }: CryptoMarket
     return price.toFixed(6);
   };
 
-  const formatVolume = (usd: number) => {
+  const formatLargeUsd = (usd: number) => {
+    if (usd >= 1e12) return `$${(usd / 1e12).toFixed(2)}T`;
     if (usd >= 1e9) return `$${(usd / 1e9).toFixed(2)}B`;
     if (usd >= 1e6) return `$${(usd / 1e6).toFixed(1)}M`;
     return `$${(usd / 1e3).toFixed(0)}K`;
   };
 
   return (
-    <div className="panel-card p-4 sm:p-6 space-y-5">
-      {/* 1. Header with Title, Mode Switcher & Filter Pills */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-4">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#00E699]/15 text-[#00A86B] dark:text-[#00E699] border border-[#00E699]/25 font-bold shadow-xs">
-            <LayoutGrid className="h-5 w-5" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-base sm:text-lg font-black text-[var(--foreground)] tracking-tight">
-                Market Isı Şeması
-              </h3>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#00E699]/15 px-2.5 py-0.5 text-[11px] font-mono font-bold text-[#00A86B] dark:text-[#00E699] border border-[#00E699]/30">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#00E699] animate-pulse" />
-                CANLI BENTO AKIŞI
-              </span>
-            </div>
-            <p className="text-[11px] text-[var(--card-muted)]">
-              24 saatlik getiri, hacim ağırlığı ve canlı Binance WebSocket verileriyle modüler bento mimarisi
-            </p>
-          </div>
+    <div className="panel-card p-4 sm:p-5 space-y-4 select-none">
+      {/* 1. Header Toolbar Exactly Like Screenshot */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] pb-3">
+        {/* Left Title */}
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg sm:text-xl font-black text-[var(--foreground)] tracking-tight">
+            Heatmap
+          </h2>
+          <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-[#00E699]/15 px-2.5 py-0.5 text-xs font-mono font-bold text-[#00A86B] dark:text-[#00E699] border border-[#00E699]/30">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#00E699] animate-pulse" />
+            CANLI PİYASA AKIŞI
+          </span>
         </div>
 
-        {/* Action Controls: Switcher & Category Pills */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Category Selector */}
-          <div className="flex items-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--background)] p-1 text-xs font-semibold">
-            {[
-              { id: 'ALL', label: 'Tümü' },
-              { id: 'L1', label: 'Katman 1' },
-              { id: 'DEFI', label: 'DeFi' },
-              { id: 'AI', label: 'Yapay Zeka' },
-              { id: 'MEME', label: 'Meme' }
-            ].map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setFilterCategory(cat.id as any)}
-                className={`rounded-lg px-2.5 py-1 transition-all cursor-pointer ${
-                  filterCategory === cat.id
-                    ? 'bg-[#2962FF] text-white shadow-xs font-bold'
-                    : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
+        {/* Right Controls: [ ] Sector Checkbox + Dropdowns */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs">
+          {/* Sector Toggle Checkbox (Exact match to screenshot) */}
+          <label className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--background)] hover:bg-[var(--card-subtle)] cursor-pointer font-bold text-[var(--foreground)] transition-colors">
+            <input
+              type="checkbox"
+              checked={isSectorMode}
+              onChange={(e) => setIsSectorMode(e.target.checked)}
+              className="rounded border-[var(--border)] text-[#2962FF] focus:ring-0 cursor-pointer h-4 w-4"
+            />
+            <span>Sector (Sektör)</span>
+          </label>
+
+          {/* Market Cap / Volume Dropdown */}
+          <div className="relative">
+            <select
+              value={weightMetric}
+              onChange={(e) => setWeightMetric(e.target.value as any)}
+              className="appearance-none rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-1.5 pr-8 font-bold text-[var(--foreground)] hover:bg-[var(--card-subtle)] transition-colors cursor-pointer focus:outline-none"
+            >
+              <option value="MARKET_CAP">Market cap ⌄</option>
+              <option value="VOLUME">Volume 24h ⌄</option>
+            </select>
+            <ChevronDown className="h-3.5 w-3.5 absolute right-2.5 top-2.5 pointer-events-none text-[var(--card-muted)]" />
           </div>
 
-          {/* View Mode Toggle (Bento Grid vs Mozaik Treemap) */}
-          <div className="flex items-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--card-subtle)] p-1 text-xs font-semibold">
-            <button
-              onClick={() => setViewMode('bento')}
-              className={`rounded-lg px-3 py-1 transition-all cursor-pointer flex items-center gap-1.5 ${
-                viewMode === 'bento'
-                  ? 'bg-[#2962FF] text-white shadow-xs font-bold'
-                  : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
-              }`}
+          {/* Price Change Dropdown */}
+          <div className="relative">
+            <select
+              value={timeframe}
+              onChange={(e) => setTimeframe(e.target.value as any)}
+              className="appearance-none rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 py-1.5 pr-8 font-bold text-[var(--foreground)] hover:bg-[var(--card-subtle)] transition-colors cursor-pointer focus:outline-none"
             >
-              <span>◫</span>
-              <span>Bento Grid</span>
-            </button>
-            <button
-              onClick={() => setViewMode('treemap')}
-              className={`rounded-lg px-3 py-1 transition-all cursor-pointer flex items-center gap-1.5 ${
-                viewMode === 'treemap'
-                  ? 'bg-[var(--card)] text-[var(--foreground)] shadow-xs font-bold border border-[var(--border)]'
-                  : 'text-[var(--card-muted)] hover:text-[var(--foreground)]'
-              }`}
-            >
-              <span>⊞</span>
-              <span>Mozaik</span>
-            </button>
+              <option value="24H">Price Change (24s) ⌄</option>
+              <option value="1H">Price Change (1s) ⌄</option>
+              <option value="7D">Price Change (7g) ⌄</option>
+            </select>
+            <ChevronDown className="h-3.5 w-3.5 absolute right-2.5 top-2.5 pointer-events-none text-[var(--card-muted)]" />
           </div>
         </div>
       </div>
 
-      {/* 2. MAIN BENTO GRID VIEW (ALTERNATİF 1) */}
-      {viewMode === 'bento' ? (
-        <div className="space-y-4">
-          {/* Top Tier: Bitcoin & Ethereum Hero Bento Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Bitcoin Hero Bento Card */}
-            {btc && (
+      {/* 2. SQUARIFIED TREEMAP CANVAS */}
+      <div 
+        ref={containerRef}
+        style={{ height: `${canvasDimensions.height}px` }}
+        className="w-full relative rounded-xl overflow-hidden border border-[var(--border)] bg-slate-900/40 shadow-inner"
+        onMouseLeave={() => setHoveredCoin(null)}
+      >
+        {!isSectorMode ? (
+          /* A) UNIFIED GLOBAL TREEMAP (EXACT MATCH TO UPLOADED SCREENSHOT) */
+          globalNodes.map((node) => {
+            const coin = node.data;
+            const colors = getCoinglassColor(coin.effectiveChange);
+            const isWide = node.width >= 70;
+            const isTall = node.height >= 55;
+            const isHuge = node.width >= 120 && node.height >= 90;
+            const isTiny = node.width < 45 || node.height < 32;
+
+            // Compute font sizes dynamically based on box area
+            const symbolFontSize = isHuge ? 'text-xl sm:text-2xl font-black' : isWide && isTall ? 'text-sm sm:text-base font-black' : isTiny ? 'text-[10px] font-bold' : 'text-xs font-black';
+            const changeFontSize = isHuge ? 'text-sm sm:text-base font-bold' : isWide && isTall ? 'text-xs font-bold' : isTiny ? 'text-[9px]' : 'text-[10px] font-bold';
+
+            return (
               <Link
-                href={`/kripto/${btc.slug}/`}
-                className="group relative rounded-2xl border border-[var(--border)] bg-gradient-to-br from-[var(--card)] via-[var(--card)] to-[var(--background)] p-5 transition-all duration-300 hover:border-[#F7931A]/60 hover:shadow-xl hover:shadow-[#F7931A]/5 overflow-hidden flex flex-col justify-between"
+                key={coin.id}
+                href={`/kripto/${coin.slug}/`}
+                style={{
+                  position: 'absolute',
+                  left: `${(node.x / canvasDimensions.width) * 100}%`,
+                  top: `${(node.y / canvasDimensions.height) * 100}%`,
+                  width: `${(node.width / canvasDimensions.width) * 100}%`,
+                  height: `${(node.height / canvasDimensions.height) * 100}%`,
+                  padding: '1px'
+                }}
+                onMouseEnter={(e) => {
+                  const rect = containerRef.current?.getBoundingClientRect();
+                  if (rect) {
+                    setHoveredCoin({
+                      coin,
+                      x: e.clientX - rect.left,
+                      y: e.clientY - rect.top
+                    });
+                  }
+                }}
+                className="group transition-transform hover:z-20 cursor-pointer"
               >
-                {/* Subtle Ambient Glow */}
-                <div className={`absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-15 pointer-events-none ${
-                  btc.effectiveChange >= 0 ? 'bg-[#00E699]' : 'bg-[#FF3B56]'
-                }`} />
-
-                {/* Top Row: Coin Identity, Rank & Live Ping */}
-                <div className="flex items-start justify-between relative z-10">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F7931A]/15 text-[#F7931A] border border-[#F7931A]/30 text-2xl font-black shadow-xs group-hover:scale-105 transition-transform">
-                      ₿
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl font-black text-[var(--foreground)] group-hover:text-[#F7931A] transition-colors">
-                          {btc.name}
-                        </span>
-                        <span className="text-xs font-mono font-bold text-[var(--card-muted)]">
-                          {btc.symbol}
-                        </span>
-                        <span className="rounded-md bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[10px] font-mono font-bold text-[var(--card-muted)] border border-[var(--border)]">
-                          #1
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-[var(--card-muted)] flex items-center gap-2 mt-0.5">
-                        <span>Piyasa Payı: <strong>%{btc.dominancePercent || 56.4}</strong></span>
-                        <span>•</span>
-                        <span>24s Hacim: <strong>{formatVolume(btc.volume24hUsd)}</strong></span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 24h Change Pill */}
-                  <div className={`flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-mono font-black border shadow-xs ${
-                    btc.effectiveChange >= 0
-                      ? 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30'
-                      : 'bg-rose-50 dark:bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-500/30'
-                  }`}>
-                    {btc.effectiveChange >= 0 ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
-                    <span>{btc.effectiveChange >= 0 ? '+' : ''}{btc.effectiveChange.toFixed(2)}%</span>
-                  </div>
-                </div>
-
-                {/* Middle Row: Massive Live Prices & Sparkline */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center my-4 relative z-10">
-                  <div>
-                    <div className="text-2xl sm:text-3xl font-black font-mono text-[var(--foreground)] tracking-tight">
-                      ${formatPrice(btc.effectivePrice)}
-                    </div>
-                    <div className="text-xs sm:text-sm font-mono font-semibold text-[var(--card-muted)] mt-1 flex items-center gap-1.5">
-                      <span>₺{(btc.effectivePrice * usdtRate).toLocaleString('tr-TR', { maximumFractionDigits: 0 })} TRY</span>
-                      <span className="text-[10px] opacity-75">(1 USDT = ₺{usdtRate.toFixed(2)})</span>
-                    </div>
-                  </div>
-
-                  {/* Sparkline Trend Chart */}
-                  <div className="flex flex-col items-end">
-                    <span className="text-[10px] font-mono text-[var(--card-muted)] mb-1">24 Saatlik Fiyat Eğrisi</span>
-                    <Sparkline
-                      change24h={btc.effectiveChange}
-                      width={180}
-                      height={44}
-                      className="w-full max-w-[200px]"
-                    />
-                  </div>
-                </div>
-
-                {/* Bottom Row: Quick Stats & Direct Link */}
-                <div className="flex items-center justify-between pt-3 border-t border-[var(--border)] text-xs text-[var(--card-muted)] relative z-10">
-                  <div className="flex items-center gap-3 font-mono text-[11px]">
-                    <span>24s Düşük: <strong>${formatPrice(btc.low24h || btc.effectivePrice * 0.985)}</strong></span>
-                    <span>24s Yüksek: <strong>${formatPrice(btc.high24h || btc.effectivePrice * 1.015)}</strong></span>
-                  </div>
-                  <span className="text-[#F7931A] font-bold text-xs flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                    Bitcoin Analizi <ArrowUpRight className="h-3.5 w-3.5" />
-                  </span>
-                </div>
-              </Link>
-            )}
-
-            {/* Ethereum Hero Bento Card */}
-            {eth && (
-              <Link
-                href={`/kripto/${eth.slug}/`}
-                className="group relative rounded-2xl border border-[var(--border)] bg-gradient-to-br from-[var(--card)] via-[var(--card)] to-[var(--background)] p-5 transition-all duration-300 hover:border-[#627EEA]/60 hover:shadow-xl hover:shadow-[#627EEA]/5 overflow-hidden flex flex-col justify-between"
-              >
-                {/* Subtle Ambient Glow */}
-                <div className={`absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-15 pointer-events-none ${
-                  eth.effectiveChange >= 0 ? 'bg-[#00E699]' : 'bg-[#FF3B56]'
-                }`} />
-
-                {/* Top Row: Coin Identity, Rank & Live Ping */}
-                <div className="flex items-start justify-between relative z-10">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#627EEA]/15 text-[#627EEA] border border-[#627EEA]/30 text-2xl font-black shadow-xs group-hover:scale-105 transition-transform">
-                      Ξ
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl font-black text-[var(--foreground)] group-hover:text-[#627EEA] transition-colors">
-                          {eth.name}
-                        </span>
-                        <span className="text-xs font-mono font-bold text-[var(--card-muted)]">
-                          {eth.symbol}
-                        </span>
-                        <span className="rounded-md bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-[10px] font-mono font-bold text-[var(--card-muted)] border border-[var(--border)]">
-                          #2
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-[var(--card-muted)] flex items-center gap-2 mt-0.5">
-                        <span>Piyasa Payı: <strong>%{eth.dominancePercent || 14.8}</strong></span>
-                        <span>•</span>
-                        <span>24s Hacim: <strong>{formatVolume(eth.volume24hUsd)}</strong></span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 24h Change Pill */}
-                  <div className={`flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-mono font-black border shadow-xs ${
-                    eth.effectiveChange >= 0
-                      ? 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30'
-                      : 'bg-rose-50 dark:bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-500/30'
-                  }`}>
-                    {eth.effectiveChange >= 0 ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
-                    <span>{eth.effectiveChange >= 0 ? '+' : ''}{eth.effectiveChange.toFixed(2)}%</span>
-                  </div>
-                </div>
-
-                {/* Middle Row: Massive Live Prices & Sparkline */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center my-4 relative z-10">
-                  <div>
-                    <div className="text-2xl sm:text-3xl font-black font-mono text-[var(--foreground)] tracking-tight">
-                      ${formatPrice(eth.effectivePrice)}
-                    </div>
-                    <div className="text-xs sm:text-sm font-mono font-semibold text-[var(--card-muted)] mt-1 flex items-center gap-1.5">
-                      <span>₺{(eth.effectivePrice * usdtRate).toLocaleString('tr-TR', { maximumFractionDigits: 0 })} TRY</span>
-                      <span className="text-[10px] opacity-75">(Katman-1 Lideri)</span>
-                    </div>
-                  </div>
-
-                  {/* Sparkline Trend Chart */}
-                  <div className="flex flex-col items-end">
-                    <span className="text-[10px] font-mono text-[var(--card-muted)] mb-1">24 Saatlik Fiyat Eğrisi</span>
-                    <Sparkline
-                      change24h={eth.effectiveChange}
-                      width={180}
-                      height={44}
-                      className="w-full max-w-[200px]"
-                    />
-                  </div>
-                </div>
-
-                {/* Bottom Row: Quick Stats & Direct Link */}
-                <div className="flex items-center justify-between pt-3 border-t border-[var(--border)] text-xs text-[var(--card-muted)] relative z-10">
-                  <div className="flex items-center gap-3 font-mono text-[11px]">
-                    <span>24s Düşük: <strong>${formatPrice(eth.low24h || eth.effectivePrice * 0.982)}</strong></span>
-                    <span>24s Yüksek: <strong>${formatPrice(eth.high24h || eth.effectivePrice * 1.018)}</strong></span>
-                  </div>
-                  <span className="text-[#627EEA] font-bold text-xs flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                    Ethereum Analizi <ArrowUpRight className="h-3.5 w-3.5" />
-                  </span>
-                </div>
-              </Link>
-            )}
-          </div>
-
-          {/* Secondary Tier: Major Altcoin Bento Grid (SOL, BNB, XRP, DOGE, AVAX, SUI, LINK, ADA, etc.) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
-            {mediumCoins.map((coin) => {
-              const badge = COIN_BADGES[coin.symbol] || {
-                bg: 'bg-slate-100 dark:bg-slate-800 border-[var(--border)]',
-                text: 'text-[var(--foreground)]',
-                icon: coin.symbol.slice(0, 2)
-              };
-              const isPositive = coin.effectiveChange >= 0;
-
-              return (
-                <Link
-                  key={coin.id}
-                  href={`/kripto/${coin.slug}/`}
-                  className="group relative rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 transition-all duration-200 hover:border-[#2962FF]/50 hover:shadow-md flex flex-col justify-between"
+                <div
+                  className={`w-full h-full rounded-[3px] border border-black/10 dark:border-white/10 ${colors.bg} ${colors.text} flex flex-col items-center justify-center text-center p-1 overflow-hidden transition-all duration-150 group-hover:brightness-110 group-hover:ring-2 group-hover:ring-white/80`}
                 >
-                  {/* Top Bar: Icon, Symbol, Name & 24h Change Pill */}
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-black text-sm border shadow-2xs ${badge.bg} ${badge.text}`}>
-                        {badge.icon}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="font-black text-sm text-[var(--foreground)] truncate group-hover:text-[#2962FF] transition-colors">
-                          {coin.symbol}
-                        </div>
-                        <div className="text-[11px] text-[var(--card-muted)] truncate">
-                          {coin.name}
-                        </div>
-                      </div>
+                  {/* Official Coin Logo for Larger Tiles */}
+                  {isHuge && (
+                    <div className="mb-1">
+                      <CoinIcon
+                        symbol={coin.symbol}
+                        name={coin.name}
+                        imageUrl={coin.imageUrl}
+                        size={32}
+                        className="shadow-sm border border-white/20"
+                      />
                     </div>
+                  )}
 
-                    <div className={`shrink-0 rounded-lg px-2 py-0.5 text-xs font-mono font-black border ${
-                      isPositive
-                        ? 'bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30'
-                        : 'bg-rose-50 dark:bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-500/30'
-                    }`}>
-                      {isPositive ? '+' : ''}{coin.effectiveChange.toFixed(2)}%
-                    </div>
-                  </div>
+                  {/* Coin Symbol */}
+                  <span className={`${symbolFontSize} tracking-tight leading-none drop-shadow-xs truncate max-w-full px-0.5`}>
+                    {coin.symbol}
+                  </span>
 
-                  {/* Price & Sparkline Row */}
-                  <div className="flex items-end justify-between gap-2 mt-3 pt-3 border-t border-[var(--border)]">
-                    <div>
-                      <div className="text-base font-black font-mono text-[var(--foreground)]">
-                        ${formatPrice(coin.effectivePrice)}
-                      </div>
-                      <div className="text-[11px] font-mono text-[var(--card-muted)]">
-                        ₺{(coin.effectivePrice * usdtRate).toLocaleString('tr-TR', { maximumFractionDigits: coin.effectivePrice > 1 ? 2 : 4 })}
-                      </div>
-                    </div>
+                  {/* Price Change % */}
+                  <span className={`${changeFontSize} font-mono leading-tight drop-shadow-xs mt-0.5 truncate max-w-full`}>
+                    {coin.effectiveChange >= 0 ? '+' : ''}{coin.effectiveChange.toFixed(2)}%
+                  </span>
 
-                    <Sparkline
-                      change24h={coin.effectiveChange}
-                      width={86}
-                      height={26}
-                      className="shrink-0"
-                    />
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Tertiary Tier: Compact Altcoin Tiles (20+ Liquid Coins) */}
-          <div className="space-y-2 pt-2">
-            <div className="flex items-center justify-between text-xs font-bold text-[var(--card-muted)] px-1">
-              <span className="flex items-center gap-1.5">
-                <Activity className="h-3.5 w-3.5 text-[#2962FF]" />
-                <span>Diğer Likit Ekosistem Varlıkları (24s Değişim)</span>
-              </span>
-              <span className="font-mono text-[11px]">Toplam {mappedCoins.length} Kripto Para</span>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
-              {compactCoins.map((coin) => {
-                const isPositive = coin.effectiveChange >= 0;
-                return (
-                  <Link
-                    key={coin.id}
-                    href={`/kripto/${coin.slug}/`}
-                    className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-2.5 hover:border-[#2962FF]/50 transition-all flex items-center justify-between gap-2 group hover:bg-[var(--card-subtle)]"
-                  >
-                    <div className="min-w-0">
-                      <div className="font-black text-xs text-[var(--foreground)] group-hover:text-[#2962FF] truncate">
-                        {coin.symbol}
-                      </div>
-                      <div className="text-[10px] font-mono text-[var(--card-muted)] truncate">
-                        ${formatPrice(coin.effectivePrice)}
-                      </div>
-                    </div>
-
-                    <span className={`text-[11px] font-mono font-bold shrink-0 ${
-                      isPositive ? 'text-[#00C087]' : 'text-[#F6465D]'
-                    }`}>
-                      {isPositive ? '+' : ''}{coin.effectiveChange.toFixed(1)}%
+                  {/* Price formatted if space permits */}
+                  {isHuge && (
+                    <span className="text-[11px] font-mono opacity-90 mt-1 drop-shadow-xs">
+                      ${formatPrice(coin.effectivePrice)}
                     </span>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      ) : (
-        /* 3. TRADINGVIEW SQUARIFIED TREEMAP (ALTERNATIVE VIEW) */
-        <div className="w-full rounded-2xl overflow-hidden border border-[var(--border)] bg-[var(--background)] p-1.5 select-none">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-1.5 min-h-[480px]">
-            {/* Left Dominant Block: BITCOIN */}
-            <Link
-              href={`/kripto/${btc.slug}/`}
-              className={`lg:col-span-6 rounded-xl p-5 flex flex-col items-center justify-center text-center transition-all hover:scale-[1.008] shadow-xs cursor-pointer group ${
-                btc.effectiveChange >= 0 ? 'bg-[#00B074] text-white' : 'bg-[#DC2626] text-white'
-              }`}
-            >
-              <div className="flex flex-col items-center gap-2">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#F7931A] text-white shadow-md text-2xl font-black">
-                  ₿
-                </div>
-                <h4 className="text-xl sm:text-2xl font-black tracking-tight">{btc.name}</h4>
-                <div className="text-sm font-mono opacity-90">
-                  ${formatPrice(btc.effectivePrice)}
-                </div>
-                <div className="text-2xl sm:text-3xl font-black font-mono mt-1">
-                  {btc.effectiveChange >= 0 ? '+' : ''}
-                  {btc.effectiveChange.toFixed(2)}%
-                </div>
-                <span className="text-[11px] font-mono opacity-80 mt-1">
-                  Piyasa Payı: %{btc.dominancePercent || 56.4}
-                </span>
-              </div>
-            </Link>
-
-            {/* Right Side: Ethereum, Stablecoins, and Sub-trees */}
-            <div className="lg:col-span-6 grid grid-cols-12 gap-1.5">
-              <Link
-                href={`/kripto/${eth.slug}/`}
-                className={`col-span-7 rounded-xl p-3 sm:p-4 flex flex-col justify-between items-center text-center transition-all hover:scale-[1.01] shadow-xs cursor-pointer ${
-                  eth.effectiveChange >= 0 ? 'bg-[#00C087] text-white' : 'bg-[#DC2626] text-white'
-                }`}
-              >
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#627EEA] text-white text-base font-bold shadow-xs">
-                  Ξ
-                </div>
-                <div>
-                  <div className="font-black text-sm sm:text-base">{eth.name}</div>
-                  <div className="text-xs font-mono opacity-90">${formatPrice(eth.effectivePrice)}</div>
-                </div>
-                <div className="text-lg sm:text-xl font-black font-mono">
-                  {eth.effectiveChange >= 0 ? '+' : ''}
-                  {eth.effectiveChange.toFixed(2)}%
+                  )}
                 </div>
               </Link>
+            );
+          })
+        ) : (
+          /* B) SECTOR-PARTITIONED TREEMAP (SECTOR MODE ENABLED) */
+          sectorGroups.map(({ sector, rect, nodes }) => {
+            const isSectorPositive = sector.avgChange >= 0;
 
-              {/* Tether USDT */}
-              <div className="col-span-5 rounded-xl p-3 flex flex-col justify-between items-center text-center transition-all shadow-xs bg-[#475569] text-white">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#26A17B] text-white text-xs font-black shadow-xs">
-                  ₮
+            return (
+              <div
+                key={sector.id}
+                style={{
+                  position: 'absolute',
+                  left: `${(rect.x / canvasDimensions.width) * 100}%`,
+                  top: `${(rect.y / canvasDimensions.height) * 100}%`,
+                  width: `${(rect.width / canvasDimensions.width) * 100}%`,
+                  height: `${(rect.height / canvasDimensions.height) * 100}%`,
+                  padding: '2px'
+                }}
+                className="overflow-hidden"
+              >
+                <div className="w-full h-full rounded-lg border border-[var(--border)] bg-[var(--card)]/90 flex flex-col overflow-hidden shadow-xs">
+                  {/* Sector Header Banner */}
+                  <div className="h-6 shrink-0 bg-[var(--background)] px-2 flex items-center justify-between border-b border-[var(--border)] text-[10px] font-bold">
+                    <span className="truncate text-[var(--foreground)]">{sector.category}</span>
+                    <span className={`font-mono ${isSectorPositive ? 'text-[#00E699]' : 'text-[#FF3B56]'}`}>
+                      {isSectorPositive ? '+' : ''}{sector.avgChange.toFixed(2)}%
+                    </span>
+                  </div>
+
+                  {/* Sector Inner Tiles */}
+                  <div className="w-full flex-1 relative">
+                    {nodes.map((node: TreemapNode<any>) => {
+                      const coin = node.data;
+                      const colors = getCoinglassColor(coin.effectiveChange);
+                      const isWide = node.width >= 50;
+                      const isTall = node.height >= 40;
+
+                      // Coordinates relative to the sector box
+                      const relX = node.x - (rect.x + 1);
+                      const relY = node.y - (rect.y + 24);
+                      const innerW = rect.width - 2;
+                      const innerH = rect.height - 25;
+
+                      return (
+                        <Link
+                          key={coin.id}
+                          href={`/kripto/${coin.slug}/`}
+                          style={{
+                            position: 'absolute',
+                            left: `${(relX / innerW) * 100}%`,
+                            top: `${(relY / innerH) * 100}%`,
+                            width: `${(node.width / innerW) * 100}%`,
+                            height: `${(node.height / innerH) * 100}%`,
+                            padding: '1px'
+                          }}
+                          onMouseEnter={(e) => {
+                            const containerRect = containerRef.current?.getBoundingClientRect();
+                            if (containerRect) {
+                              setHoveredCoin({
+                                coin,
+                                x: e.clientX - containerRect.left,
+                                y: e.clientY - containerRect.top
+                              });
+                            }
+                          }}
+                          className="group transition-transform hover:z-20 cursor-pointer"
+                        >
+                          <div
+                            className={`w-full h-full rounded-[2px] ${colors.bg} ${colors.text} flex flex-col items-center justify-center text-center p-0.5 overflow-hidden transition-all group-hover:brightness-110 group-hover:ring-2 group-hover:ring-white`}
+                          >
+                            <span className="font-black text-[11px] leading-tight truncate max-w-full">
+                              {coin.symbol}
+                            </span>
+                            <span className="font-mono text-[9px] leading-tight truncate max-w-full opacity-95">
+                              {coin.effectiveChange >= 0 ? '+' : ''}{coin.effectiveChange.toFixed(1)}%
+                            </span>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div>
-                  <div className="font-bold text-xs sm:text-sm">Tether USDT</div>
-                  <div className="text-[10px] font-mono opacity-80">₺{usdtRate.toFixed(2)}</div>
+              </div>
+            );
+          })
+        )}
+
+        {/* 3. FLOATING RICH HOVER TOOLTIP */}
+        {hoveredCoin && (
+          <div
+            style={{
+              position: 'absolute',
+              left: Math.min(hoveredCoin.x + 15, canvasDimensions.width - 260),
+              top: Math.min(hoveredCoin.y + 15, canvasDimensions.height - 180),
+              pointerEvents: 'none',
+              zIndex: 50
+            }}
+            className="rounded-2xl border border-white/20 bg-slate-950/95 backdrop-blur-md p-3.5 shadow-2xl text-white w-60 space-y-2.5 transition-all duration-75"
+          >
+            {/* Header: Logo, Name, Symbol, Rank */}
+            <div className="flex items-center gap-2.5">
+              <CoinIcon
+                symbol={hoveredCoin.coin.symbol}
+                name={hoveredCoin.coin.name}
+                imageUrl={hoveredCoin.coin.imageUrl}
+                size={34}
+                className="border border-white/20 shadow-xs"
+              />
+              <div className="min-w-0">
+                <div className="font-black text-sm text-white truncate flex items-center gap-1.5">
+                  <span>{hoveredCoin.coin.name}</span>
+                  <span className="text-[10px] text-slate-400 font-mono">#{hoveredCoin.coin.marketCapRank}</span>
                 </div>
-                <div className="text-xs sm:text-sm font-bold font-mono">+0.01%</div>
+                <div className="text-[11px] font-mono text-slate-400">
+                  {hoveredCoin.coin.symbol} • {hoveredCoin.coin.category}
+                </div>
+              </div>
+            </div>
+
+            {/* Price & 24h Change */}
+            <div className="flex items-baseline justify-between border-t border-white/10 pt-2">
+              <div>
+                <div className="text-base font-black font-mono text-white">
+                  ${formatPrice(hoveredCoin.coin.effectivePrice)}
+                </div>
+                <div className="text-[11px] font-mono text-slate-300">
+                  ₺{(hoveredCoin.coin.effectivePrice * usdtRate).toLocaleString('tr-TR', { maximumFractionDigits: hoveredCoin.coin.effectivePrice > 1 ? 2 : 4 })} TRY
+                </div>
               </div>
 
-              {/* Other altcoins grid */}
-              <div className="col-span-12 grid grid-cols-4 sm:grid-cols-6 gap-1 pt-0.5">
-                {mediumCoins.concat(compactCoins).slice(0, 18).map((coin) => (
-                  <Link
-                    key={coin.id}
-                    href={`/kripto/${coin.slug}/`}
-                    className={`rounded-lg p-1.5 flex flex-col items-center justify-center text-center transition-all hover:scale-105 cursor-pointer ${
-                      coin.effectiveChange >= 0 ? 'bg-[#00C087] text-white' : 'bg-[#DC2626] text-white'
-                    }`}
-                  >
-                    <span className="text-[11px] font-black truncate w-full">{coin.symbol}</span>
-                    <span className="text-[10px] font-mono opacity-90 truncate w-full">
-                      {coin.effectiveChange >= 0 ? '+' : ''}{coin.effectiveChange.toFixed(1)}%
-                    </span>
-                  </Link>
-                ))}
+              <div className={`px-2 py-0.5 rounded-lg text-xs font-mono font-black ${
+                hoveredCoin.coin.effectiveChange >= 0
+                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                  : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+              }`}>
+                {hoveredCoin.coin.effectiveChange >= 0 ? '+' : ''}{hoveredCoin.coin.effectiveChange.toFixed(2)}%
+              </div>
+            </div>
+
+            {/* Volume & Market Cap */}
+            <div className="grid grid-cols-2 gap-2 border-t border-white/10 pt-2 text-[10px] font-mono text-slate-300">
+              <div>
+                <span className="text-slate-400 block">24s Hacim</span>
+                <strong className="text-white">{formatLargeUsd(hoveredCoin.coin.volume24hUsd)}</strong>
+              </div>
+              <div>
+                <span className="text-slate-400 block">Piyasa Değeri</span>
+                <strong className="text-white">{formatLargeUsd(hoveredCoin.coin.marketCapUsd)}</strong>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
-      {/* Footer Navigation to Dedicated Page */}
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[var(--border)] text-xs text-[var(--card-muted)]">
-        <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-[#00E699]" />
-          <span>Fiyatlar serbest piyasa ve Binance WebSocket canlı akışıyla her saniye güncellenir.</span>
-        </span>
+      {/* 4. Color Scale Legend (Coinglass Standard) */}
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs text-[var(--card-muted)]">
+        <div className="flex items-center gap-1.5 font-mono text-[11px]">
+          <span>Getiri Skalası:</span>
+          <div className="flex items-center rounded-md overflow-hidden border border-[var(--border)] text-[9px] font-bold text-white">
+            <span className="px-1.5 py-0.5 bg-[#991B1B]">&lt;-5%</span>
+            <span className="px-1.5 py-0.5 bg-[#DC2626]">-2.5%</span>
+            <span className="px-1.5 py-0.5 bg-[#F87171]">-0.8%</span>
+            <span className="px-1.5 py-0.5 bg-[#64748B]">0%</span>
+            <span className="px-1.5 py-0.5 bg-[#22C55E]">+0.8%</span>
+            <span className="px-1.5 py-0.5 bg-[#007A43]">+2.5%</span>
+            <span className="px-1.5 py-0.5 bg-[#005A32]">&gt;+5%</span>
+          </div>
+        </div>
+
         <Link
           href="/market-isi-semasi/"
           className="text-[#2962FF] font-bold hover:underline flex items-center gap-1"
         >
-          Tam Ekran Market Isı Şeması Sayfası <ArrowUpRight className="h-3.5 w-3.5" />
+          Tam Ekran Isı Şeması Sayfası <ArrowUpRight className="h-3.5 w-3.5" />
         </Link>
       </div>
     </div>

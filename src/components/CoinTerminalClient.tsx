@@ -8,6 +8,7 @@ import { LIVE_CURRENCY_RATES } from '../lib/data';
 import TradingViewChart from './TradingViewChart';
 import LiquidationHeatmap from './LiquidationHeatmap';
 import Sparkline from './Sparkline';
+import CoinIcon from './CoinIcon';
 import {
   Flame,
   DollarSign,
@@ -165,9 +166,13 @@ export default function CoinTerminalClient({ coin }: CoinTerminalClientProps) {
       {/* 2. Main Terminal Hero Header (Real-Time Live WebSocket Ticking) */}
       <div className="panel-card p-5 sm:p-7 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 border border-[#2962FF]/20">
         <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#2962FF]/25 to-[#00E699]/20 border border-[var(--border)] font-mono font-black text-xl text-[var(--foreground)] shadow-md">
-            {coin.symbol.slice(0, 3)}
-          </div>
+          <CoinIcon
+            symbol={coin.symbol}
+            name={coin.name}
+            imageUrl={coin.imageUrl}
+            size={56}
+            className="border border-[var(--border)] shadow-md"
+          />
           <div>
             <div className="flex flex-wrap items-center gap-2.5">
               <h1 className="text-2xl sm:text-3xl font-black text-[var(--foreground)] tracking-tight">
