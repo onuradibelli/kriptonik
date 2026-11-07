@@ -25,6 +25,7 @@ const BASE_DEFAULTS: Record<string, { price: number; change24h: number }> = {
   LINKUSDT: { price: 13.80, change24h: 1.45 },
   ADAUSDT: { price: 0.328, change24h: -1.20 },
   AVAXUSDT: { price: 8.40, change24h: 2.82 },
+  USDTTRY: { price: 50.09, change24h: 0.08 },
   PEPEUSDT: { price: 0.0000094, change24h: 6.45 },
   SHIBUSDT: { price: 0.0000182, change24h: 1.75 },
   NEARUSDT: { price: 4.85, change24h: 3.84 },

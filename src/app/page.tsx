@@ -55,11 +55,65 @@ export default function HomePage() {
     BNBUSDT: { price: 695.50, change24h: 1.04 },
     XRPUSDT: { price: 1.185, change24h: -4.63 },
     DOGEUSDT: { price: 0.0729, change24h: 1.87 },
-    SUIUSDT: { price: 0.871, change24h: 2.85 }
+    SUIUSDT: { price: 0.871, change24h: 2.85 },
+    USDTTRY: { price: 50.09, change24h: 0.08 }
   };
 
   const { tickers } = useBinanceTickers(defaultTickers);
   const selectedCoin = COINS_DATA.find((c) => c.slug === selectedCoinSlug) || COINS_DATA[0];
+
+  // Dynamic Real-Time Macro Telemetry State
+  const [liveFearGreed, setLiveFearGreed] = useState<{ value: number; classification: string; yesterday: number }>({
+    value: 25,
+    classification: 'Aşırı Korku',
+    yesterday: 28
+  });
+  const [liveUsdTry, setLiveUsdTry] = useState<number>(50.18);
+
+  useEffect(() => {
+    // 1. Fetch live Fear and Greed from Alternative.me
+    const fetchFng = async () => {
+      try {
+        const res = await fetch('https://api.alternative.me/fng/?limit=2');
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.data?.[0]) {
+            const today = data.data[0];
+            const yesterday = data.data[1];
+            const val = parseInt(today.value) || 25;
+            const cls =
+              val <= 25 ? 'Aşırı Korku' : val <= 45 ? 'Korku' : val <= 55 ? 'Nötr' : val <= 75 ? 'Açgözlülük' : 'Aşırı Açgözlülük';
+            setLiveFearGreed({
+              value: val,
+              classification: cls,
+              yesterday: yesterday ? parseInt(yesterday.value) || 28 : 28
+            });
+          }
+        }
+      } catch {}
+    };
+
+    // 2. Fetch live USD/TRY rate from Open Forex API
+    const fetchUsd = async () => {
+      try {
+        const res = await fetch('https://open.er-api.com/v6/latest/USD');
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.rates?.TRY) {
+            setLiveUsdTry(parseFloat(data.rates.TRY));
+          }
+        }
+      } catch {}
+    };
+
+    fetchFng();
+    fetchUsd();
+    const timer = setInterval(() => {
+      fetchFng();
+      fetchUsd();
+    }, 45000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Watchlist persistence
   useEffect(() => {
@@ -100,8 +154,9 @@ export default function HomePage() {
     const dateStr = new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
     const timeStr = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
     
-    const usdtTry = LIVE_CURRENCY_RATES.USDT_TRY; // 50.04
-    const usdTry = LIVE_CURRENCY_RATES.USD_TRY;   // 50.15
+    const usdtTry = tickers['USDTTRY']?.price || 50.09;
+    const usdTry = liveUsdTry;
+    const spreadPct = ((usdtTry - usdTry) / usdTry) * 100;
 
     const text = `📊 KRİPTONİK GÜNLÜK PİYASA RAPORU\r\n` +
       `📅 Tarih: ${dateStr} - ${timeStr}\r\n` +
@@ -113,17 +168,21 @@ export default function HomePage() {
       `• BNB/USDT: $${bnbTick.price.toLocaleString('tr-TR')} (${bnbTick.change24h >= 0 ? '+' : ''}${bnbTick.change24h.toFixed(2)}%)\r\n` +
       `• XRP/USDT: $${xrpTick.price.toLocaleString('tr-TR', { minimumFractionDigits: 3 })} (${xrpTick.change24h >= 0 ? '+' : ''}${xrpTick.change24h.toFixed(2)}%)\r\n\r\n` +
       `💵 SERBEST PİYASA & DÖVİZ (TCMB / BORSALAR)\r\n` +
-      `• Tether (USDT/TRY): ₺${usdtTry.toFixed(2)}\r\n` +
+      `• Tether (USDT/TRY): ₺${usdtTry.toFixed(2)} (Bybit TR & Binance TR)\r\n` +
       `• Dolar (USD/TRY): ₺${usdTry.toFixed(2)}\r\n` +
-      `• Kripto Dolar Primi: %-0.22 (İskontolu Alım Avantajı)\r\n\r\n` +
+      `• Kripto Dolar Primi: %${spreadPct.toFixed(2)} (${spreadPct <= 0 ? 'İskontolu Alım' : 'Primli'})\r\n\r\n` +
       `🔥 TÜREV & LİKİDASYON RADARI (24 SAAT)\r\n` +
       `• Toplam Tasfiye: $190.27M\r\n` +
       `• Tasfiye Dağılımı: %65.6 Long ($124.8M) / %34.4 Short ($65.4M)\r\n` +
       `• En Büyük Tasfiye: Binance - ETHUSDT ($2.88M)\r\n\r\n` +
       `🏦 KURUMSAL SPOT ETF AKIŞLARI\r\n` +
-      `• Konsolide Giriş/Çıkış: -$506.8M (BTC: -$438.4M, ETH: -$68.4M)\r\n` +
+      `• Konsolide Net Akış: -$470.6M (BTC: -$438.4M, ETH: -$68.4M, SOL: +$36.2M)\r\n` +
       `• Solana Spot ETF: +$36.2M Net Giriş (GSOL, VSOL, TSOL)\r\n\r\n` +
       `😱 PİYASA DUYARLILIĞI & FONLAMA\r\n` +
+      `• Korku & Açgözlülük İndeksi: ${liveFearGreed.value} / 100 (${liveFearGreed.classification})\r\n` +
+      `• Ağırlıklı Fonlama Oranı: +%0.0084 (Dengeli)\r\n\r\n` +
+      `🔗 Detaylı Canlı Isı Haritası, TradingView Grafikleri & Arbitraj:\r\n` +
+      `👉 https://kriptonik.com\r\n`; +
       `• Korku & Açgözlülük İndeksi: ${FEAR_AND_GREED.value} / 100 (${FEAR_AND_GREED.classification.split(' ')[0]})\r\n` +
       `• Ağırlıklı Fonlama Oranı: +%0.0084 (Dengeli)\r\n\r\n` +
       `🔗 Detaylı Canlı Isı Haritası, TradingView Grafikleri & Arbitraj:\r\n` +
@@ -198,19 +257,22 @@ export default function HomePage() {
           <div className="cockpit-card p-4 space-y-3">
             <div className="flex items-center justify-between text-xs">
               <span className="font-semibold text-[var(--card-muted)]">Piyasa Duyarlılığı</span>
-              <span className="font-mono text-[10px] text-[var(--card-muted)]">Günlük İndeks</span>
+              <span className="rounded bg-[#00E699]/15 text-[#00A86B] dark:text-[#00E699] px-2 py-0.5 font-mono text-[10px] font-bold border border-[#00E699]/30 flex items-center gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#00E699] animate-pulse" />
+                CANLI İNDEKS
+              </span>
             </div>
             <div className="flex items-baseline justify-between">
               <div>
                 <div className="text-2xl font-black font-mono text-[#FF3B56]">
-                  {FEAR_AND_GREED.value}
+                  {liveFearGreed.value}
                 </div>
                 <div className="text-xs font-bold text-[#FF3B56]">
-                  {FEAR_AND_GREED.classification}
+                  {liveFearGreed.classification}
                 </div>
               </div>
               <div className="text-right text-[10px] font-mono text-[var(--card-muted)]">
-                Dün: <strong>32</strong>
+                Dün: <strong>{liveFearGreed.yesterday}</strong>
               </div>
             </div>
 
@@ -234,26 +296,26 @@ export default function HomePage() {
           <div className="cockpit-card p-4 space-y-3">
             <div className="flex items-center justify-between text-xs">
               <span className="font-semibold text-[var(--card-muted)]">24s Tasfiye Isı Dengesi</span>
-              <span className="font-mono text-[10px] text-[#FF3B56] font-bold">Short Baskın</span>
+              <span className="font-mono text-[10px] text-[#00A86B] dark:text-[#00E699] font-bold">Uzun Baskın</span>
             </div>
             <div className="flex items-baseline justify-between">
               <div className="text-2xl font-black font-mono text-[var(--foreground)]">
-                $348.5M
+                $190.27M
               </div>
               <div className="text-[10px] font-mono text-[var(--card-muted)]">
-                Toplam Tasfiye
+                66.136 Yatırımcı
               </div>
             </div>
 
-            {/* Visual Duel Bar (Short vs Long) */}
+            {/* Visual Duel Bar (Long vs Short) */}
             <div className="space-y-1">
               <div className="h-2.5 w-full rounded-full bg-[var(--border)] overflow-hidden flex">
-                <div style={{ width: '62%' }} className="bg-[#FF3B56] h-full" title="Short Tasfiyeleri: %62 ($216.1M)" />
-                <div style={{ width: '38%' }} className="bg-[#00E699] h-full" title="Long Tasfiyeleri: %38 ($132.4M)" />
+                <div style={{ width: '65.6%' }} className="bg-[#00C087] h-full" title="Long Tasfiyeleri: %65.6 ($124.9M)" />
+                <div style={{ width: '34.4%' }} className="bg-[#FF3B56] h-full" title="Short Tasfiyeleri: %34.4 ($65.4M)" />
               </div>
               <div className="flex justify-between text-[10px] font-mono">
-                <span className="text-[#FF3B56] font-bold">%62 Short ($216M)</span>
-                <span className="text-[#00A86B] dark:text-[#00E699] font-bold">%38 Long ($132M)</span>
+                <span className="text-[#00A86B] dark:text-[#00E699] font-bold">%65.6 Long ($124.9M)</span>
+                <span className="text-[#FF3B56] font-bold">%34.4 Short ($65.4M)</span>
               </div>
             </div>
           </div>
@@ -269,57 +331,71 @@ export default function HomePage() {
             <div className="flex items-baseline justify-between">
               <div className="text-2xl font-black font-mono text-[#FF3B56] flex items-center gap-1">
                 <TrendingDown className="h-5 w-5" />
-                -$506.8M
+                -$470.6M
               </div>
               <div className="text-[10px] font-mono text-[#FF3B56] font-bold">
-                Net Çıkış (Dün)
+                Net Akış (Dün)
               </div>
             </div>
 
             {/* Visual Distribution */}
             <div className="space-y-1">
               <div className="h-2 w-full rounded-full bg-[var(--border)] overflow-hidden flex gap-1">
-                <div style={{ width: '86%' }} className="bg-[#FF3B56] h-full" />
-                <div style={{ width: '14%' }} className="bg-[#FF8A00] h-full" />
+                <div style={{ width: '80%' }} className="bg-[#FF3B56] h-full" title="BTC ETF: -$438.4M" />
+                <div style={{ width: '13%' }} className="bg-[#FF8A00] h-full" title="ETH ETF: -$68.4M" />
+                <div style={{ width: '7%' }} className="bg-[#00E699] h-full" title="SOL ETF: +$36.2M" />
               </div>
               <div className="flex justify-between text-[10px] font-mono text-[var(--card-muted)]">
-                <span>BTC ETF: <strong className="text-[#FF3B56]">-$438.4M</strong></span>
-                <span>ETH: <strong className="text-[#FF8A00]">-$68.4M</strong></span>
+                <span>BTC: <strong className="text-[#FF3B56]">-$438M</strong></span>
+                <span>ETH: <strong className="text-[#FF8A00]">-$68M</strong></span>
+                <span>SOL: <strong className="text-[#00E699]">+$36M</strong></span>
               </div>
             </div>
           </div>
 
           {/* Card 4: USDT/TRY and USD/TRY Live Spread */}
-          <div className="cockpit-card p-4 space-y-3">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-[var(--card-muted)]">Tether & Dolar Kuru</span>
-              <span className="font-mono text-[10px] text-[#00A86B] dark:text-[#00E699] font-bold">Canlı Tahta</span>
-            </div>
-            <div className="flex items-baseline justify-between">
-              <div>
-                <span className="text-xs text-[var(--card-muted)] mr-1">USDT:</span>
-                <span className="text-2xl font-black font-mono text-[#00A86B] dark:text-[#00E699]">
-                  ₺{LIVE_CURRENCY_RATES.USDT_TRY.toFixed(2)}
-                </span>
-              </div>
-              <div className="text-right">
-                <div className="text-xs font-mono text-[var(--card-muted)]">
-                  USD: <strong className="text-[var(--foreground)]">₺{LIVE_CURRENCY_RATES.USD_TRY.toFixed(2)}</strong>
+          {(() => {
+            const liveUsdt = tickers['USDTTRY']?.price || 50.09;
+            const liveFlash = tickers['USDTTRY']?.flashDirection;
+            const spread = ((liveUsdt - liveUsdTry) / liveUsdTry) * 100;
+            return (
+              <div className="cockpit-card p-4 space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-semibold text-[var(--card-muted)]">Tether & Dolar Kuru</span>
+                  <span className="rounded bg-[#00E699]/15 text-[#00A86B] dark:text-[#00E699] px-2 py-0.5 font-mono text-[10px] font-bold flex items-center gap-1 border border-[#00E699]/30">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#00E699] animate-pulse" />
+                    CANLI TAHTA
+                  </span>
+                </div>
+                <div className="flex items-baseline justify-between">
+                  <div>
+                    <span className="text-xs text-[var(--card-muted)] mr-1">USDT:</span>
+                    <span className={`text-2xl font-black font-mono px-1 rounded transition-colors inline-block ${
+                      liveFlash === 'UP' ? 'tick-flash-up text-[#00E699]' : liveFlash === 'DOWN' ? 'tick-flash-down text-[#FF3B56]' : 'text-[#00A86B] dark:text-[#00E699]'
+                    }`}>
+                      ₺{liveUsdt.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs font-mono text-[var(--card-muted)]">
+                      USD: <strong className="text-[var(--foreground)]">₺{liveUsdTry.toFixed(2)}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Visual Premium Spread Indicator */}
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-[10px] font-mono">
+                    <span className="text-[var(--card-muted)]">Bybit TR & Binance TR: <strong>₺{liveUsdt.toFixed(2)}</strong></span>
+                    <span className="text-[#00A86B] dark:text-[#00E699] font-bold">%{spread.toFixed(2)} {spread <= 0 ? 'İskonto' : 'Prim'}</span>
+                  </div>
+                  <div className="h-1.5 w-full rounded-full bg-[var(--border)] overflow-hidden">
+                    <div style={{ width: '48%' }} className="bg-[#00E699] h-full" />
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* Visual Premium Spread Indicator */}
-            <div className="space-y-1">
-              <div className="flex items-center justify-between text-[10px] font-mono">
-                <span className="text-[var(--card-muted)]">Kripto Dolar Primi:</span>
-                <span className="text-[#00A86B] dark:text-[#00E699] font-bold">-%0.22 İskonto</span>
-              </div>
-              <div className="h-1.5 w-full rounded-full bg-[var(--border)] overflow-hidden">
-                <div style={{ width: '48%' }} className="bg-[#00E699] h-full" />
-              </div>
-            </div>
-          </div>
+            );
+          })()}
         </div>
 
         {/* C) MARKET ISI ŞEMASI (Hacim Ağırlıklı Saydam Treemap) */}
